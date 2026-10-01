@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DMS - Devine Money Savings</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
@@ -14,23 +15,23 @@ header h1{color:#d4af37;font-size:16px}
 .card{background:#1a1a1a;border:1px solid #d4af37;border-radius:16px;padding:16px;margin:12px}
 .yellow{background:#d4af37;color:#000;border:none;padding:8px 16px;border-radius:20px;font-weight:bold;cursor:pointer}
 .gold{color:#d4af37}
-.input{background:#111;border:1px solid #d4af37;color:#fff;padding:10px;border-radius:8px;width:100%;margin:6px 0}
-.input:disabled{background:#2a2a2a;color:#aaa}
+.input{background:#111;border:1px solid #d4af37;color:#fff;padding:12px;border-radius:8px;width:100%;margin:6px 0;font-size:16px}
 .btn-full{width:100%;padding:14px;background:#d4af37;color:#000;font-weight:bold;border:none;border-radius:10px;margin-top:10px;cursor:pointer;font-size:16px}
 .modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
 .modal-box{background:#1a1a1a;border:2px solid #d4af37;border-radius:16px;padding:20px;width:100%;max-width:400px}
 .wallet-opt{background:#222;border:1px solid #d4af37;padding:12px;border-radius:10px;margin:8px 0;cursor:pointer;display:flex;justify-content:space-between}
 .pass-wrap{position:relative}
-.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#d4af37}
-select.input{appearance:auto}
-#auth{padding:20px}
+.eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;font-size:20px;z-index:5;padding:6px}
 .auth-tab{display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap}
-.auth-tab button{background:#222;color:#d4af37;border:1px solid #d4af37;padding:8px 16px;border-radius:20px}
+.auth-tab button{background:#222;color:#d4af37;border:1px solid #d4af37;padding:10px 16px;border-radius:20px}
 .auth-tab button.active{background:#d4af37;color:#000}
 </style>
 </head>
 <body>
-<header><h1>DMS - Devine Money Savings</h1><button id="logoutBtn" class="yellow" style="display:none;background:#ff3333;color:#fff" onclick="logout()">Logout</button></header>
+<header>
+<h1>DMS - Devine Money Savings</h1>
+<button id="logoutBtn" type="button" class="yellow" style="display:none;background:#ff3333;color:#fff" onclick="logout()">Logout</button>
+</header>
 
 <div id="auth">
 <div class="card" style="max-width:450px;margin:auto">
@@ -38,33 +39,46 @@ select.input{appearance:auto}
 <p style="text-align:center;color:#aaa;font-size:13px;margin:8px 0">Min R70 | 3 Wallets | Bank Zero</p>
 
 <div class="auth-tab">
-<button id="btnReg" class="active" onclick="switchAuth('reg')">Register</button>
-<button id="btnLogin" onclick="switchAuth('login')">User Login</button>
-<button id="btnAdmin" onclick="switchAuth('admin')">Admin Login</button>
+<button type="button" id="btnReg" class="active" onclick="switchAuth('reg')">Register</button>
+<button type="button" id="btnLogin" onclick="switchAuth('login')">User Login</button>
+<button type="button" id="btnAdmin" onclick="switchAuth('admin')">Admin Login</button>
 </div>
 
 <div id="regDiv">
 <input id="rFull" class="input" placeholder="Full Name & Surname *">
 <select id="rGender" class="input"><option value="">Gender *</option><option>Male</option><option>Female</option><option>Other</option></select>
-<input id="rCell" class="input" placeholder="Cell Number * (e.g. 0712345678)">
+<input id="rCell" class="input" placeholder="Cell Number *">
 <input id="rEmail" class="input" placeholder="Email *">
 <input id="rInviter" class="input" placeholder="Inviter Code (optional)">
-<select id="rProvince" class="input"><option value="">Province *</option><option>Gauteng</option><option>Western Cape</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Free State</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select>
-<div class="pass-wrap"><input id="rPass" class="input" type="password" placeholder="Password *"><span class="eye" onclick="toggleEye('rPass')">👁️</span></div>
-<button class="btn-full" onclick="register()">Register</button>
+<select id="rProvince" class="input">
+<option value="">Province *</option>
+<option>Gauteng</option><option>Western Cape</option><option>KwaZulu-Natal</option>
+<option>Eastern Cape</option><option>Free State</option><option>Limpopo</option>
+<option>Mpumalanga</option><option>North West</option><option>Northern Cape</option>
+</select>
+<div class="pass-wrap">
+<input id="rPass" class="input" type="password" placeholder="Password *">
+<span class="eye" onclick="toggleEye('rPass')">👁️</span>
+</div>
+<button type="button" class="btn-full" onclick="register()">Register</button>
 </div>
 
 <div id="loginDiv" style="display:none">
 <input id="lEmail" class="input" placeholder="Email">
-<div class="pass-wrap"><input id="lPass" class="input" type="password" placeholder="Password"><span class="eye" onclick="toggleEye('lPass')">👁️</span></div>
-<button class="btn-full" onclick="login()">Login</button>
+<div class="pass-wrap">
+<input id="lPass" class="input" type="password" placeholder="Password">
+<span class="eye" onclick="toggleEye('lPass')">👁️</span>
+</div>
+<button type="button" class="btn-full" onclick="login()">Login</button>
 </div>
 
 <div id="adminDiv" style="display:none">
-<input id="aEmail" class="input" placeholder="Admin Email" value="admin@dms.co.za">
-<div class="pass-wrap"><input id="aPass" class="input" type="password" placeholder="Admin Password" value="admin123"><span class="eye" onclick="toggleEye('aPass')">👁️</span></div>
-<button class="btn-full" onclick="adminLogin()">Admin Login</button>
-<p style="font-size:12px;color:#aaa;margin-top:6px;text-align:center">Default: admin@dms.co.za / admin123</p>
+<input id="aEmail" class="input" value="admin@dms.co.za">
+<div class="pass-wrap">
+<input id="aPass" class="input" type="password" value="admin123">
+<span class="eye" onclick="toggleEye('aPass')">👁️</span>
+</div>
+<button type="button" class="btn-full" onclick="adminLogin()">Admin Login</button>
 </div>
 
 </div>
@@ -72,16 +86,306 @@ select.input{appearance:auto}
 
 <div id="app" style="display:none">
 <div class="tabs">
-<button class="active" onclick="showTab('wallets')">Wallets</button>
-<button onclick="showTab('packages')">Packages</button>
-<button onclick="showTab('team')">Team</button>
-<button onclick="showTab('history')">History</button>
-<button onclick="showTab('adminP')">Admin</button>
+<button type="button" class="active" onclick="showTab('wallets',this)">Wallets</button>
+<button type="button" onclick="showTab('packages',this)">Packages</button>
+<button type="button" onclick="showTab('team',this)">Team</button>
+<button type="button" onclick="showTab('history',this)">History</button>
+<button type="button" onclick="showTab('adminP',this)">Admin</button>
 </div>
 
 <div id="wallets" class="tab">
 <div class="card">
 <h3 class="gold">3 Wallets</h3>
-<div style="border:1px solid #d4af37;border-radius:10px;padding:10px;margin:6px 0">Main Wallet: R<span id="mainW">0.00</span></div>
-<div style="border:1px solid #d4af37;border-radius:10px;padding:10px;margin:6px 0">Inviter Bonus Wallet: R<span id="invW">0.00</span></div>
-<div style="border:1px solid #d4af37;border-radius:10px;padding:10px;margin:6px 0">Loyalty Bonus Wallet: R<span id="loyW
+<div style="border:1px solid #d4af37;border-radius:10px;padding:10px;margin:6px 0">Main: R<span id="mainW">0.00</span></div>
+<div style="border:1px solid #d4af37;border-radius:10px;padding:10px;margin:6px 0">Inviter: R<span id="invW">0.00</span></div>
+<div style="border:1px solid #d4af37;border-radius:10px;padding:10px;margin:6px 0">Loyalty: R<span id="loyW">0.00</span></div>
+<p>Total R<span id="totalW">0.00</span></p>
+<button type="button" class="btn-full" onclick="openWithdrawModal()">Withdraw</button>
+<button type="button" class="yellow" style="margin-top:10px;width:100%" onclick="openWithdrawModal()">Withdraw Min R70</button>
+<div id="pkgList" style="margin-top:12px"></div>
+</div>
+<div id="bankSection" class="card" style="display:none;border-color:#ff9800">
+<h3 class="gold">Bank Zero Details</h3>
+<input class="input" value="Bank Zero" disabled>
+<label>Holder</label><input id="holderName" class="input" disabled>
+<input class="input" value="888000" disabled>
+<input id="accNum" class="input" placeholder="Account Number *">
+<input id="otpInput" class="input" placeholder="OTP (optional, admin can approve)">
+<button type="button" class="btn-full" onclick="submitBank()">Submit for Approval</button>
+<p id="bankStatus"></p>
+</div>
+</div>
+
+<div id="packages" class="tab" style="display:none">
+<div class="card" style="text-align:center"><button type="button" class="yellow">EXCLUSIVE PACKAGES</button><h2 class="gold" style="margin:12px 0">PACKAGES</h2></div>
+<div id="allPkgs"></div>
+</div>
+<div id="team" class="tab" style="display:none"><div class="card"><h3 class="gold">Team</h3><div id="teamInfo"></div></div></div>
+<div id="history" class="tab" style="display:none"><div class="card"><h3 class="gold">History</h3><div id="histList"></div></div></div>
+<div id="adminP" class="tab" style="display:none"><div class="card"><h3 class="gold">Admin - Approvals</h3><div id="adminBankList"></div><hr><h3 class="gold">All Users</h3><div id="adminUsers"></div></div></div>
+</div>
+
+<div id="withdrawModal" class="modal">
+<div class="modal-box">
+<h3 class="gold">Choose Wallet</h3>
+<div class="wallet-opt" onclick="chooseWallet('main')"><span>Main</span><span>R<span id="mMain">0</span></span></div>
+<div class="wallet-opt" onclick="chooseWallet('inviter')"><span>Inviter</span><span>R<span id="mInv">0</span></span></div>
+<div class="wallet-opt" onclick="chooseWallet('loyalty')"><span>Loyalty</span><span>R<span id="mLoy">0</span></span></div>
+<button type="button" class="yellow" style="width:100%;margin-top:12px" onclick="closeWithdrawModal()">Cancel</button>
+</div>
+</div>
+
+<script>
+var PKGS=[
+{name:"PACKAGE A",price:160,daily:10},
+{name:"PACKAGE B",price:250,daily:18},
+{name:"PACKAGE C",price:340,daily:25},
+{name:"PACKAGE D",price:430,daily:35},
+{name:"PACKAGE E",price:520,daily:70}
+];
+function toggleEye(id){
+var e=document.getElementById(id);
+e.type=e.type==="password"?"text":"password";
+}
+function switchAuth(t){
+document.getElementById("regDiv").style.display=(t==="reg")?"block":"none";
+document.getElementById("loginDiv").style.display=(t==="login")?"block":"none";
+document.getElementById("adminDiv").style.display=(t==="admin")?"block":"none";
+document.getElementById("btnReg").className=(t==="reg")?"active":"";
+document.getElementById("btnLogin").className=(t==="login")?"active":"";
+document.getElementById("btnAdmin").className=(t==="admin")?"active":"";
+if(t==="reg"){document.getElementById("btnReg").classList.add("active")}
+if(t==="login"){document.getElementById("btnLogin").classList.add("active")}
+if(t==="admin"){document.getElementById("btnAdmin").classList.add("active")}
+}
+function getUsers(){
+return JSON.parse(localStorage.getItem("dms_users")||"[]");
+}
+function saveUsers(u){
+localStorage.setItem("dms_users",JSON.stringify(u));
+}
+function getCur(){
+return JSON.parse(localStorage.getItem("dms_cur")||"null");
+}
+function setCur(c){
+localStorage.setItem("dms_cur",JSON.stringify(c));
+checkAuth();
+}
+function getUser(){
+var c=getCur();
+if(!c)return null;
+return getUsers().find(x=>x.id===c.id)||null;
+}
+function saveUser(u){
+var us=getUsers();
+var i=us.findIndex(x=>x.id===u.id);
+if(i>=0){us[i]=u}else{us.push(u)}
+saveUsers(us);
+setCur(u);
+}
+function ensureWallets(u){
+if(!u.w){u.w={main:0,inviter:0,loyalty:0}}
+if(!u.pkgs){u.pkgs=[]}
+if(!u.history){u.history=[]}
+return u;
+}
+function checkAuth(){
+var c=getCur();
+if(c){
+document.getElementById("auth").style.display="none";
+document.getElementById("app").style.display="block";
+document.getElementById("logoutBtn").style.display="block";
+updateUI();
+}else{
+document.getElementById("auth").style.display="block";
+document.getElementById("app").style.display="none";
+document.getElementById("logoutBtn").style.display="none";
+}
+}
+function register(){
+var full=document.getElementById("rFull").value.trim();
+var gen=document.getElementById("rGender").value;
+var cell=document.getElementById("rCell").value.trim();
+var email=document.getElementById("rEmail").value.trim();
+var inv=document.getElementById("rInviter").value.trim();
+var prov=document.getElementById("rProvince").value;
+var pass=document.getElementById("rPass").value.trim();
+if(!full||!gen||!cell||!email||!prov||!pass){
+alert("Fill all *");
+return;
+}
+var us=getUsers();
+if(us.find(x=>x.email.toLowerCase()===email.toLowerCase())){
+alert("Email exists, Login");
+switchAuth("login");
+return;
+}
+var u={
+id:Date.now().toString(),
+name:full,gender:gen,cell:cell,
+email:email,inviter:inv,province:prov,
+pass:pass,w:{main:0,inviter:0,loyalty:0},
+pkgs:[],history:["Registered"],role:"user"
+};
+us.push(u);
+saveUsers(us);
+setCur(u);
+alert("Welcome "+full);
+}
+function login(){
+var e=document.getElementById("lEmail").value.trim();
+var p=document.getElementById("lPass").value.trim();
+var u=getUsers().find(x=>x.email.toLowerCase()===e.toLowerCase()&&x.pass===p);
+if(!u){alert("Invalid login");return;}
+setCur(u);
+}
+function adminLogin(){
+var e=document.getElementById("aEmail").value.trim();
+var p=document.getElementById("aPass").value.trim();
+if(e.toLowerCase()==="admin@dms.co.za"&&p==="admin123"){
+var us=getUsers();
+var ad=us.find(x=>x.email.toLowerCase()===e.toLowerCase());
+if(!ad){
+ad={id:"admin1",name:"Admin",gender:"Male",cell:"000",email:e,pass:p,province:"Gauteng",w:{main:0,inviter:0,loyalty:0},pkgs:[],history:[],role:"admin"};
+us.push(ad);saveUsers(us);
+}
+setCur(ad);
+return;
+}
+alert("Invalid admin");
+}
+function updateUI(){
+var u=getUser();
+if(!u)return;
+u=ensureWallets(u);
+document.getElementById("mainW").innerText=u.w.main.toFixed(2);
+document.getElementById("invW").innerText=u.w.inviter.toFixed(2);
+document.getElementById("loyW").innerText=u.w.loyalty.toFixed(2);
+document.getElementById("totalW").innerText=(u.w.main+u.w.inviter+u.w.loyalty).toFixed(2);
+document.getElementById("holderName").value=u.name||"";
+if(u.bank){
+var s=u.bank.status;
+document.getElementById("bankStatus").innerHTML="Status: "+s.toUpperCase()+" - "+u.bank.accountNumber;
+document.getElementById("bankSection").style.display="block";
+}else{
+document.getElementById("bankStatus").innerText="No bank";
+}
+document.getElementById("pkgList").innerHTML=u.pkgs.join("<br>")||"No packages";
+document.getElementById("histList").innerHTML=u.history.join("<br>")||"No history";
+document.getElementById("teamInfo").innerHTML="Name: "+u.name+"<br>Email: "+u.email+"<br>ID: "+u.id;
+renderPackages();
+renderAdmin();
+}
+function showTab(t,btn){
+document.querySelectorAll(".tab").forEach(x=>x.style.display="none");
+document.getElementById(t).style.display="block";
+document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+if(btn){btn.classList.add("active")}
+}
+function renderPackages(){
+var html="";
+for(var i=0;i<PKGS.length;i++){
+var p=PKGS[i];
+html+="<div class='card'><b>"+p.name+"</b> - R"+p.price+"<h3>R"+p.price+" > R"+p.daily+" daily</h3><p>Min R70</p><button type='button' class='btn-full' onclick='buyPkg("+i+")'>Buy "+p.name+"</button></div>";
+}
+document.getElementById("allPkgs").innerHTML=html;
+}
+function buyPkg(i){
+var u=getUser();
+u=ensureWallets(u);
+var price=PKGS[i].price;
+var total=u.w.main+u.w.inviter+u.w.loyalty;
+if(total<price){alert("Insufficient");return;}
+u.pkgs.push(PKGS[i].name+" - R"+price);
+u.history.push("Bought "+PKGS[i].name);
+saveUser(u);
+alert("Bought!");
+updateUI();
+}
+function openWithdrawModal(){
+var u=getUser();
+u=ensureWallets(u);
+document.getElementById("mMain").innerText=u.w.main.toFixed(2);
+document.getElementById("mInv").innerText=u.w.inviter.toFixed(2);
+document.getElementById("mLoy").innerText=u.w.loyalty.toFixed(2);
+document.getElementById("withdrawModal").style.display="flex";
+}
+function closeWithdrawModal(){
+document.getElementById("withdrawModal").style.display="none";
+}
+function chooseWallet(type){
+var u=getUser();
+u=ensureWallets(u);
+var bal=0;
+if(type==="main"){bal=u.w.main}
+if(type==="inviter"){bal=u.w.inviter}
+if(type==="loyalty"){bal=u.w.loyalty}
+closeWithdrawModal();
+if(bal===0){alert("Insufficient funds - R0.00");return;}
+if(bal<70){alert("Minimum withdrawal is R70. This wallet has R"+bal.toFixed(2));return;}
+if(!u.bank||!u.bank.accountNumber){
+alert("Upload banking details first (Bank Zero)");
+document.getElementById("bankSection").style.display="block";
+return;
+}
+if(u.bank.status!=="approved"){
+alert("Bank details pending admin approval");
+document.getElementById("bankSection").style.display="block";
+return;
+}
+if(confirm("Withdraw R"+bal+" from "+type+"?")){
+if(type==="main"){u.w.main=0}
+if(type==="inviter"){u.w.inviter=0}
+if(type==="loyalty"){u.w.loyalty=0}
+u.history.push("Withdrawal R"+bal+" from "+type);
+saveUser(u);
+alert("Withdrawal submitted!");
+updateUI();
+}
+}
+function submitBank(){
+var acc=document.getElementById("accNum").value.trim();
+var otp=document.getElementById("otpInput").value.trim();
+if(!acc||acc.length<6){alert("Enter valid acc");return;}
+var u=getUser();
+u.bank={bankName:"Bank Zero",branchCode:"888000",accountNumber:acc,holder:u.name,otp:otp||"PENDING_MANUAL",status:"pending",submittedAt:new Date().toLocaleString()};
+saveUser(u);
+document.getElementById("bankStatus").innerHTML="PENDING - Awaiting admin";
+alert("Submitted! Admin will approve manually");
+updateUI();
+}
+function renderAdmin(){
+var us=getUsers();
+var pending=us.filter(u=>u.bank&&u.bank.status==="pending");
+var html="";
+for(var i=0;i<pending.length;i++){
+var u=pending[i];
+html+="<div style='border:1px solid #ff9800;padding:10px;margin:6px 0'><b>"+u.name+" - "+u.email+"</b><br>Acc: "+u.bank.accountNumber+"<br>OTP: "+u.bank.otp+"<br><button type='button' class='yellow' onclick='approveBank(\""+u.id+"\")'>Approve Manually</button> <button type='button' style='background:#ff3333;color:#fff;border:none;padding:6px 12px;border-radius:12px' onclick='rejectBank(\""+u.id+"\")'>Reject</button></div>";
+}
+if(html===""){html="<p>No pending</p>"}
+document.getElementById("adminBankList").innerHTML=html;
+var usersHtml="";
+for(var j=0;j<us.length;j++){
+usersHtml+="<div style='border-bottom:1px solid #333;padding:4px 0'>"+us[j].name+" | "+us[j].email+" | R"+(us[j].w?us[j].w.main+us[j].w.inviter+us[j].w.loyalty:0).toFixed(2)+"</div>";
+}
+document.getElementById("adminUsers").innerHTML=usersHtml;
+}
+function approveBank(id){
+var us=getUsers();
+var u=us.find(x=>x.id===id);
+if(u){u.bank.status="approved";saveUsers(us);alert("Approved!");renderAdmin();updateUI();}
+}
+function rejectBank(id){
+if(!confirm("Reject?"))return;
+var us=getUsers();
+var u=us.find(x=>x.id===id);
+if(u){delete u.bank;saveUsers(us);alert("Rejected");renderAdmin();}
+}
+function logout(){
+localStorage.removeItem("dms_cur");
+checkAuth();
+}
+checkAuth();
+</script>
+</body>
+</html>
