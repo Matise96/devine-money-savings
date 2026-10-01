@@ -1,16 +1,366 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Devine Money Savings</title><style>body{font-family:sans-serif;background:#f3f4f6;margin:0}header{background:#14532d;color:#fff;padding:12px;text-align:center;font-weight:bold}nav{display:flex;gap:6px;padding:8px;background:#fff;overflow:auto}nav button{padding:8px 12px;border:1px solid #ccc;border-radius:20px;background:#fff}nav button.active{background:#14532d;color:#fff}.card{background:#fff;margin:10px;padding:15px;border-radius:12px}.input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}.btn{width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:bold}.btn2{padding:8px 12px;background:#14532d;color:#fff;border:none;border-radius:6px;margin:4px}.small{font-size:12px;color:#666}</style></head><body><header>Devine Money Savings</header><nav><button onclick="H()" id="bH" class="active">Home</button><button onclick="W()" id="bW">Wallets</button><button onclick="P()" id="bP">Packages</button><button onclick="T()" id="bT">Team</button><button onclick="HI()" id="bHI">History</button><button onclick="A()" id="bA">Admin</button></nav><div id="app"></div><script>
-const PK=[{n:'Package A (R160)',p:160,d:8},{n:'Package B (R250)',p:250,d:15},{n:'Package C (R340)',p:340,d:22},{n:'Package D (R430)',p:430,d:30},{n:'Package E (R520)',p:520,d:38}];let users=JSON.parse(localStorage.getItem('u')||'[]'),txs=JSON.parse(localStorage.getItem('t')||'[]'),cur=JSON.parse(localStorage.getItem('c')||'null');function S(){localStorage.setItem('u',JSON.stringify(users));localStorage.setItem('c',JSON.stringify(cur))}function act(id){document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));let e=document.getElementById(id);if(e)e.classList.add('active')}
-function H(){act('bH');let u=cur;if(!u){app.innerHTML=`<div class=card><h3>Login</h3><input id=lC class=input placeholder=Cellphone><input id=lP class=input type=password placeholder=Password><button class=btn onclick=login()>Login</button><p class=small>No account? <span onclick=R() style=color:blue>Register</span></p><hr><h4>Packages</h4>${PK.map(p=>`<div style="border:1px solid #ddd;padding:8px;margin:6px 0;border-radius:8px"><b>${p.n}</b><br>R${p.p} Daily R${p.d}`).join('')}</div>`;return}app.innerHTML=`<div class=card><h3>Welcome ${u.name}</h3><p>Cell:${u.cell}<br>Invite:${u.invite}</p><button class=btn2 onclick="cur=null;localStorage.removeItem('c');H()">Logout</button></div>`}
-function R(){app.innerHTML=`<div class=card><h3>Register</h3><input id=rN class=input placeholder="Full Name*"><input id=rC class=input placeholder="Cellphone*"><input id=rE class=input placeholder="Email*"><select id=rPr class=input><option value="">Province*</option><option>Free State</option><option>Gauteng</option><option>KZN</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select><select id=rG class=input><option value="">Gender*</option><option>Male</option><option>Female</option></select><input id=rP class=input type=password placeholder="Password*"><input id=rI class=input placeholder="Invite Code (optional)"><button class=btn onclick=reg()>Register</button></div>`}
-function reg(){let n=rN.value.trim(),c=rC.value.trim(),e=rE.value.trim(),pr=rPr.value,g=rG.value,p=rP.value.trim(),inv=rI.value.trim();if(!n||!c||!e||!pr||!g||!p)return alert('Fill all *');if(users.find(x=>x.cell===c))return alert('Cell exists');let code='DMS'+Math.floor(1000+Math.random()*9000),u={cell:c,name:n,email:e,prov:pr,gender:g,pass:p,invite:code,by:inv||null,w:{main:0,bonus:10},pkgs:[]};users.push(u);if(inv){let invt=users.find(x=>x.invite===inv||x.cell===inv);if(invt){invt.w.bonus+=10;txs.push({cell:invt.cell,ty:'bonus',a:10,d:'Invite '+c,dt:new Date().toISOString(),st:'done'})}}localStorage.setItem('u',JSON.stringify(users));localStorage.setItem('t',JSON.stringify(txs));alert('Registered! Login');H()}
-function login(){let c=lC.value.trim(),p=lP.value.trim();if(c==='0510011039'&&p==='admin123'){cur={cell:'ADMIN',name:'Admin',admin:1};S();A();return}let u=users.find(x=>x.cell===c&&x.pass===p);if(!u)return alert('Wrong');cur=u;S();H()}
-function P(){act('bP');app.innerHTML=`<div class=card><h3>Packages</h3>${PK.map((x,i)=>`<div style="border:1px solid #ccc;padding:12px;margin:8px 0;border-radius:10px"><b>${x.n}</b><br>Price R${x.p}<br>Daily R${x.d} x 30 = R${x.d*30}<br><button class=btn2 onclick="buy(${i})">Buy Now</button></div>`).join('')}</div>`}
-function buy(i){if(!cur||cur.admin)return alert('Login as member');let pk=PK[i],u=users.find(x=>x.cell===cur.cell);u.pkgs.push({i,pr:pk.p,d:pk.d,bought:Date.now(),cl:0,done:0});cur=u;S();alert('Bought '+pk.n)}
-function W(){act('bW');if(!cur||cur.admin)return app.innerHTML='<div class=card>Login as member</div>';let u=users.find(x=>x.cell===cur.cell),td=0;u.pkgs.forEach(a=>{if(!a.done)td+=a.d});app.innerHTML=`<div class=card><h3>Wallets</h3><p>Main R${u.w.main}<br>Bonus R${u.w.bonus}<br>Daily R${td}</p><button class=btn2 onclick=claim()>Claim Daily</button><button class=btn2 onclick=wd()>Withdraw</button></div>`}
-function claim(){let u=users.find(x=>x.cell===cur.cell),earn=0;u.pkgs.forEach(a=>{if(a.done)return;let ds=Math.floor((Date.now()-a.bought)/86400000);if(ds>=a.cl&&a.cl<30){earn+=a.d;a.cl++;if(a.cl>=30)a.done=1}});if(!earn)return alert('Already claimed today');u.w.main+=earn;txs.push({cell:u.cell,ty:'daily',a:earn,d:'Daily',dt:new Date().toISOString(),st:'done'});localStorage.setItem('t',JSON.stringify(txs));S();alert('Claimed R'+earn);W()}
-function wd(){let am=parseFloat(prompt('Amount?'));if(!am)return;let u=users.find(x=>x.cell===cur.cell);if(am>u.w.main)return alert('No balance');u.w.main-=am;let fee=am*0.1,rec=am-fee;txs.push({cell:u.cell,ty:'wd',a:am,f:fee,d:'Withdraw receive R'+rec.toFixed(2),dt:new Date().toISOString(),st:'pending'});localStorage.setItem('t',JSON.stringify(txs));S();alert('Requested, you get R'+rec.toFixed(2))}
-function T(){act('bT');if(!cur)return app.innerHTML='<div class=card>Login</div>';let code=cur.invite||users.find(x=>x.cell===cur.cell)?.invite,team=users.filter(x=>x.by===code||x.by===cur.cell);app.innerHTML=`<div class=card><h3>Team ${team.length}</h3><p>Code <b>${code||''}</b></p>${team.map(x=>`<div>${x.name}-${x.cell}</div>`).join('')||'No team'}</div>`}
-function HI(){act('bHI');if(!cur)return app.innerHTML='<div class=card>Login</div>';let my=txs.filter(x=>x.cell===cur.cell||cur.admin);app.innerHTML=`<div class=card><h3>History</h3>${my.slice().reverse().map(x=>`<div style="border-bottom:1px solid #eee;padding:6px">${new Date(x.dt).toLocaleDateString()} ${x.ty} R${x.a} ${x.d} ${x.st}</div>`).join('')}</div>`}
-function A(){act('bA');if(!cur||!cur.admin){app.innerHTML=`<div class=card><h3>Admin</h3><input id=aC class=input placeholder=Cell><input id=aP class=input type=password placeholder=Pass><button class=btn onclick="if(aC.value==='0510011039'&&aP.value==='admin123'){cur={cell:'ADMIN',name:'Admin',admin:1};S();A()}else alert('wrong')">Login</button></div>`;return}let pen=txs.filter(x=>x.st==='pending');app.innerHTML=`<div class=card><h3>Admin Total:${users.length} Pend:${pen.length}</h3>${pen.map((x,i)=>`<div style="border:1px solid #ccc;padding:8px;margin:6px 0">${x.cell} R${x.a} ${x.d} <button class=btn2 onclick="txs[${txs.indexOf(x)}].st='done';localStorage.setItem('t',JSON.stringify(txs));A()">Approve</button><button class=btn2 onclick="let u=users.find(y=>y.cell==='${x.cell}');if(u){u.w.main+=${x.a}}txs[${txs.indexOf(x)}].st='reject';localStorage.setItem('t',JSON.stringify(txs));localStorage.setItem('u',JSON.stringify(users));A()">Reject</button></div>`).join('')||'No pend'}<hr>${users.map(u=>`<div>${u.name} ${u.cell} ${u.prov} R${u.w.main} pkgs:${u.pkgs.length}</div>`).join('')}</div>`}
-H();
-</script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devine Money Savings - DMS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f5f6fa;color:#333}
+.header{background:#1a1a2e;color:#fff;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100}
+.nav{background:#fff;display:flex;overflow-x:auto;white-space:nowrap;border-bottom:1px solid #ddd;padding:5px 0}
+.nav button{border:none;background:none;padding:10px 14px;font-weight:bold;cursor:pointer;color:#333}
+.nav button.active{color:#e67e22;border-bottom:2px solid #e67e22}
+.card{background:#fff;margin:10px;padding:15px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.btn{width:100%;padding:12px;background:#27ae60;color:#fff;border:none;border-radius:8px;margin-top:10px;font-weight:bold;font-size:15px}
+.btn-blue{background:#2980b9}.btn-red{background:#c0392b}.btn-orange{background:#e67e22}
+.input{width:100%;padding:12px;margin-top:8px;border:1px solid #ccc;border-radius:8px}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px} th,td{border:1px solid #ddd;padding:6px;text-align:left}
+.badge{display:inline-block;padding:3px 8px;border-radius:10px;color:#fff;font-size:11px}
+.small{font-size:12px;color:#777;margin-top:5px}
+.overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;justify-content:center;align-items:center;z-index:200;padding:15px}
+.overlayBox{background:#fff;width:100%;max-width:400px;padding:20px;border-radius:12px}
+img.responsive{width:100%;border-radius:12px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="header"><span onclick="location.reload()" style="cursor:pointer">💰 DMS</span><div><span id="userInfo" class="small" style="color:#fff"></span> <button onclick="doLogout()" style="background:#e74c3c;color:#fff;border:none;padding:6px 12px;border-radius:6px;margin-left:8px">Logout</button></div></div>
+<div id="navBar" class="nav"></div>
+<div id="app"></div>
+<div id="withdrawOverlay" class="overlay"><div class="overlayBox"><h3 id="wWalletName">Withdraw</h3><p>Bank: <b id="wBankName">Bank Zero</b></p><input id="wAccNum" class="input" placeholder="Account Number"><input id="wAmount" class="input" type="number" placeholder="Amount Min R70"><p class="small">Fee: <span id="wFeeText">25%</span> Net: <b id="wNetText">R0</b></p><p id="wErr" style="color:red" class="small"></p><button class="btn" onclick="requestWithdraw()">Request OTP</button><button class="btn btn-red" onclick="closeWithdraw()">Cancel</button></div></div>
+<div id="otpOverlay" class="overlay"><div class="overlayBox"><h3>OTP Verification</h3><p>OTP sent to <b id="otpEmail"></b></p><p style="background:#f0f0f0;padding:10px;text-align:center;font-size:20px;letter-spacing:3px" id="otpShow"></p><input id="otpInput" class="input" placeholder="Enter OTP"><p id="otpErr" style="color:red" class="small"></p><button class="btn" onclick="confirmOtpAction()">Confirm</button><button class="btn btn-red" onclick="closeOtp()">Cancel</button></div></div>
+<script>
+// AUTO FIX - clear bad data if URL has?reset
+if(location.search.includes('reset') || location.search.includes('clear')){ localStorage.clear(); alert('Storage cleared!'); location.href=location.href.split('?')[0]; }
+let users=JSON.parse(localStorage.getItem('dms_users')||'[]');
+let txs=JSON.parse(localStorage.getItem('dms_txs')||'[]');
+let currentUser=JSON.parse(localStorage.getItem('dms_currentUser')||'null');
+let genOtp=''; let pendingAction=null; let isAdminMode=false; let activeWallet=''; const MIN_WITHDRAW=70;
+const PACKAGES=[{id:1,name:'Package A',price:160,daily:12,days:30},{id:2,name:'Package B',price:320,daily:25,days:30},{id:3,name:'Package C',price:640,daily:55,days:30}];
+function saveUsers(){ localStorage.setItem('dms_users',JSON.stringify(users)); }
+function saveCurrent(){ localStorage.setItem('dms_currentUser',JSON.stringify(currentUser)); let idx=users.findIndex(u=>u.cell===currentUser.cell); if(idx>=0){ users[idx]=currentUser; saveUsers(); } }
+function isWithdrawOpen(){ let d=new Date(); let day=d.getDay(); let hour=d.getHours(); return day>=1&&day<=6&&hour>=8&&hour<18; }
+function init(){
+ try{
+  if(!currentUser){ showLogin(); return; }
+  // Fix old users with no wallets
+  if(!currentUser.wallets){ currentUser.wallets={main:0,inviter:0,loyal:0}; saveCurrent(); }
+  if(!currentUser.myCode){ currentUser.myCode='DMS'+Math.floor(1000+Math.random()*9000); saveCurrent(); }
+  runDailyCredits();
+  document.getElementById('userInfo').innerText=currentUser.cell+' | '+currentUser.myCode;
+  showNav(); showPage('home');
+ }catch(e){ console.error(e); localStorage.clear(); location.reload(); }
+}
+function doLogout(){ localStorage.removeItem('dms_currentUser'); location.reload(); }
+function showNav(){
+ let nav=`<button onclick="showPage('home')" id="nb-home" class="active">Home</button><button onclick="showPage('packages')" id="nb-packages">Packages</button><button onclick="showPage('wallet')" id="nb-wallet">Wallets</button><button onclick="showPage('deposit')" id="nb-deposit">Deposit</button><button onclick="showPage('withdraw')" id="nb-withdraw">Withdraw</button><button onclick="showPage('bonus')" id="nb-bonus">Bonus</button><button onclick="showPage('history')" id="nb-history">History</button><button onclick="showPage('profile')" id="nb-profile">Profile</button><button onclick="showPage('contact')" id="nb-contact">Contact</button><button onclick="showPage('about')" id="nb-about">About</button>`;
+ if(currentUser && (currentUser.cell==='admin' || currentUser.cell==='0712345678')){ nav+=`<button onclick="showPage('admin')" id="nb-admin">Admin</button>`; isAdminMode=true; }
+ document.getElementById('navBar').innerHTML=nav;
+}
+function setActive(id){ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active')); let el=document.getElementById('nb-'+id); if(el) el.classList.add('active'); }
+function showPage(p){ setActive(p); if(p==='home') renderHome(); else if(p==='packages') renderPackages(); else if(p==='wallet') renderWallet(); else if(p==='deposit') renderDeposit(); else if(p==='withdraw') renderWithdrawPage(); else if(p==='bonus') renderBonus(); else if(p==='history') renderHistory(); else if(p==='profile') renderProfile(); else if(p==='contact') renderContact(); else if(p==='about') renderAbout(); else if(p==='admin') renderAdmin(); }
+function showLogin(){
+ document.getElementById('navBar').innerHTML=''; document.getElementById('userInfo').innerText='';
+ document.getElementById('app').innerHTML=`
+ <div class="card"><h3>💰 Devine Money Savings</h3><p class="small">Company: Devine Pty-Ltd | Reg: 2024/344088/07</p><img src="packages.jpg" class="responsive" onerror="this.style.display='none'"><p class="small">Bank Zero: 8020 5598 418 | Branch 888000</p></div>
+ <div class="card"><h3>Login</h3><input id="lCell" class="input" placeholder="Cell number"><input id="lPass" class="input" type="password" placeholder="Password"><button class="btn" onclick="login()">Login</button><p class="small">Admin login: admin / admin123</p></div>
+ <div class="card"><h3>Register</h3><input id="rName" class="input" placeholder="Full Name"><input id="rCell" class="input" placeholder="Cell number"><input id="rEmail" class="input" placeholder="Email for OTP"><input id="rProvince" class="input" placeholder="Province"><input id="rPass" class="input" type="password" placeholder="Password"><input id="rCode" class="input" placeholder="Inviter Code (optional)"><button class="btn btn-blue" onclick="register()">Create Account</button></div>
+ <div class="card"><button class="btn btn-red" onclick="localStorage.clear();location.reload()">⚠️ Clear Storage if Blank</button><p class="small">If you see blank, click here.</p></div>`;
+}
+function login(){
+ let cell=document.getElementById('lCell').value.trim(); let pass=document.getElementById('lPass').value;
+ if(cell==='admin' && pass==='admin123'){ currentUser={cell:'admin',fullname:'Admin',myCode:'ADMIN',wallets:{main:0,inviter:0,loyal:0},bank:{bankName:'Bank Zero'},invites:0}; localStorage.setItem('dms_currentUser',JSON.stringify(currentUser)); isAdminMode=true; init(); return; }
+ let u=users.find(x=>x.cell===cell && x.password===pass); if(!u){ alert('Wrong cell or password. If blank before, click Clear Storage button.'); return; }
+ currentUser=u; saveCurrent(); init();
+}
+function register(){
+ let name=document.getElementById('rName').value.trim(); let cell=document.getElementById('rCell').value.trim(); let email=document.getElementById('rEmail').value.trim(); let province=document.getElementById('rProvince').value.trim(); let pass=document.getElementById('rPass').value; let inv=document.getElementById('rCode').value.trim();
+ if(!name||!cell||!email||!pass){ alert('Fill all required'); return; }
+ if(users.find(x=>x.cell===cell)){ alert('Cell already exists - login'); return; }
+ let myCode='DMS'+Math.floor(1000+Math.random()*9000);
+ let newUser={fullname:name,cell,email,province,password:pass,myCode,invites:0,wallets:{main:0,inviter:0,loyal:0},bank:{bankName:'Bank Zero',accNumber:'',branchCode:'888000',otherBanks:[]},packages:[],createdAt:new Date().toISOString()};
+ users.push(newUser);
+ if(inv){ let inviter=users.find(x=>x.myCode===inv); if(inviter){ inviter.invites=(inviter.invites||0)+1; inviter.wallets.inviter=(inviter.wallets.inviter||0)+10; txs.push({cell:inviter.cell,type:'bonus',wallet:'inviter',amount:10,fee:0,desc:'R10 Invite bonus from '+cell,date:new Date().toISOString(),status:'completed'}); } }
+ saveUsers(); localStorage.setItem('dms_txs',JSON.stringify(txs)); currentUser=newUser; saveCurrent(); alert('Account created! Code: '+myCode); init();
+}
+function runDailyCredits(){
+ let today=new Date().toDateString();
+ if(localStorage.getItem('dms_lastCredit')===today) return;
+ users.forEach(u=>{
+  if(!u.packages) return;
+  u.packages.forEach(pkg=>{
+   if(pkg.remaining>0){ let earn=PACKAGES.find(p=>p.id===pkg.packageId)?.daily||0; u.wallets.main=(u.wallets.main||0)+earn; pkg.remaining--; txs.push({cell:u.cell,type:'earning',wallet:'main',amount:earn,fee:0,desc:'Daily '+earn+' from '+pkg.name,date:new Date().toISOString(),status:'completed'}); }
+  });
+ });
+ localStorage.setItem('dms_lastCredit',today); localStorage.setItem('dms_txs',JSON.stringify(txs)); saveUsers(); if(currentUser){ let fresh=users.find(x=>x.cell===currentUser.cell); if(fresh) currentUser=fresh; }
+}
+function renderHome(){
+ document.getElementById('app').innerHTML=`
+ <div class="card"><h3>Welcome ${currentUser.fullname}</h3><p>Your Code: <b>${currentUser.myCode}</b> | Invites: ${currentUser.invites||0}</p><img src="saflag.jpg" class="responsive" onerror="this.style.display='none'"><img src="throne.jpg" class="responsive" onerror="this.style.display='none'"></div>
+ <div class="card"><h3>💼 3 Wallets</h3><p>Main: R${(currentUser.wallets.main||0).toFixed(2)}<br>Inviter: R${(currentUser.wallets.inviter||0).toFixed(2)} (R10/invite)<br>Loyalty: R${(currentUser.wallets.loyal||0).toFixed(2)} (No Fee)</p><button class="btn" onclick="showPage('packages')">Buy Package</button></div>
+ <div class="card"><h3>📦 Our Packages</h3><img src="packages.jpg" class="responsive" onerror="this.style.display='none'"></div>`;
+}
+function renderPackages(){
+ let html=PACKAGES.map(p=>`<div class="card"><h4>${p.name} - R${p.price}</h4><p>Daily R${p.daily} x ${p.days} days = R${p.daily*p.days}</p><button class="btn btn-orange" onclick="buyPkg(${p.id})">Buy Package</button></div>`).join('');
+ document.getElementById('app').innerHTML=html+`<div class="card"><p class="small">Uses Main Wallet. Must deposit via EFT first.</p></div>`;
+}
+function buyPkg(id){
+ let pkg=PACKAGES.find(p=>p.id===id); if((currentUser.wallets.main||0)<pkg.price){ alert('Insufficient Main Wallet. Deposit first. Balance R'+(currentUser.wallets.main||0)); showPage('deposit'); return; }
+ currentUser.wallets.main-=pkg.price; if(!currentUser.packages) currentUser.packages=[]; currentUser.packages.push({packageId:id,name:pkg.name,daily:pkg.daily,remaining:pkg.days,boughtAt:new Date().toISOString()});
+ txs.push({cell:currentUser.cell,type:'purchase',wallet:'main',amount:-pkg.price,fee:0,desc:'Bought '+pkg.name,date:new Date().toISOString(),status:'completed'}); saveCurrent(); localStorage.setItem('dms_txs',JSON.stringify(txs)); alert('Package bought! Daily R'+pkg.daily+' will credit automatically.'); showPage('wallet');
+}
+function renderWallet(){
+ document.getElementById('app').innerHTML=`
+ <div class="card"><h3>💰 Main Wallet: R${(currentUser.wallets.main||0).toFixed(2)}</h3><p class="small">Used to buy packages. 25% withdrawal fee.</p><button class="btn" onclick="showPage('deposit')">Deposit EFT</button><button class="btn" onclick="showPage('withdraw')">Withdraw</button></div>
+ <div class="card"><h3>👥 Inviter Bonus: R${(currentUser.wallets.inviter||0).toFixed(2)}</h3><p class="small">R10 per invite when invitee deposits. Min R70. 25% fee.</p></div>
+ <div class="card"><h3>🏆 Loyalty: R${(currentUser.wallets.loyal||0).toFixed(2)}</h3><p class="small">Credited by Admin. 0% fee - full amount!</p></div>`;
+}function init(){
+ if(!currentUser &&!isAdminMode){ showLogin(); return; }
+ if(isAdminMode){
+   let adminUser = users.find(u=>u.cell===currentAdminCell);
+   if(!adminUser && users.length>0){
+     currentUser = {cell:currentAdminCell, fullname:'ADMIN', isAdmin:true, wallets:{main:0,inviter:0,loyal:0}};
+   } else if(adminUser){ currentUser=adminUser; currentUser.isAdmin=true; }
+   else { currentUser={cell:currentAdminCell, fullname:'ADMIN', isAdmin:true, wallets:{main:0,inviter:0,loyal:0}}; }
+ }
+ if(currentUser){
+   let fresh = users.find(u=>u.cell===currentUser.cell);
+   if(fresh){ currentUser=fresh; if(isAdminMode) currentUser.isAdmin=true; runDailyCredits(currentUser); }
+   document.getElementById('userInfo').innerText=currentUser.fullname+' | '+(currentUser.myCode||'');
+   showNav(); showPage('home');
+ } else { showLogin(); }
+}
+function showLogin(){
+ document.getElementById('navBar').innerHTML='';
+ document.getElementById('app').innerHTML=`
+ <div class="card"><h2>Welcome to Devine Money Savings</h2>
+ <input id="lcell" class="input" placeholder="Cell Number (Username)">
+ <input id="lpass" class="input" type="password" placeholder="Password">
+ <button class="btn" onclick="doLogin()">Login</button>
+ <button class="btn btn-blue" onclick="showRegister()">No account? Register</button>
+ <p class="small">Admin? Use admin.html page</p>
+ </div>`;
+}
+function showRegister(){
+ document.getElementById('app').innerHTML=`
+ <div class="card"><h3>Create Account</h3>
+ <input id="fullname" class="input" placeholder="Name and Surname *">
+ <select id="gender" class="input"><option value="">Gender *</option><option>Male</option><option>Female</option><option>Other</option></select>
+ <input id="cell" class="input" placeholder="Cell Number * (username)" >
+ <input id="email" class="input" placeholder="Email * (for OTP)" type="email">
+ <select id="province" class="input"><option value="">Province *</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Western Cape</option><option>Eastern Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Free State</option><option>Northern Cape</option></select>
+ <input id="inviter" class="input" placeholder="Inviter Code e.g. DMS-001 (optional)">
+ <input id="password" class="input" placeholder="Password *" type="password">
+ <input id="password2" class="input" placeholder="Confirm Password *" type="password">
+ <p id="regErr" style="color:red;font-size:13px"></p>
+ <button class="btn" onclick="doRegister()">Register</button>
+ <button class="btn btn-red" onclick="showLogin()">Back to Login</button>
+ </div>`;
+}
+function doLogin(){
+ let cell=document.getElementById('lcell').value.trim(); let pass=document.getElementById('lpass').value.trim();
+ let u=users.find(x=>x.cell===cell && x.password===pass);
+ if(!u){ alert('Wrong cell or password'); return; }
+ currentUser=u; localStorage.setItem('dms_currentUser',JSON.stringify(u)); init();
+}
+function doRegister(){
+ let fn=document.getElementById('fullname').value.trim(); let g=document.getElementById('gender').value;
+ let cell=document.getElementById('cell').value.trim(); let email=document.getElementById('email').value.trim().toLowerCase();
+ let prov=document.getElementById('province').value; let inv=document.getElementById('inviter').value.trim().toUpperCase();
+ let pw=document.getElementById('password').value; let pw2=document.getElementById('password2').value;
+ let err=document.getElementById('regErr');
+ if(!fn||!g||!cell||!email||!prov||!pw||!pw2){ err.innerText='Fill all *'; return; }
+ if(pw!==pw2){ err.innerText='Passwords no match'; return; }
+ if(users.some(u=>u.cell===cell)){ err.innerText='Cell already exists - duplicate!'; return; }
+ if(users.some(u=>u.email===email)){ err.innerText='Email exists'; return; }
+ let next=users.length+1; let myCode='DMS-'+String(next).padStart(3,'0');
+ let newUser={fullname:fn, gender:g, cell,email, province:prov, inviterCode:inv, myCode, password:pw, wallets:{main:0,inviter:0,loyal:0}, bank:{bankName:'Bank Zero', accNumber:'', branch:'888000', otherBanks:[]}, activePackages:[], invites:0, date:new Date().toISOString()};
+ users.push(newUser); saveUsers();
+ alert('Registered! Your code: '+myCode+' | Login with cell number'); showLogin();
+}
+function logout(){ localStorage.removeItem('dms_currentUser'); localStorage.removeItem('dms_currentAdmin'); location.reload(); }
+function showNav(){
+ let base=['home','wallet','deposit','withdraw','bonus','history','profile','contact','about'];
+ let html='';
+ let labels={home:'🏠 Home', wallet:'👛 Wallets', deposit:'💳 Deposit', withdraw:'💸 Withdraw', bonus:'🎁 Bonus', history:'📜 History', profile:'👤 Profile', contact:'📞 Contacts', about:'ℹ️ About'};
+ base.forEach(p=>{ html+=`<button onclick="showPage('${p}')" id="nav-${p}">${labels[p]}</button>`; });
+ if(isAdminMode) html+=`<button onclick="showPage('admin')" id="nav-admin" style="background:#e74c3c;color:#fff">🔧 Admin</button>`;
+ document.getElementById('navBar').innerHTML=html;
+}
+function showPage(p){
+ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+ let nb=document.getElementById('nav-'+p); if(nb) nb.classList.add('active');
+ if(p==='home') renderHome();
+ else if(p==='wallet') renderWallet();
+ else if(p==='deposit') renderDeposit();
+ else if(p==='withdraw') renderWithdrawPage();
+ else if(p==='bonus') renderBonus();
+ else if(p==='history') renderHistory();
+ else if(p==='profile') renderProfile();
+ else if(p==='contact') renderContact();
+ else if(p==='about') renderAbout();
+ else if(p==='admin') renderAdmin();
+}
+function renderHome(){
+ let pkgs=Object.entries(PACKAGES).map(([k,v])=>`
+ <div class="card"><h3>${v.name} - R${v.price}</h3><p>Daily cashback system - hidden logic</p><button class="btn" onclick="buyPackage('${k}')">Buy ${v.name} - R${v.price}</button></div>`).join('');
+ document.getElementById('app').innerHTML=`<div class="card"><h3>Welcome ${currentUser.fullname}</h3><p>Main Balance: <b>R${(currentUser.wallets.main||0).toFixed(2)}</b></p></div>`+pkgs;
+}
+function buyPackage(key){
+ let pkg=PACKAGES[key];
+ let w=prompt(`Buy ${pkg.name} for R${pkg.price}? Type wallet: main / inviter / loyal`);
+ if(!w) return; w=w.toLowerCase(); if(!['main','inviter','loyal'].includes(w)){ alert('Invalid wallet'); return; }
+ if((currentUser.wallets[w]||0)<pkg.price){ alert('Insufficient balance in '+w+' wallet. Deposit first via Deposit page.'); return; }
+ currentUser.wallets[w]-=pkg.price;
+ if(!currentUser.activePackages) currentUser.activePackages=[];
+ currentUser.activePackages.push({key, name:pkg.name, price:pkg.price, daily:pkg.daily, totalDays:pkg.days, creditedDays:0, startDate:new Date().toISOString(), completed:false});
+ txs.push({cell:currentUser.cell, type:'purchase', wallet:w, amount:-pkg.price, fee:0, desc:`Bought ${pkg.name}`, date:new Date().toISOString(), status:'completed'});
+ if(currentUser.inviterCode &&!currentUser.inviterRewarded){
+   let inviter=users.find(u=>u.myCode===currentUser.inviterCode);
+   if(inviter){ inviter.wallets.inviter=(inviter.wallets.inviter||0)+INVITE_BONUS; inviter.invites=(inviter.invites||0)+1; txs.push({cell:inviter.cell, type:'bonus', wallet:'inviter', amount:INVITE_BONUS, fee:0, desc:`Invite bonus from ${currentUser.myCode}`, date:new Date().toISOString(), status:'completed'}); currentUser.inviterRewarded=true; }
+ }
+ saveCurrent(); localStorage.setItem('dms_txs',JSON.stringify(txs));
+ alert(`Success! Bought ${pkg.name}. Daily R${pkg.daily} will credit to Main wallet for ${pkg.days} days.`);
+ showPage('wallet');
+}
+function renderWallet(){
+ let w=currentUser.wallets;
+ document.getElementById('app').innerHTML=`
+ <div class="wallet"><div><b>Main Wallet</b><br><small>Daily cashbacks</small></div><div><b>R${(w.main||0).toFixed(2)}</b><br><button class="btn btn-blue" style="padding:6px" onclick="openW('main')">Withdraw/Buy</button></div></div>
+ <div class="wallet bonus"><div><b>Inviter Bonus Wallet</b><br><small>R10 per invite</small></div><div><b>R${(w.inviter||0).toFixed(2)}</b><br><button class="btn btn-blue" style="padding:6px" onclick="openW('inviter')">Withdraw/Buy</button></div></div>
+ <div class="wallet loyal"><div><b>Loyalty Bonus Wallet</b><br><small>No fee withdrawal</small></div><div><b>R${(w.loyal||0).toFixed(2)}</b><br><button class="btn btn-blue" style="padding:6px" onclick="openW('loyal')">Withdraw/Buy</button></div></div>
+ <div class="card small">Funds cannot be transferred between wallets. Main & Inviter: 25% fee. Loyalty: 0% fee. Min withdraw R70.</div>
+ `;
+}function renderDeposit(){
+ document.getElementById('app').innerHTML=`
+ <div class="card"><h3>💳 Deposit - EFT</h3>
+ <p><b>Bank name:</b> Bank Zero<br><b>Account number:</b> 8020 5598 418<br><b>Branch code:</b> 888000<br><b>Account type:</b> Cheque<br><b>SWIFT Code:</b> ZERMZAJJ</p>
+ <p class="small">NB: We recommend Payshap and immediate payment only to avoid delays.</p>
+ <input id="depAmount" class="input" type="number" placeholder="Amount deposited e.g. 160">
+ <button class="btn" onclick="submitDeposit()">I Have Deposited (Add to Main Wallet)</button>
+ </div>
+ <div class="card"><h3>💵 CASHSEND</h3><p>We accept only: Nedbank, Absa, FNB & Standard Bank.</p><p class="small">NB: If you choose this method please send proof of payment to our whatsapp channel to avoid fraud.<br>Members may use the payment method that is easy and convenient to them.</p></div>
+ `;
+}
+function submitDeposit(){
+ let amt=parseFloat(document.getElementById('depAmount').value); if(!amt||amt<=0){ alert('Enter amount'); return; }
+ currentUser.wallets.main=(currentUser.wallets.main||0)+amt;
+ txs.push({cell:currentUser.cell, type:'deposit', wallet:'main', amount:amt, fee:0, desc:'EFT Deposit', date:new Date().toISOString(), status:'completed'});
+ saveCurrent(); localStorage.setItem('dms_txs',JSON.stringify(txs));
+ alert('Deposit R'+amt+' added to Main Wallet. Now you can buy package.'); showPage('wallet');
+}
+function renderWithdrawPage(){
+ document.getElementById('app').innerHTML=`
+ <div class="card"><h3>Withdrawal Hours</h3><p>Mon-Sat 08:00 am - 18:00 pm (including holidays)</p><p class="small">Min R70 for all wallets. Main & Inviter 25% fee, Loyalty 0% fee.</p></div>
+ <div class="card"><h3>Select Wallet to Withdraw</h3>
+ <button class="btn" onclick="openW('main')">Withdraw from Main (R${(currentUser.wallets.main||0).toFixed(2)})</button>
+ <button class="btn" style="background:#f39c12" onclick="openW('inviter')">Withdraw from Inviter Bonus (R${(currentUser.wallets.inviter||0).toFixed(2)})</button>
+ <button class="btn" style="background:#9b59b6" onclick="openW('loyal')">Withdraw from Loyalty (R${(currentUser.wallets.loyal||0).toFixed(2)}) - No Fee</button>
+ </div>`;
+}
+let activeWallet='';
+function openW(wallet){
+ activeWallet=wallet;
+ if(!isWithdrawOpen()){ alert('Withdrawals runs from Mon-Sat 08:00 am - 18:00 pm'); return; }
+ let bal=currentUser.wallets[wallet]||0;
+ if(bal<MIN_WITHDRAW){ alert('Minimum withdrawal is R70. Your balance R'+bal); return; }
+ document.getElementById('wWalletName').innerText=wallet+' - Balance R'+bal.toFixed(2);
+ document.getElementById('wBankName').innerText=currentUser.bank?.bankName||'Bank Zero';
+ document.getElementById('wAccNum').value=currentUser.bank?.accNumber||'';
+ let feeRate = (wallet==='loyal'?0:0.25);
+ document.getElementById('wFeeText').innerText = (feeRate*100)+'%';
+ document.getElementById('wAmount').addEventListener('input', updateNet);
+ document.getElementById('withdrawOverlay').style.display='flex';
+}
+function closeWithdraw(){ document.getElementById('withdrawOverlay').style.display='none'; }
+function updateNet(){ let amt=parseFloat(document.getElementById('wAmount').value)||0; let feeRate=(activeWallet==='loyal'?0:0.25); let fee=amt*feeRate; let net=amt-fee; document.getElementById('wFeeText').innerText=(feeRate*100)+'% = R'+fee.toFixed(2); document.getElementById('wNetText').innerText='R'+net.toFixed(2); }
+document.addEventListener('input', (e)=>{ if(e.target.id==='wAmount') updateNet(); });
+function requestWithdraw(){
+ let acc=document.getElementById('wAccNum').value.trim(); let amt=parseFloat(document.getElementById('wAmount').value);
+ let err=document.getElementById('wErr');
+ if(!acc){ err.innerText='Enter account number'; return; }
+ if(!amt || amt<MIN_WITHDRAW){ err.innerText='Min R70'; return; }
+ if(amt>(currentUser.wallets[activeWallet]||0)){ err.innerText='Insufficient balance'; return; }
+ genOtp=Math.floor(100000+Math.random()*900000).toString();
+ document.getElementById('otpEmail').innerText=currentUser.email;
+ document.getElementById('otpShow').innerText=genOtp;
+ pendingAction={type:'withdraw', wallet:activeWallet, amount:amt, acc};
+ document.getElementById('withdrawOverlay').style.display='none';
+ document.getElementById('otpOverlay').style.display='flex';
+}
+function closeOtp(){ document.getElementById('otpOverlay').style.display='none'; }
+function confirmOtpAction(){
+ let input=document.getElementById('otpInput').value.trim(); if(input!==genOtp){ document.getElementById('otpErr').innerText='Wrong OTP - try '+genOtp; return; }
+ document.getElementById('otpOverlay').style.display='none';
+ if(pendingAction.type==='withdraw'){
+   let feeRate=(pendingAction.wallet==='loyal'?0:0.25); let fee=pendingAction.amount*feeRate;
+   currentUser.wallets[pendingAction.wallet]-=pendingAction.amount;
+   txs.push({cell:currentUser.cell, type:'withdrawal', wallet:pendingAction.wallet, amount:-pendingAction.amount, fee, net:pendingAction.amount-fee, acc:pendingAction.acc, date:new Date().toISOString(), status:'pending', desc:`Withdraw to ${pendingAction.acc}`});
+   saveCurrent(); localStorage.setItem('dms_txs',JSON.stringify(txs));
+   alert(`Withdrawal R${pendingAction.amount} submitted. Fee R${fee.toFixed(2)}, you receive R${(pendingAction.amount-fee).toFixed(2)}. Pending admin.`);
+   showPage('history');
+ } else if(pendingAction.type==='bankUpdate'){
+   currentUser.bank.accNumber=pendingAction.acc; currentUser.fullname=pendingAction.name; currentUser.bank.bankName='Bank Zero';
+   saveCurrent(); alert('Banking details updated with OTP!'); showPage('profile');
+ }
+}
+function renderBonus(){
+ document.getElementById('app').innerHTML=`
+ <div class="card"><h3>🎁 Bonus Page</h3>
+ <p>• Earn <b>R10 per invite</b> guaranteed.<br>• Invites are unlimited.<br>• <b>NB: Invitee must deposit for any package for the inviter to be rewarded.</b><br>• You do not have to invite many people, you can just invite 7 people once and everytime they deposit you earn your reward and can be immediately withdrawn from Inviter bonus Wallet as the minimum withdrawal amount is R70.</p>
+ <p>Your Code: <b>${currentUser.myCode}</b><br>Invites: <b>${currentUser.invites||0}</b><br>Bonus: <b>R${(currentUser.wallets.inviter||0).toFixed(2)}</b></p></div>`;
+}
+function renderHistory(){
+ let myTxs=txs.filter(t=>t.cell===currentUser.cell).sort((a,b)=>new Date(b.date)-new Date(a.date));
+ let html=myTxs.map(t=>`<tr><td>${new Date(t.date).toLocaleString()}</td><td>${t.type}</td><td>${t.wallet}</td><td>R${t.amount}</td><td>${t.fee?'R'+t.fee.toFixed(2):''}</td><td>${t.status||''}</td><td>${t.desc||''}</td></tr>`).join('');
+ if(!html) html='<tr><td colspan=7>No transactions</td></tr>';
+ document.getElementById('app').innerHTML=`<div class="card"><h3>📜 Transaction History</h3><div style="overflow-x:auto"><table><tr><th>Date</th><th>Type</th><th>Wallet</th><th>Amount</th><th>Fee</th><th>Status</th><th>Desc</th></tr>${html}</table></div></div>`;
+}
+function renderProfile(){
+ document.getElementById('app').innerHTML=`
+ <div class="card"><h3>👤 Personal Info</h3>
+ <p>Name: <b>${currentUser.fullname}</b><br>Cell: <b>${currentUser.cell}</b><br>Email: <b>${currentUser.email}</b><br>Province: ${currentUser.province}<br>My Code: ${currentUser.myCode}</p>
+ <h4>Banking Details (Bank Zero only)</h4>
+ <p>Bank: Bank Zero (auto)<br>Branch: 888000 (auto)</p>
+ <input id="pAcc" class="input" placeholder="Account Number" value="${currentUser.bank?.accNumber||''}">
+ <input id="pName" class="input" placeholder="Name and Surname" value="${currentUser.fullname}">
+ <button class="btn" onclick="updateProfile()">Update with OTP (Email)</button>
+ <p class="small">Other banks can only be added by admin manually.</p></div>`;
+}
+function updateProfile(){
+ let acc=document.getElementById('pAcc').value.trim(); let name=document.getElementById('pName').value.trim();
+ if(!acc||!name){ alert('Fill all'); return; }
+ genOtp=Math.floor(100000+Math.random()*900000).toString();
+ document.getElementById('otpEmail').innerText=currentUser.email;
+ document.getElementById('otpShow').innerText=genOtp;
+ pendingAction={type:'bankUpdate', acc, name};
+ document.getElementById('otpOverlay').style.display='flex';
+}
+function renderContact(){
+ document.getElementById('app').innerHTML=`<div class="card"><h3>📞 Contacts</h3><p><b>Whatsapp:</b> 051 001 1039<br><b>Email:</b> devine9606@gmail.com<br><b>Website:</b> www.devinemoneysavings.co.za</p></div>`;
+}
+function renderAbout(){
+ document.getElementById('app').innerHTML=`<div class="card"><h3>ℹ️ About Us</h3><p><b>Company name:</b> Devine Pty-Ltd<br><b>Trading Name:</b> Devine Money Savings.<br><b>Reg No:</b> 2024/344088/07<br><b>Originated in Free state but operate in 9 Provinces.</b></p><p><b>Withdrawal Page:</b><br>Bank: Bank Zero (auto)<br>Account number: manual<br>Branch: 888000 (auto)<br>OTP: from user's email<br><br>Withdrawals Mon-Sat 08:00-18:00 including holidays</p></div>`;
+}
+function renderAdmin(){
+ if(!isAdminMode){ document.getElementById('app').innerHTML='<div class="card">Access denied - Admin only via admin.html</div>'; return; }
+ let sorted=[...users].sort((a,b)=>(b.invites||0)-(a.invites||0));
+ let leaderHtml=sorted.map((u,i)=>`<tr><td>${i+1}</td><td>${u.myCode}</td><td>${u.fullname}</td><td>${u.cell}</td><td>${u.invites||0}</td><td>R${(u.wallets.inviter||0).toFixed(2)}</td><td>R${(u.wallets.main||0).toFixed(2)}</td><td>R${(u.wallets.loyal||0).toFixed(2)}</td></tr>`).join('') || '<tr><td colspan=8>No users</td></tr>';
+ let pendingW=txs.filter(t=>t.type==='withdrawal' && t.status==='pending');
+ let pendingHtml=pendingW.map(t=>`<tr><td>${new Date(t.date).toLocaleString()}</td><td>${t.cell}</td><td>${t.wallet}</td><td>R${Math.abs(t.amount)}</td><td>R${t.fee.toFixed(2)}</td><td>${t.acc}</td><td><button onclick="approveW(${txs.indexOf(t)})">Approve</button> <button onclick="rejectW(${txs.indexOf(t)})">Reject</button></td></tr>`).join('') || '<tr><td colspan=7>No pending</td></tr>';
+ document.getElementById('app').innerHTML=`
+ <div class="card"><h3>🔧 Admin - Full Control</h3><p>Inviter Leaderboard (Admin Only)</p><div style="overflow-x:auto"><table><tr><th>Rank</th><th>Code</th><th>Name</th><th>Cell</th><th>Invites</th><th>Inviter W</th><th>Main</th><th>Loyalty</th></tr>${leaderHtml}</table></div></div>
+ <div class="card"><h3>Pending Withdrawals</h3><div style="overflow-x:auto"><table><tr><th>Date</th><th>Cell</th><th>Wallet</th><th>Amount</th><th>Fee</th><th>Acc</th><th>Action</th></tr>${pendingHtml}</table></div></div>
+ <div class="card"><h3>Credit Loyalty / Add Bank (Admin Only)</h3>
+ <input id="aCell" class="input" placeholder="User Cell"><input id="aLoyalAmt" class="input" type="number" placeholder="Loyalty Amount"><button class="btn" onclick="creditLoyal()">Credit Loyalty Wallet (No Fee)</button><hr>
+ <input id="aBankCell" class="input" placeholder="User Cell"><input id="aBankName" class="input" placeholder="Other Bank Name"><input id="aBankAcc" class="input" placeholder="Account Number"><button class="btn btn-blue" onclick="addOtherBank()">Add Other Bank for User</button></div>
+ <div class="card"><button class="btn btn-red" onclick="clearAll()">⚠️ Reset All Data</button></div>`;
+}
+function creditLoyal(){ let cell=document.getElementById('aCell').value.trim(); let amt=parseFloat(document.getElementById('aLoyalAmt').value); let u=users.find(x=>x.cell===cell); if(!u||!amt){ alert('Enter valid'); return; } u.wallets.loyal=(u.wallets.loyal||0)+amt; txs.push({cell, type:'bonus', wallet:'loyal', amount:amt, fee:0, desc:'Loyalty bonus from Admin', date:new Date().toISOString(), status:'completed'}); saveUsers(); localStorage.setItem('dms_txs',JSON.stringify(txs)); alert('Credited R'+amt+' loyalty to '+cell); renderAdmin(); }
+function addOtherBank(){ let cell=document.getElementById('aBankCell').value.trim(); let bName=document.getElementById('aBankName').value.trim(); let bAcc=document.getElementById('aBankAcc').value.trim(); let u=users.find(x=>x.cell===cell); if(!u||!bName||!bAcc){ alert('Fill all'); return; } if(!u.bank.otherBanks) u.bank.otherBanks=[]; u.bank.bankName=bName; u.bank.accNumber=bAcc; u.bank.otherBanks.push(bName); saveUsers(); alert('Added '+bName+' for '+cell); renderAdmin(); }
+function approveW(idx){ txs[idx].status='completed'; localStorage.setItem('dms_txs',JSON.stringify(txs)); alert('Approved!'); renderAdmin(); }
+function rejectW(idx){ let t=txs[idx]; let u=users.find(x=>x.cell===t.cell); if(u){ u.wallets[t.wallet]+=Math.abs(t.amount); } txs[idx].status='rejected'; localStorage.setItem('dms_txs',JSON.stringify(txs)); saveUsers(); alert('Rejected & refunded'); renderAdmin(); }
+function clearAll(){ if(confirm('Delete ALL users & txs?')){ localStorage.removeItem('dms_users'); localStorage.removeItem('dms_txs'); users=[]; txs=[]; alert('Cleared'); location.reload(); } }
+init();
+</script>
+</body>
+</html>
