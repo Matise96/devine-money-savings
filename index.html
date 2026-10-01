@@ -14,7 +14,26 @@ function doRegister(){var n=document.getElementById("rN").value.trim(),c=documen
 function doLogin(){var c=document.getElementById("lC").value.trim(),p=document.getElementById("lP").value.trim();if(c==="0510011039"&&p==="admin123"){cur={cell:"ADMIN"};save();goAdmin();return;}for(var i=0;i<users.length;i++){if(users[i].cell===c&&users[i].pass===p){ensureWallets(users[i]);cur={cell:users[i].cell};save();goHome();return;}}alert("Wrong");}
 function adminLogin(){var c=document.getElementById("aC").value.trim(),p=document.getElementById("aP").value.trim();if(c==="0510011039"&&p==="admin123"){cur={cell:"ADMIN"};save();goAdmin();}else{alert("Wrong");}}
 function goPackages(){setActive("bP");checkLogout();var h='<div class="card"><h3 class="gold">Packages</h3>';for(var i=0;i<PKGS.length;i++){var pk=PKGS[i];h+='<div class="pkg"><span class="badge">'+pk.name+'</span> <b style="float:right">R'+pk.price+'</b><br><br><b>R'+pk.price+' > R'+pk.daily+' daily</b><br><span class="small">'+pk.desc+'</span><br><br><button class="btn2" onclick="buyPkg('+i+')">Buy '+pk.name+'</button></div>';}h+='</div>';document.getElementById("app").innerHTML=h;}
-function buyPkg(i){var u=getUser();if(!u){alert("Login");return;}var pk=PKGS[i];if(!confirm("Buy "+pk.name+" for R"+pk.price+"?"))return;u.pkgs.push({pkgId:pk.id,price:pk.price,daily:pk.daily,earliest:pk.earliest,boughtAt:Date.now(),claimed:0,done:false});save();alert("Bought "+pk.name);goWallets();}
+function buyPkg(i){
+var u=getUser();
+if(!u){alert("Please login");return;}
+var p=PKGS[i];
+ensureWallets(u);
+var main=u.w.m!=null?u.w.m:(u.w.main||0);
+var inv=u.w.i!=null?u.w.i:(u.w.inviter!=null?u.w.inviter:(u.w.inv||0));
+var loy=u.w.l!=null?u.w.l:(u.w.loyalty!=null?u.w.loyalty:(u.w.loy||0));
+var total=Number(main)+Number(inv)+Number(loy);
+if(total<p.price){alert("Insufficient funds, deposit to purchase.");return;}
+var need=p.price;
+if(main>=need){if(u.w.m!=null)u.w.m-=need;else u.w.main-=need;need=0;}
+else{need-=main;if(u.w.m!=null)u.w.m=0;else u.w.main=0;
+if(inv>=need){if(u.w.i!=null)u.w.i-=need;else if(u.w.inviter!=null)u.w.inviter-=need;else u.w.inv-=need;need=0;}
+else{need-=inv;if(u.w.i!=null)u.w.i=0;else if(u.w.inviter!=null)u.w.inviter=0;else u.w.inv=0;
+if(u.w.l!=null)u.w.l-=need;else if(u.w.loyalty!=null)u.w.loyalty-=need;else u.w.loy-=need;}}
+save();
+alert("Bought "+p.name+"!");
+goWallets();
+}
 function goWallets(){setActive("bW");checkLogout();var u=getUser();if(!u){document.getElementById("app").innerHTML="<div class=card>Login first</div>";return;}var now=Date.now(),canClaim=0,details="";for(var i=0;i<u.pkgs.length;i++){var p=u.pkgs[i];var d=Math.floor((now-p.boughtAt)/86400000);var cl=Math.min(d,30)-p.claimed;if(cl>0&&!p.done)canClaim+=cl*p.daily;details+="<div style=border-bottom:1px solid #222;padding:4px 0>"+p.pkgId+" R"+p.price+" "+p.claimed+"/30 R"+p.daily+"/day</div>";}var total=u.w.main+u.w.inviter+u.w.loyalty;var h='<div class="card"><h3 class="gold">3 Wallets</h3><div class="walletBox">Main Wallet: R'+u.w.main.toFixed(2)+'</div><div class="walletBox">Inviter Bonus Wallet: R'+u.w.inviter.toFixed(2)+'</div><div class="walletBox">Loyalty Bonus Wallet: R'+u.w.loyalty.toFixed(2)+'</div><p>Total R'+total.toFixed(2)+' Pending R'+canClaim+'</p><button class="btn" onclick="claimDaily()">Claim Daily</button><hr><button class="btn2" onclick="doWithdraw()">Withdraw Min R70</button><hr>'+(details||"No packages")+'</div>';document.getElementById("app").innerHTML=h;}
 function claimDaily(){var u=getUser();var now=Date.now(),earned=0,claims=0;for(var i=0;i<u.pkgs.length;i++){var p=u.pkgs[i];if(p.done)continue;var d=Math.floor((now-p.boughtAt)/86400000);var cl=Math.min(d,30)-p.claimed;if(cl>0){earned+=cl*p.daily;claims+=cl;p.claimed+=cl;if(p.claimed>=30)p.done=true;}}if(earned===0){alert("Come back tomorrow");return;}u.w.main+=earned;u.w.loyalty+=claims*2;txs.push({cell:u.cell,type:"daily",amount:earned,fee:0,note:"Daily R"+earned+" + Loyalty R"+(claims*2),date:new Date().toISOString(),status:"done"});save();alert("Claimed R"+earned+" + Loyalty R"+(claims*2));goWallets();}
 function doWithdraw(){var u=getUser();if(!u)return;var total=u.w.main+u.w.inviter+u.w.loyalty;if(total<70){alert("Min R70 needed. Have R"+total.toFixed(2));return;}var now=Date.now();if(u.pkgs.length>0){var ok=false;for(var i=0;i<u.pkgs.length;i++){if(Math.floor((now-u.pkgs[i].boughtAt)/86400000)>=u.pkgs[i].earliest){ok=true;break;}}if(!ok){alert("Earliest not reached");return;}}alert("Withdrawal Fee Notice:\n\nPlease note that all withdrawals have a 25% fee.");var amt=parseFloat(prompt("Total R"+total.toFixed(2)+"\nEnter amount Min R70:","70"));if(!amt||amt<70){alert("Min R70");return;}if(amt>total){alert("Insufficient");return;}var fee=amt*0.25;var rem=amt;if(u.w.main>=rem){u.w.main-=rem;rem=0;}else{rem-=u.w.main;u.w.main=0;if(u.w.inviter>=rem){u.w.inviter-=rem;rem=0;}else{rem-=u.w.inviter;u.w.inviter=0;u.w.loyalty-=rem;}}txs.push({cell:u.cell,type:"withdraw",amount:amt,fee:fee,note:"Withdraw R"+amt+" 25% fee",date:new Date().toISOString(),status:"pending"});save();alert("Withdrawal R"+amt+" requested - 25% fee - Pending");goHistory();}
