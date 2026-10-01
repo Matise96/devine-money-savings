@@ -1,73 +1,16 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Devine Money Savings</title>
-<style>
-body{font-family:sans-serif;background:#f3f4f6;margin:0}
-header{background:#14532d;color:#fff;padding:12px;text-align:center;font-weight:bold;font-size:20px}
-nav{display:flex;gap:6px;padding:8px;background:#fff;overflow:auto}
-nav button{padding:8px 12px;border:1px solid #ccc;border-radius:20px;background:#fff;white-space:nowrap}
-nav button.active{background:#14532d;color:#fff}
-.card{background:#fff;margin:10px;padding:15px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
-.input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}
-.btn{width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:bold;margin-top:8px}
-.btn2{padding:8px 12px;background:#14532d;color:#fff;border:none;border-radius:6px;margin:4px}
-.small{font-size:12px;color:#666}
-table{width:100%;border-collapse:collapse;font-size:13px}
-td,th{border:1px solid #ddd;padding:6px}
-</style>
-</head>
-<body>
-<header>Devine Money Savings</header>
-<nav>
-<button onclick="renderHome()" id="bHome" class="active">Home</button>
-<button onclick="renderWallets()" id="bWallets">Wallets</button>
-<button onclick="renderPackages()" id="bPackages">Packages</button>
-<button onclick="renderTeam()" id="bTeam">Team</button>
-<button onclick="renderHistory()" id="bHistory">History</button>
-<button onclick="renderAdmin()" id="bAdmin">Admin</button>
-</nav>
-<div id="app"></div>
-<script>
-const INVITE_BONUS=10;
-const PACKAGES = [
- {id:'A', name:'Package A (R160)', price:160, daily:8, days:30},
- {id:'B', name:'Package B (R250)', price:250, daily:15, days:30},
- {id:'C', name:'Package C (R340)', price:340, daily:22, days:30},
- {id:'D', name:'Package D (R430)', price:430, daily:30, days:30},
- {id:'E', name:'Package E (R520)', price:520, daily:38, days:30},
-];
-let users = JSON.parse(localStorage.getItem('dms_users')||'[]');
-let txs = JSON.parse(localStorage.getItem('dms_txs')||'[]');
-let currentUser = JSON.parse(localStorage.getItem('dms_current')||'null');
-function saveUsers(){localStorage.setItem('dms_users',JSON.stringify(users));localStorage.setItem('dms_current',JSON.stringify(currentUser));}
-function setActive(b){document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));let el=document.getElementById(b);if(el)el.classList.add('active');}
-
-function renderHome(){
- setActive('bHome');
- let u=currentUser;
- if(!u){
-  document.getElementById('app').innerHTML=`<div class="card"><h3>Login</h3>
-  <input id="lCell" class="input" placeholder="Cellphone"><input id="lPass" class="input" type="password" placeholder="Password">
-  <button class="btn" onclick="login()">Login</button>
-  <p class="small">No account? <span onclick="renderRegister()" style="color:blue;cursor:pointer">Register here</span></p>
-  <hr><h4>Available Packages</h4>${PACKAGES.map(p=>`<div style="border:1px solid #ddd;padding:8px;margin:6px 0;border-radius:8px"><b>${p.name}</b><br>R${p.price} - Daily R${p.daily} for ${p.days} days</div>`).join('')}
-  </div>`;
-  return;
- }
- let totalActive = (u.activePackages||[]).filter(p=>!p.completed).length;
- document.getElementById('app').innerHTML=`<div class="card"><h3>Welcome ${u.name}</h3>
- <p>Cell: ${u.cell}<br>Email: ${u.email||''}<br>Province: ${u.province||''}<br>Invite Code: <b>${u.inviteCode}</b></p>
- <p>Total Active Packages: ${totalActive}</p>
- <button class="btn2" onclick="logout()">Logout</button></div>`;
-}
-
-function renderRegister(){
- document.getElementById('app').innerHTML=`<div class="card"><h3>Register</h3>
- <input id="rName" class="input" placeholder="Full Name *">
- <input id="rCell" class="input" placeholder="Cellphone *">
- <input id="rEmail" class="input" placeholder="Email *">
- <select id="rProvince" class="input"><option value="">Select Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select>
- <select id="rGender" class="input"><option value="">
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Devine Money Savings</title><style>body{font-family:sans-serif;background:#f3f4f6;margin:0}header{background:#14532d;color:#fff;padding:12px;text-align:center;font-weight:bold}nav{display:flex;gap:6px;padding:8px;background:#fff;overflow:auto}nav button{padding:8px 12px;border:1px solid #ccc;border-radius:20px;background:#fff}nav button.active{background:#14532d;color:#fff}.card{background:#fff;margin:10px;padding:15px;border-radius:12px}.input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}.btn{width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:bold}.btn2{padding:8px 12px;background:#14532d;color:#fff;border:none;border-radius:6px;margin:4px}.small{font-size:12px;color:#666}</style></head><body><header>Devine Money Savings</header><nav><button onclick="H()" id="bH" class="active">Home</button><button onclick="W()" id="bW">Wallets</button><button onclick="P()" id="bP">Packages</button><button onclick="T()" id="bT">Team</button><button onclick="HI()" id="bHI">History</button><button onclick="A()" id="bA">Admin</button></nav><div id="app"></div><script>
+const PK=[{n:'Package A (R160)',p:160,d:8},{n:'Package B (R250)',p:250,d:15},{n:'Package C (R340)',p:340,d:22},{n:'Package D (R430)',p:430,d:30},{n:'Package E (R520)',p:520,d:38}];let users=JSON.parse(localStorage.getItem('u')||'[]'),txs=JSON.parse(localStorage.getItem('t')||'[]'),cur=JSON.parse(localStorage.getItem('c')||'null');function S(){localStorage.setItem('u',JSON.stringify(users));localStorage.setItem('c',JSON.stringify(cur))}function act(id){document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));let e=document.getElementById(id);if(e)e.classList.add('active')}
+function H(){act('bH');let u=cur;if(!u){app.innerHTML=`<div class=card><h3>Login</h3><input id=lC class=input placeholder=Cellphone><input id=lP class=input type=password placeholder=Password><button class=btn onclick=login()>Login</button><p class=small>No account? <span onclick=R() style=color:blue>Register</span></p><hr><h4>Packages</h4>${PK.map(p=>`<div style="border:1px solid #ddd;padding:8px;margin:6px 0;border-radius:8px"><b>${p.n}</b><br>R${p.p} Daily R${p.d}`).join('')}</div>`;return}app.innerHTML=`<div class=card><h3>Welcome ${u.name}</h3><p>Cell:${u.cell}<br>Invite:${u.invite}</p><button class=btn2 onclick="cur=null;localStorage.removeItem('c');H()">Logout</button></div>`}
+function R(){app.innerHTML=`<div class=card><h3>Register</h3><input id=rN class=input placeholder="Full Name*"><input id=rC class=input placeholder="Cellphone*"><input id=rE class=input placeholder="Email*"><select id=rPr class=input><option value="">Province*</option><option>Free State</option><option>Gauteng</option><option>KZN</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select><select id=rG class=input><option value="">Gender*</option><option>Male</option><option>Female</option></select><input id=rP class=input type=password placeholder="Password*"><input id=rI class=input placeholder="Invite Code (optional)"><button class=btn onclick=reg()>Register</button></div>`}
+function reg(){let n=rN.value.trim(),c=rC.value.trim(),e=rE.value.trim(),pr=rPr.value,g=rG.value,p=rP.value.trim(),inv=rI.value.trim();if(!n||!c||!e||!pr||!g||!p)return alert('Fill all *');if(users.find(x=>x.cell===c))return alert('Cell exists');let code='DMS'+Math.floor(1000+Math.random()*9000),u={cell:c,name:n,email:e,prov:pr,gender:g,pass:p,invite:code,by:inv||null,w:{main:0,bonus:10},pkgs:[]};users.push(u);if(inv){let invt=users.find(x=>x.invite===inv||x.cell===inv);if(invt){invt.w.bonus+=10;txs.push({cell:invt.cell,ty:'bonus',a:10,d:'Invite '+c,dt:new Date().toISOString(),st:'done'})}}localStorage.setItem('u',JSON.stringify(users));localStorage.setItem('t',JSON.stringify(txs));alert('Registered! Login');H()}
+function login(){let c=lC.value.trim(),p=lP.value.trim();if(c==='0510011039'&&p==='admin123'){cur={cell:'ADMIN',name:'Admin',admin:1};S();A();return}let u=users.find(x=>x.cell===c&&x.pass===p);if(!u)return alert('Wrong');cur=u;S();H()}
+function P(){act('bP');app.innerHTML=`<div class=card><h3>Packages</h3>${PK.map((x,i)=>`<div style="border:1px solid #ccc;padding:12px;margin:8px 0;border-radius:10px"><b>${x.n}</b><br>Price R${x.p}<br>Daily R${x.d} x 30 = R${x.d*30}<br><button class=btn2 onclick="buy(${i})">Buy Now</button></div>`).join('')}</div>`}
+function buy(i){if(!cur||cur.admin)return alert('Login as member');let pk=PK[i],u=users.find(x=>x.cell===cur.cell);u.pkgs.push({i,pr:pk.p,d:pk.d,bought:Date.now(),cl:0,done:0});cur=u;S();alert('Bought '+pk.n)}
+function W(){act('bW');if(!cur||cur.admin)return app.innerHTML='<div class=card>Login as member</div>';let u=users.find(x=>x.cell===cur.cell),td=0;u.pkgs.forEach(a=>{if(!a.done)td+=a.d});app.innerHTML=`<div class=card><h3>Wallets</h3><p>Main R${u.w.main}<br>Bonus R${u.w.bonus}<br>Daily R${td}</p><button class=btn2 onclick=claim()>Claim Daily</button><button class=btn2 onclick=wd()>Withdraw</button></div>`}
+function claim(){let u=users.find(x=>x.cell===cur.cell),earn=0;u.pkgs.forEach(a=>{if(a.done)return;let ds=Math.floor((Date.now()-a.bought)/86400000);if(ds>=a.cl&&a.cl<30){earn+=a.d;a.cl++;if(a.cl>=30)a.done=1}});if(!earn)return alert('Already claimed today');u.w.main+=earn;txs.push({cell:u.cell,ty:'daily',a:earn,d:'Daily',dt:new Date().toISOString(),st:'done'});localStorage.setItem('t',JSON.stringify(txs));S();alert('Claimed R'+earn);W()}
+function wd(){let am=parseFloat(prompt('Amount?'));if(!am)return;let u=users.find(x=>x.cell===cur.cell);if(am>u.w.main)return alert('No balance');u.w.main-=am;let fee=am*0.1,rec=am-fee;txs.push({cell:u.cell,ty:'wd',a:am,f:fee,d:'Withdraw receive R'+rec.toFixed(2),dt:new Date().toISOString(),st:'pending'});localStorage.setItem('t',JSON.stringify(txs));S();alert('Requested, you get R'+rec.toFixed(2))}
+function T(){act('bT');if(!cur)return app.innerHTML='<div class=card>Login</div>';let code=cur.invite||users.find(x=>x.cell===cur.cell)?.invite,team=users.filter(x=>x.by===code||x.by===cur.cell);app.innerHTML=`<div class=card><h3>Team ${team.length}</h3><p>Code <b>${code||''}</b></p>${team.map(x=>`<div>${x.name}-${x.cell}</div>`).join('')||'No team'}</div>`}
+function HI(){act('bHI');if(!cur)return app.innerHTML='<div class=card>Login</div>';let my=txs.filter(x=>x.cell===cur.cell||cur.admin);app.innerHTML=`<div class=card><h3>History</h3>${my.slice().reverse().map(x=>`<div style="border-bottom:1px solid #eee;padding:6px">${new Date(x.dt).toLocaleDateString()} ${x.ty} R${x.a} ${x.d} ${x.st}</div>`).join('')}</div>`}
+function A(){act('bA');if(!cur||!cur.admin){app.innerHTML=`<div class=card><h3>Admin</h3><input id=aC class=input placeholder=Cell><input id=aP class=input type=password placeholder=Pass><button class=btn onclick="if(aC.value==='0510011039'&&aP.value==='admin123'){cur={cell:'ADMIN',name:'Admin',admin:1};S();A()}else alert('wrong')">Login</button></div>`;return}let pen=txs.filter(x=>x.st==='pending');app.innerHTML=`<div class=card><h3>Admin Total:${users.length} Pend:${pen.length}</h3>${pen.map((x,i)=>`<div style="border:1px solid #ccc;padding:8px;margin:6px 0">${x.cell} R${x.a} ${x.d} <button class=btn2 onclick="txs[${txs.indexOf(x)}].st='done';localStorage.setItem('t',JSON.stringify(txs));A()">Approve</button><button class=btn2 onclick="let u=users.find(y=>y.cell==='${x.cell}');if(u){u.w.main+=${x.a}}txs[${txs.indexOf(x)}].st='reject';localStorage.setItem('t',JSON.stringify(txs));localStorage.setItem('u',JSON.stringify(users));A()">Reject</button></div>`).join('')||'No pend'}<hr>${users.map(u=>`<div>${u.name} ${u.cell} ${u.prov} R${u.w.main} pkgs:${u.pkgs.length}</div>`).join('')}</div>`}
+H();
+</script></body></html>
