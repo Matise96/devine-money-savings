@@ -70,3 +70,304 @@ header h1{color:#d4af37;font-size:14px}
 </div>
 </div>
 <!--PART 1 END-->
+<div id="app" style="display:none">
+<div class="tabs">
+<button type="button" class="active" onclick="showTab('home',this)">Home</button>
+<button type="button" onclick="showTab('wallets',this)">Wallets</button>
+<button type="button" onclick="showTab('packages',this)">Packages</button>
+<button type="button" onclick="showTab('bonus',this)">Bonus</button>
+<button type="button" onclick="showTab('team',this)">Team</button>
+<button type="button" onclick="showTab('about',this)">About</button>
+<button type="button" onclick="showTab('contact',this)">Contact</button>
+<button type="button" onclick="showTab('history',this)">History</button>
+<button type="button" onclick="showTab('adminP',this)">Admin</button>
+</div>
+
+<div id="home" class="tab">
+<div class="card" style="text-align:center;background:#0a1931">
+<h2 class="gold">DEVINE MONEY SAVINGS</h2>
+<p style="font-size:12px;margin:6px 0">Devine Pty (Ltd) - Reg No: 2024/344088/07</p>
+<p style="font-size:12px">Province of Origin: Free State</p>
+</div>
+<div class="flag-box"><img src="https://flagcdn.com/w640/za.png" alt="SA Flag"></div>
+<div class="poster">
+<h3 class="gold" style="text-align:center">EXCLUSIVE PACKAGES</h3>
+<p style="text-align:center;font-size:10px;color:#aaa">Company: Devine Pty-Ltd reg 2024/344088/07</p>
+<div class="pkg-row"><b>PACKAGE A</b><span style="font-size:12px">R160 > R10 daily<br><small>Earliest 7 days. Min R70</small></span></div>
+<div class="pkg-row"><b>PACKAGE B</b><span style="font-size:12px">R250 > R18 daily<br><small>Min R70</small></span></div>
+<div class="pkg-row"><b>PACKAGE C</b><span style="font-size:12px">R340 > R25 daily<br><small>Earliest 7 days</small></span></div>
+<div class="pkg-row"><b>PACKAGE D</b><span style="font-size:12px">R430 > R35 daily<br><small>Earliest 2 days</small></span></div>
+<div class="pkg-row" style="border:none"><b>PACKAGE E</b><span style="font-size:12px">R520 > R70 daily<br><small>Earliest 2 days</small></span></div>
+</div>
+</div>
+
+<div id="wallets" class="tab" style="display:none">
+<div class="card">
+<h3 class="gold">3 Wallets</h3>
+<div style="border:1px solid #d4af37;border-radius:8px;padding:8px;margin:5px 0">Main: R<span id="mainW">0.00</span></div>
+<div style="border:1px solid #d4af37;border-radius:8px;padding:8px;margin:5px 0">Inviter: R<span id="invW">0.00</span></div>
+<div style="border:1px solid #d4af37;border-radius:8px;padding:8px;margin:5px 0">Loyalty: R<span id="loyW">0.00</span></div>
+<p>Total R<span id="totalW">0.00</span></p>
+<button type="button" class="btn-full" onclick="openWithdrawModal()">Withdraw Min R70</button>
+<div id="pkgList" style="margin-top:8px"></div>
+</div>
+<div class="card" style="border-color:#ff9800">
+<h3 class="gold">Bank Zero</h3>
+<input class="input" value="Bank Zero" disabled>
+<label>Holder</label><input id="holderName" class="input" disabled>
+<input class="input" value="Branch: 888000" disabled>
+<input id="accNum" class="input" placeholder="Account Number *">
+<input id="otpInput" class="input" placeholder="OTP optional, admin can approve manually">
+<button type="button" class="btn-full" onclick="submitBank()">Submit for Approval</button>
+<p id="bankStatus" style="font-size:12px;margin-top:6px"></p>
+</div>
+</div>
+
+<div id="packages" class="tab" style="display:none"><div id="allPkgs"></div></div>
+
+<div id="bonus" class="tab" style="display:none">
+<div class="card">
+<h3 class="gold">Bonus Explained</h3>
+<div style="background:#222;padding:8px;border-radius:8px;margin:6px 0;font-size:13px"><b class="gold">Daily Cashback:</b><br>A: R10, B: R18, C: R25, D: R35, E: R70 daily</div>
+<div style="background:#222;padding:8px;border-radius:8px;margin:6px 0;font-size:13px"><b class="gold">Inviter Bonus (10%):</b><br>Invite person buys package, you get 10% instantly.</div>
+<div style="background:#222;padding:8px;border-radius:8px;margin:6px 0;font-size:13px"><b class="gold">Loyalty Bonus (5% + 2%):</b><br>Level2: 5%, Level3: 2% from team.</div>
+<div style="background:#222;padding:8px;border-radius:8px;margin:6px 0;font-size:13px"><b class="gold">Withdraw:</b> Min R70 to Bank Zero. OTP optional, admin approves manually.</div>
+</div>
+</div>
+
+<div id="team" class="tab" style="display:none">
+<div class="card">
+<h3 class="gold">My Team</h3>
+<div id="teamInfo" style="font-size:13px;line-height:1.6"></div>
+<div style="background:#222;padding:8px;border-radius:8px;margin-top:8px">
+<p style="font-size:11px;color:#aaa">Invite Link:</p>
+<p id="inviteLink" style="font-size:11px;color:#d4af37;word-break:break-all"></p>
+<button type="button" class="yellow" style="width:100%;margin-top:6px" onclick="copyInvite()">Copy Link</button>
+</div>
+<div class="stat-grid" style="margin-top:8px"><div class="stat"><b id="teamCount">0</b><br><small>Members</small></div><div class="stat"><b id="teamBonus">R0</b><br><small>Bonus</small></div></div>
+</div>
+</div>
+
+<div id="about" class="tab" style="display:none">
+<div class="card"><h3 class="gold">About Us</h3><p style="font-size:13px;line-height:1.6;margin-top:8px">Company: Devine Pty (Ltd)<br>Reg No: 2024/344088/07<br>Province: Free State, South Africa<br><br>Devine Money Savings is a community savings platform with exclusive packages, daily cashback, and 3 wallets for easy withdrawals to Bank Zero.<br><br>Min withdrawal R70. Bank Zero secure. Admin manual approval if OTP missing.</p></div>
+</div>
+
+<div id="contact" class="tab" style="display:none">
+<div class="card"><h3 class="gold">Contact Us</h3><p style="font-size:13px;line-height:1.8;margin-top:8px">Email: devine.money.savings@gmail.com<br>Support: support@y-savings.vercel.app<br>WhatsApp: +27 71 234 5678<br>Bank: Bank Zero - 888000<br>Hours: Mon-Sat 8am-6pm<br>Admin: admin@dms.co.za</p></div>
+</div>
+
+<div id="history" class="tab" style="display:none"><div class="card"><h3 class="gold">History</h3><div id="histList"></div></div></div>
+
+<div id="adminP" class="tab" style="display:none">
+<div class="card">
+<h3 class="gold">Admin Dashboard</h3>
+<div class="stat-grid"><div class="stat"><b id="statUsers">0</b><br><small>Users</small></div><div class="stat"><b id="statMoney">R0</b><br><small>Total</small></div><div class="stat"><b id="statPendBank">0</b><br><small>Pend Banks</small></div><div class="stat"><b id="statPendW">0</b><br><small>Pend W</small></div></div>
+<h3 class="gold" style="margin-top:10px">Bank Approvals - Manual</h3><div id="adminBankList"></div>
+<hr style="margin:8px 0"><h3 class="gold">Withdrawals</h3><div id="adminWithdrawList"></div>
+<hr style="margin:8px 0"><h3 class="gold">All Users</h3><div id="adminUsers"></div>
+</div>
+</div>
+</div>
+
+<div id="withdrawModal" class="modal">
+<div class="modal-box">
+<h3 class="gold">Choose Wallet</h3>
+<div class="wallet-opt" onclick="chooseWallet('main')"><span>Main</span><span>R<span id="mMain">0</span></span></div>
+<div class="wallet-opt" onclick="chooseWallet('inviter')"><span>Inviter</span><span>R<span id="mInv">0</span></span></div>
+<div class="wallet-opt" onclick="chooseWallet('loyalty')"><span>Loyalty</span><span>R<span id="mLoy">0</span></span></div>
+<button type="button" class="yellow" style="width:100%;margin-top:8px" onclick="closeWithdrawModal()">Cancel</button>
+</div>
+</div>
+<!--PART 2 END--><script>
+var PKGS=[
+{name:"PACKAGE A",price:160,daily:10,early:"7 days"},
+{name:"PACKAGE B",price:250,daily:18,early:"7 days"},
+{name:"PACKAGE C",price:340,daily:25,early:"7 days"},
+{name:"PACKAGE D",price:430,daily:35,early:"2 days"},
+{name:"PACKAGE E",price:520,daily:70,early:"2 days"}
+];
+function toggleEye(id){
+var e=document.getElementById(id);
+e.type=e.type==="password"?"text":"password";
+}
+function switchAuth(t){
+document.getElementById("regDiv").style.display=t==="reg"?"block":"none";
+document.getElementById("loginDiv").style.display=t==="login"?"block":"none";
+document.getElementById("adminDiv").style.display=t==="admin"?"block":"none";
+document.getElementById("btnReg").classList.toggle("active",t==="reg");
+document.getElementById("btnLogin").classList.toggle("active",t==="login");
+document.getElementById("btnAdmin").classList.toggle("active",t==="admin");
+}
+function getUsers(){
+return JSON.parse(localStorage.getItem("dms_users")||"[]");
+}
+function saveUsers(u){
+localStorage.setItem("dms_users",JSON.stringify(u));
+}
+function getCur(){
+return JSON.parse(localStorage.getItem("dms_cur")||"null");
+}
+function setCur(c){
+localStorage.setItem("dms_cur",JSON.stringify(c));
+checkAuth();
+}
+function getUser(){
+var c=getCur();
+if(!c)return null;
+var us=getUsers();
+var u=us.find(x=>x.id===c.id);
+if(!u){
+u=us.find(x=>x.email===c.email);
+if(u){
+if(!u.id){u.id=Date.now().toString()}
+if(!u.refCode){u.refCode=u.id.slice(-6).toUpperCase()}
+saveUsers(us);
+}
+}
+if(u){
+if(!u.refCode){u.refCode=u.id.slice(-6).toUpperCase()}
+if(!u.w){u.w={main:0,inviter:0,loyalty:0}}
+if(!u.pkgs){u.pkgs=[]}
+if(!u.history){u.history=[]}
+if(!u.withdrawals){u.withdrawals=[]}
+}
+return u||null;
+}
+function saveUser(u){
+var us=getUsers();
+var i=us.findIndex(x=>x.id===u.id);
+if(i>=0){us[i]=u}else{us.push(u)}
+saveUsers(us);
+setCur(u);
+}
+function checkAuth(){
+var c=getCur();
+if(c){
+document.getElementById("auth").style.display="none";
+document.getElementById("app").style.display="block";
+document.getElementById("logoutBtn").style.display="block";
+updateUI();
+}else{
+document.getElementById("auth").style.display="block";
+document.getElementById("app").style.display="none";
+document.getElementById("logoutBtn").style.display="none";
+}
+}
+function register(){
+var full=document.getElementById("rFull").value.trim();
+var gen=document.getElementById("rGender").value;
+var cell=document.getElementById("rCell").value.trim();
+var email=document.getElementById("rEmail").value.trim();
+var inv=document.getElementById("rInviter").value.trim();
+var prov=document.getElementById("rProvince").value;
+var pass=document.getElementById("rPass").value.trim();
+if(!full||!gen||!cell||!email||!prov||!pass){
+alert("Fill all *");
+return;
+}
+var us=getUsers();
+if(us.find(x=>x.email.toLowerCase()===email.toLowerCase())){
+alert("Email exists, login");
+switchAuth("login");
+return;
+}
+var id=Date.now().toString();
+var ref=id.slice(-6).toUpperCase();
+var u={
+id:id,refCode:ref,name:full,gender:gen,cell:cell,
+email:email,inviter:inv,province:prov,pass:pass,
+w:{main:0,inviter:0,loyalty:0},pkgs:[],
+history:["Registered "+new Date().toLocaleString()],
+role:"user",withdrawals:[]
+};
+us.push(u);
+saveUsers(us);
+if(inv){
+var inviter=us.find(x=>x.refCode===inv||x.id===inv);
+if(inviter){
+inviter.w.inviter+=20;
+inviter.history.push("R20 bonus from "+full);
+saveUsers(us);
+}
+}
+setCur(u);
+alert("Welcome "+full+" Code: "+ref);
+}
+function login(){
+var e=document.getElementById("lEmail").value.trim();
+var p=document.getElementById("lPass").value.trim();
+var u=getUsers().find(x=>x.email.toLowerCase()===e.toLowerCase()&&x.pass===p);
+if(!u){alert("Invalid login");return;}
+setCur(u);
+}
+function adminLogin(){
+var e=document.getElementById("aEmail").value.trim();
+var p=document.getElementById("aPass").value.trim();
+if(e.toLowerCase()==="admin@dms.co.za"&&p==="admin123"){
+var us=getUsers();
+var ad=us.find(x=>x.email.toLowerCase()===e.toLowerCase());
+if(!ad){
+ad={id:"admin1",refCode:"ADMIN",name:"Admin",gender:"Male",cell:"000",email:e,pass:p,province:"Gauteng",w:{main:0,inviter:0,loyalty:0},pkgs:[],history:[],role:"admin",withdrawals:[]};
+us.push(ad);
+saveUsers(us);
+}
+setCur(ad);
+return;
+}
+alert("Invalid admin");
+}
+function updateUI(){
+var u=getUser();
+if(!u)return;
+document.getElementById("mainW").innerText=u.w.main.toFixed(2);
+document.getElementById("invW").innerText=u.w.inviter.toFixed(2);
+document.getElementById("loyW").innerText=u.w.loyalty.toFixed(2);
+document.getElementById("totalW").innerText=(u.w.main+u.w.inviter+u.w.loyalty).toFixed(2);
+document.getElementById("holderName").value=u.name||"";
+if(u.bank){
+document.getElementById("bankStatus").innerHTML="Status: <b>"+u.bank.status.toUpperCase()+"</b> - "+u.bank.accountNumber;
+}else{
+document.getElementById("bankStatus").innerText="No bank yet";
+}
+document.getElementById("pkgList").innerHTML=u.pkgs.join("<br>")||"No packages";
+document.getElementById("histList").innerHTML=u.history.map(h=>"<div style='border-bottom:1px solid #333;padding:5px 0'>"+h+"</div>").join("")||"No history";
+var us=getUsers();
+var myTeam=us.filter(x=>x.inviter===u.refCode||x.inviter===u.id);
+document.getElementById("teamInfo").innerHTML="Name: "+u.name+"<br>Gender: "+(u.gender||"")+"<br>Cell: "+(u.cell||"")+"<br>Email: "+u.email+"<br>Province: "+(u.province||"")+"<br>Inviter: "+(u.inviter||"None")+"<br><b>Your Code: "+(u.refCode||u.id.slice(-6))+"</b><br>ID: "+u.id;
+document.getElementById("inviteLink").innerText=window.location.origin+"?ref="+(u.refCode||u.id);
+document.getElementById("teamCount").innerText=myTeam.length;
+document.getElementById("teamBonus").innerText="R"+u.w.inviter.toFixed(2);
+renderPackages();
+renderAdmin();
+}
+function showTab(t,btn){
+document.querySelectorAll(".tab").forEach(x=>x.style.display="none");
+document.getElementById(t).style.display="block";
+document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("active"));
+if(btn)btn.classList.add("active");
+}
+function renderPackages(){
+var h="";
+for(var i=0;i<PKGS.length;i++){
+var p=PKGS[i];
+h+="<div class='card'><b class='gold'>"+p.name+"</b> - R"+p.price+"<h3 style='margin:6px 0'>R"+p.price+" > R"+p.daily+" daily</h3><p style='font-size:11px;color:#aaa'>Earliest "+p.early+". Min R70.</p><button type='button' class='btn-full' onclick='buyPkg("+i+")'>Buy "+p.name+"</button></div>";
+}
+document.getElementById("allPkgs").innerHTML=h;
+}
+function buyPkg(i){
+var u=getUser();
+var price=PKGS[i].price;
+var total=u.w.main+u.w.inviter+u.w.loyalty;
+if(total<price){
+alert("Need R"+price+" have R"+total);
+return;
+}
+var need=price;
+if(u.w.main>=need){
+u.w.main-=need;need=0;
+}else{
+need-=u.w.main;u.w.main=0;
+if(u.w.inviter>=need){
+u.w.inviter-=need;need=0;
+}else{
+need
