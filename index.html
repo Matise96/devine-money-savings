@@ -3,81 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Devine Money Savings - DMS</title>
+<title>Devine Money Savings</title>
 <style>
-body{font-family:Arial;background:#f6f7fb;margin:0;padding:0}
-header{background:#0d0d2b;color:#fff;padding:15px;text-align:center}
-.container{max-width:900px;margin:20px auto;padding:15px;background:#fff;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-.btn{background:#0d0d2b;color:#fff;padding:10px 16px;border:none;border-radius:6px;cursor:pointer;width:100%;margin-top:10px}
-input{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:6px}
-.posters{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
-.posters img{width:100%;border-radius:8px;border:1px solid #ddd}
-.note{background:#fff3cd;padding:10px;border-radius:6px;margin:10px 0;font-size:14px}
+body{margin:0;background:#00122a;color:#fff;font-family:Arial;text-align:center}
+h1{color:#d4af37;margin-top:20px}
+.posters{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;padding:20px}
+.posters img{width:320px;border:3px solid #d4af37;border-radius:15px;box-shadow:0 0 15px gold}
+.contact{margin:30px;background:#002244;padding:20px;border-radius:15px}
+a{color:#d4af37;text-decoration:none;font-weight:bold}
 </style>
-<script>
-// SAFE RESET - fixes your blank issue
-if(window.location.search.includes('reset')){
-  localStorage.clear();
-  alert('Storage cleared! Reloading to Login...');
-  window.location.href = window.location.pathname;
-}
-</script>
 </head>
 <body>
-<header><h2>Devine Money Savings (DMS)</h2><p>Secure Savings Platform</p></header>
-<div class="container" id="app">
-<h3 id="title">Login</h3>
-<div class="note">Blank fix active. If blank happens again, add ?reset to URL.</div>
-<input id="user" placeholder="Username">
-<input id="pass" type="password" placeholder="Password">
-<button class="btn" onclick="login()">Login</button>
-<button class="btn" style="background:#555" onclick="toggle()">Create Account</button>
+<h1>DEVINE MONEY SAVINGS</h1>
+<p>Devine Pty (Ltd) - Reg No: 2024/344088/07</p>
+<p>Province of Origin: Free State</p>
 
-<h4 style="margin-top:25px">Our Posters & Packages (Upload your 5 images to GitHub)</h4>
 <div class="posters">
-<img src="package.jpg" onerror="this.src='https://via.placeholder.com/300?text=Upload+package.jpg'">
-<img src="contact1.jpg" onerror="this.src='https://via.placeholder.com/300?text=Upload+contact1.jpg'">
-<img src="contact2.jpg" onerror="this.src='https://via.placeholder.com/300?text=Upload+contact2.jpg'">
-<img src="sa-flag.jpg" onerror="this.src='https://via.placeholder.com/300?text=Upload+SA+flag'">
-<img src="throne.jpg" onerror="this.src='https://via.placeholder.com/300?text=Upload+throne.jpg'">
+<img src="IMG-20261001-WA1794.jpg" alt="Contact 1">
+<img src="IMG-20261001-WA5630.jpg" alt="Contact 2">
+<img src="IMG-20261001-WA5814.jpg" alt="Packages">
+<img src="IMG-20261001-WA8463.jpg" alt="SA Flag">
+<img src="IMG-20261001-WA9145.jpg" alt="Throne">
 </div>
-<p style="margin-top:20px;font-size:13px;color:#555">Bank: Bank Zero<br>For enquiries contact us. This is a savings information platform. No guaranteed returns are promised. Terms apply.</p>
+
+<div class="contact">
+<h2>Contact Us</h2>
+<p>📞 Tel: 051 001 1039</p>
+<p>💬 WhatsApp: 051 001 1039</p>
+<p>📧 Email: devine9606@gmail.com</p>
+<p><a href="https://wa.me/27510011039">Click to WhatsApp Us</a></p>
 </div>
-<script>
-let mode='login';
-function toggle(){
- mode = mode==='login'?'register':'login';
- document.getElementById('title').innerText = mode==='login'?'Login':'Register';
-}
-function login(){
- const u=document.getElementById('user').value.trim();
- const p=document.getElementById('pass').value.trim();
- if(!u||!p) return alert('Enter username and password');
- try{
-   let users=JSON.parse(localStorage.getItem('dms_users')||'[]');
-   if(mode==='register'){
-     if(users.find(x=>x.u===u)) return alert('User exists, please login');
-     users.push({u,p}); localStorage.setItem('dms_users',JSON.stringify(users));
-     alert('Account created! Now login');
-     mode='login'; document.getElementById('title').innerText='Login';
-   } else {
-     let found=users.find(x=>x.u===u&&x.p===p);
-     if(!found) return alert('Wrong details or register first');
-     localStorage.setItem('dms_currentUser',JSON.stringify({u}));
-     document.getElementById('app').innerHTML='<h3>Welcome '+u+'!</h3><p>You are logged in.</p><div class=posters><img src=package.jpg><img src=contact1.jpg><img src=contact2.jpg><img src=sa-flag.jpg><img src=throne.jpg></div><button class=btn onclick=\"logout()\">Logout</button>';
-   }
- }catch(e){
-   // SAFE FIX for blank crash
-   console.log(e); localStorage.clear(); alert('Old data cleared, please try again'); location.reload();
- }
-}
-function logout(){localStorage.removeItem('dms_currentUser'); location.reload();}
-window.onload=function(){
- try{
-  let c=JSON.parse(localStorage.getItem('dms_currentUser')||'null');
-  if(c&&c.u){ document.getElementById('app').innerHTML='<h3>Welcome '+c.u+'!</h3><p>You are logged in.</p><button class=btn onclick=\"logout()\">Logout</button>'; }
- }catch(e){ localStorage.clear(); }
-}
-</script>
+
 </body>
 </html>
