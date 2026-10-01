@@ -1,310 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Devine Money Savings</title>
 <style>
-body{margin:0;background:#00122a;color:#fff;font-family:Arial;text-align:center}
-h1{color:#d4af37;margin-top:20px}
-.posters{display:flex;flex-wrap:wrap;justify-content:center;gap:15px;padding:20px}
-.posters img{width:320px;border:3px solid #d4af37;border-radius:15px;box-shadow:0 0 15px gold}
-.contact{margin:30px;background:#002244;padding:20px;border-radius:15px}
-a{color:#d4af37;text-decoration:none;font-weight:bold}
+body{font-family:sans-serif;background:#f3f4f6;margin:0}
+header{background:#14532d;color:#fff;padding:12px;text-align:center;font-weight:bold;font-size:20px}
+nav{display:flex;gap:6px;padding:8px;background:#fff;overflow:auto}
+nav button{padding:8px 12px;border:1px solid #ccc;border-radius:20px;background:#fff;white-space:nowrap}
+nav button.active{background:#14532d;color:#fff}
+.card{background:#fff;margin:10px;padding:15px;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.input{width:100%;padding:12px;margin:8px 0;border:1px solid #ccc;border-radius:8px;box-sizing:border-box}
+.btn{width:100%;padding:12px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-weight:bold;margin-top:8px}
+.btn2{padding:8px 12px;background:#14532d;color:#fff;border:none;border-radius:6px;margin:4px}
+.small{font-size:12px;color:#666}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td,th{border:1px solid #ddd;padding:6px}
 </style>
 </head>
 <body>
-<h1>DEVINE MONEY SAVINGS</h1>
-<p>Devine Pty (Ltd) - Reg No: 2024/344088/07</p>
-<p>Province of Origin: Free State</p>
-
-<div class="posters">
-<img src="IMG-20261001-WA1794.jpg" alt="Contact 1">
-<img src="IMG-20261001-WA5630.jpg" alt="Contact 2">
-<img src="IMG-20261001-WA5814.jpg" alt="Packages">
-<img src="IMG-20261001-WA8463.jpg" alt="SA Flag">
-<img src="IMG-20261001-WA9145.jpg" alt="Throne">
-</div>
-
-<div class="contact">
-<h2>Contact Us</h2>
-<p>📞 Tel: 051 001 1039</p>
-<p>💬 WhatsApp: 051 001 1039</p>
-<p>📧 Email: devine9606@gmail.com</p>
-<p><a href="https://wa.me/27510011039">Click to WhatsApp Us</a></p>
-</div>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Devine Money Savings</title>
-<style>
-*{box-sizing:border-box}body{font-family:Arial,sans-serif;background:#f4f6f9;margin:0;padding:0}
-header{background:#1a1a2e;color:#fff;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
-.nav{display:flex;overflow-x:auto;background:#fff;padding:8px;gap:6px;box-shadow:0 2px 5px rgba(0,0,0,.1)}
-.nav button{white-space:nowrap;padding:8px 12px;border:none;background:#eee;border-radius:20px;cursor:pointer;font-size:13px}
-.nav button.active{background:#27ae60;color:#fff}
-.card{background:#fff;border-radius:12px;padding:16px;margin:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.btn{background:#27ae60;color:#fff;padding:12px;border:none;border-radius:8px;width:100%;font-weight:bold;cursor:pointer;margin-top:8px}
-.btn-red{background:#e74c3c}.btn-blue{background:#3498db}.btn-dark{background:#2c3e50}
-.wallet{border-left:5px solid #27ae60;padding:12px;background:#fff;margin:10px 12px;border-radius:8px;display:flex;justify-content:space-between;align-items:center}
-.wallet.bonus{border-color:#f39c12}.wallet.loyal{border-color:#9b59b6}
-.input{width:100%;padding:11px;margin:6px 0;border:1px solid #ccc;border-radius:8px}
-.overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.65);z-index:999;justify-content:center;align-items:center;padding:15px}
-.popup{background:#fff;border-radius:14px;padding:20px;width:100%;max-width:420px;max-height:92vh;overflow-y:auto}
-.small{font-size:12px;color:#666} table{width:100%;border-collapse:collapse;font-size:13px} th,td{border:1px solid #ddd;padding:6px;text-align:left} th{background:#2c3e50;color:#fff}
-</style>
-</head>
-<body>
-<header><b>💰 DMS</b><span id="userInfo" style="font-size:12px"></span><button onclick="logout()" style="background:#e74c3c;color:#fff;border:none;padding:6px 10px;border-radius:6px">Logout</button></header>
-<div class="nav" id="navBar"></div>
+<header>Devine Money Savings</header>
+<nav>
+<button onclick="renderHome()" id="bHome" class="active">Home</button>
+<button onclick="renderWallets()" id="bWallets">Wallets</button>
+<button onclick="renderPackages()" id="bPackages">Packages</button>
+<button onclick="renderTeam()" id="bTeam">Team</button>
+<button onclick="renderHistory()" id="bHistory">History</button>
+<button onclick="renderAdmin()" id="bAdmin">Admin</button>
+</nav>
 <div id="app"></div>
-<div id="otpOverlay" class="overlay"><div class="popup"><h3>Verify OTP</h3><p class="small">OTP sent to <b id="otpEmail"></b><br>Demo OTP: <b id="otpShow"></b></p><input id="otpInput" class="input" placeholder="Enter OTP"><p id="otpErr" style="color:red;font-size:13px"></p><button class="btn" onclick="confirmOtpAction()">Verify</button><button class="btn btn-red" onclick="closeOtp()">Cancel</button></div></div>
-<div id="withdrawOverlay" class="overlay"><div class="popup">
-<h3>Withdraw - <span id="wWalletName"></span></h3>
-<p class="small">Bank: <b id="wBankName">Bank Zero</b> | Branch: <b>888000</b></p>
-<input id="wAccNum" class="input" placeholder="Account Number *">
-<input id="wAmount" class="input" type="number" placeholder="Amount * Min R70">
-<p class="small">Fee: <span id="wFeeText"></span> | You receive: <span id="wNetText"></span></p>
-<p id="wErr" style="color:red;font-size:13px"></p>
-<button class="btn" onclick="requestWithdraw()">Send OTP & Withdraw</button>
-<button class="btn btn-red" onclick="closeWithdraw()">Cancel</button>
-</div></div>
 <script>
-const PACKAGES = {
-  "A": {price:160, daily:10, days:14, name:"PACKAGE A"},
-  "B": {price:250, daily:10, days:21, name:"PACKAGE B"},
-  "C": {price:500, daily:10, days:30, name:"PACKAGE C"},
-  "D": {price:1000, daily:35, days:11, name:"PACKAGE D"},
-  "E": {price:1500, daily:70, days:6, name:"PACKAGE E"}
-};
-const MIN_WITHDRAW = 70;
-const INVITE_BONUS = 10;
+const INVITE_BONUS=10;
+const PACKAGES = [
+ {id:'A', name:'Package A (R160)', price:160, daily:8, days:30},
+ {id:'B', name:'Package B (R250)', price:250, daily:15, days:30},
+ {id:'C', name:'Package C (R340)', price:340, daily:22, days:30},
+ {id:'D', name:'Package D (R430)', price:430, daily:30, days:30},
+ {id:'E', name:'Package E (R520)', price:520, daily:38, days:30},
+];
 let users = JSON.parse(localStorage.getItem('dms_users')||'[]');
 let txs = JSON.parse(localStorage.getItem('dms_txs')||'[]');
-let currentUser = JSON.parse(localStorage.getItem('dms_currentUser')||'null');
-let isAdminMode = localStorage.getItem('dms_currentAdmin')?true:false;
-let currentAdminCell = localStorage.getItem('dms_currentAdmin');
-let pendingAction = null;
-let genOtp = '';
-function isWithdrawOpen(){
- let now=new Date(); let day=now.getDay(); let hour=now.getHours();
- if(day===0) return false;
- if(hour<8 || hour>=18) return false;
- return true;
-}
-function runDailyCredits(user){
- if(!user.activePackages) user.activePackages=[];
- let totalNewCredit=0;
- let now=new Date();
- user.activePackages.forEach(pkg=>{
-   if(pkg.completed) return;
-   let start=new Date(pkg.startDate);
-   let diffDays=Math.floor((now-start)/(1000*60*60*24));
-   let daysToCredit = Math.min(diffDays+1, pkg.totalDays) - (pkg.creditedDays||0);
-   if(daysToCredit>0){
-     let credit = daysToCredit * pkg.daily;
-     pkg.creditedDays = (pkg.creditedDays||0)+daysToCredit;
-     if(pkg.creditedDays>=pkg.totalDays) pkg.completed=true;
-     user.wallets.main = (user.wallets.main||0)+credit;
-     totalNewCredit+=credit;
-     txs.push({cell:user.cell, type:'cashback', wallet:'main', amount:credit, fee:0, desc:`Daily ${pkg.name} Day ${pkg.creditedDays-daysToCredit+1}-${pkg.creditedDays}`, date:now.toISOString(), status:'completed'});
-   }
- });
- if(totalNewCredit>0){
-   localStorage.setItem('dms_txs',JSON.stringify(txs));
-   saveUsers();
- }
-}
-function saveUsers(){ localStorage.setItem('dms_users',JSON.stringify(users)); }function fmtR(v){ return 'R'+parseFloat(v||0).toFixed(2); }
-function renderNav(){
- let html='';
- let menus = isAdminMode? [['Dashboard','renderAdminDash'],['Members','renderAdminMembers'],['Withdrawals','renderAdminWithdraw'],['Transactions','renderAdminTx']] : [['Home','renderHome'],['Wallets','renderWallets'],['Packages','renderPackages'],['Team','renderTeam'],['History','renderHistory']];
- menus.forEach(m=>{
-   html+=`<button onclick="${m[1]}()" id="btn_${m[1]}">${m[0]}</button>`;
- });
- document.getElementById('navBar').innerHTML=html;
-}
-function setActive(btn){ document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active')); let el=document.getElementById('btn_'+btn); if(el) el.classList.add('active'); }
+let currentUser = JSON.parse(localStorage.getItem('dms_current')||'null');
+function saveUsers(){localStorage.setItem('dms_users',JSON.stringify(users));localStorage.setItem('dms_current',JSON.stringify(currentUser));}
+function setActive(b){document.querySelectorAll('nav button').forEach(x=>x.classList.remove('active'));let el=document.getElementById(b);if(el)el.classList.add('active');}
+
 function renderHome(){
- setActive('renderHome');
+ setActive('bHome');
  let u=currentUser;
- if(!u){ document.getElementById('app').innerHTML=`<div class="card"><h2>Welcome to Devine Money Savings</h2><p class="small">Devine Pty Ltd - Reg: 2024/344088/07 - Free State</p>
- <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:15px 0">
- <img src="IMG-20261001-WA1794.jpg" style="width:100%;max-width:320px;border-radius:12px;border:2px solid gold">
- <img src="IMG-20261001-WA5630.jpg" style="width:100%;max-width:320px;border-radius:12px;border:2px solid gold">
- <img src="IMG-20261001-WA5814.jpg" style="width:100%;max-width:320px;border-radius:12px;border:2px solid gold">
- <img src="IMG-20261001-WA8463.jpg" style="width:100%;max-width:320px;border-radius:12px;border:2px solid gold">
- <img src="IMG-20261001-WA9145.jpg" style="width:100%;max-width:320px;border-radius:12px;border:2px solid gold">
- </div>
- <input id="lCell" class="input" placeholder="Cellphone / ID"><input id="lPass" class="input" type="password" placeholder="Password">
- <button class="btn" onclick="login()">Login</button><p class="small">No account? <a href="#" onclick="renderRegister()">Register here</a> | Admin? <a href="#" onclick="renderAdminLogin()">Admin Login</a></p>
- <div class="card" style="background:#00122a;color:#fff"><b>Contact:</b><br>Tel: 051 001 1039<br>WhatsApp: 051 001 1039<br>Email: devine9606@gmail.com</div>
- </div>`; return; }
- runDailyCredits(u);
+ if(!u){
+  document.getElementById('app').innerHTML=`<div class="card"><h3>Login</h3>
+  <input id="lCell" class="input" placeholder="Cellphone"><input id="lPass" class="input" type="password" placeholder="Password">
+  <button class="btn" onclick="login()">Login</button>
+  <p class="small">No account? <span onclick="renderRegister()" style="color:blue;cursor:pointer">Register here</span></p>
+  <hr><h4>Available Packages</h4>${PACKAGES.map(p=>`<div style="border:1px solid #ddd;padding:8px;margin:6px 0;border-radius:8px"><b>${p.name}</b><br>R${p.price} - Daily R${p.daily} for ${p.days} days</div>`).join('')}
+  </div>`;
+  return;
+ }
  let totalActive = (u.activePackages||[]).filter(p=>!p.completed).length;
- document.getElementById('app').innerHTML=`<div class="card"><h2>Welcome ${u.name}!</h2><p>Cell: ${u.cell} | Code: ${u.inviteCode}</p><p>Active Packages: ${totalActive}</p></div>
- <div class="wallet">💰 Main Wallet <b>${fmtR(u.wallets.main)}</b><button class="btn-blue" style="padding:6px 10px;border:none;border-radius:6px;color:#fff" onclick="openWithdraw('main')">Withdraw</button></div>
- <div class="wallet bonus">🎁 Bonus Wallet <b>${fmtR(u.wallets.bonus)}</b><button class="btn-blue" style="padding:6px 10px;border:none;border-radius:6px;color:#fff" onclick="openWithdraw('bonus')">Withdraw</button></div>
- <div class="wallet loyal">💎 Loyalty <b>${fmtR(u.wallets.loyal)}</b></div>
- <div class="card"><h3>Our Official Posters</h3><div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center">
- <img src="IMG-20261001-WA1794.jpg" style="width:46%;border-radius:10px"><img src="IMG-20261001-WA5630.jpg" style="width:46%;border-radius:10px"><img src="IMG-20261001-WA5814.jpg" style="width:46%;border-radius:10px"><img src="IMG-20261001-WA8463.jpg" style="width:46%;border-radius:10px"><img src="IMG-20261001-WA9145.jpg" style="width:90%;border-radius:10px"></div></div>`;
+ document.getElementById('app').innerHTML=`<div class="card"><h3>Welcome ${u.name}</h3>
+ <p>Cell: ${u.cell}<br>Email: ${u.email||''}<br>Province: ${u.province||''}<br>Invite Code: <b>${u.inviteCode}</b></p>
+ <p>Total Active Packages: ${totalActive}</p>
+ <button class="btn2" onclick="logout()">Logout</button></div>`;
 }
+
 function renderRegister(){
  document.getElementById('app').innerHTML=`<div class="card"><h3>Register</h3>
- <input id="rName" class="input" placeholder="Full Name *"><input id="rCell" class="input" placeholder="Cellphone *"><input id="rId" class="input" placeholder="ID Number *"><input id="rPass" class="input" type="password" placeholder="Password *"><input id="rInvite" class="input" placeholder="Invite Code (optional)">
- <button class="btn" onclick="register()">Register & Get R10 Bonus</button><p class="small" onclick="renderHome()" style="cursor:pointer;color:blue">Back to Login</p></div>`;
-}
-function register(){
- let name=document.getElementById('rName').value.trim(), cell=document.getElementById('rCell').value.trim(), id=document.getElementById('rId').value.trim(), pass=document.getElementById('rPass').value.trim(), invite=document.getElementById('rInvite').value.trim();
- if(!name||!cell||!id||!pass) return alert('Fill all *');
- if(users.find(x=>x.cell===cell)) return alert('Cell already exists');
- let code='DMS'+Math.floor(1000+Math.random()*9000);
- let newUser={cell, name, id, pass, inviteCode:code, invitedBy:invite||null, wallets:{main:0,bonus:10,loyal:0}, activePackages:[], bank:{name:'Bank Zero',acc:''}};
- users.push(newUser);
- if(invite){
-   let inviter=users.find(u=>u.inviteCode===invite||u.cell===invite);
-   if(inviter){ inviter.wallets.bonus=(inviter.wallets.bonus||0)+INVITE_BONUS; txs.push({cell:inviter.cell,type:'bonus',wallet:'bonus',amount:INVITE_BONUS,fee:0,desc:`Invite bonus from ${cell}`,date:new Date().toISOString(),status:'completed'}); }
- }
- saveUsers(); localStorage.setItem('dms_txs',JSON.stringify(txs));
- alert('Registered! R10 bonus added. Login now.'); renderHome();
-}
-function login(){
- let cell=document.getElementById('lCell').value.trim(), pass=document.getElementById('lPass').value.trim();
- let u=users.find(x=>(x.cell===cell||x.id===cell)&&x.pass===pass);
- if(!u) return alert('Wrong credentials');
- currentUser=u; localStorage.setItem('dms_currentUser',JSON.stringify(u)); document.getElementById('userInfo').innerText=u.cell; renderNav(); renderHome();
-}
-function renderAdminLogin(){
- document.getElementById('app').innerHTML=`<div class="card"><h3>Admin Login</h3><input id="aCell" class="input" placeholder="Admin Cell"><input id="aPass" class="input" type="password" placeholder="Password (admin123)"><button class="btn btn-dark" onclick="adminLogin()">Login as Admin</button></div>`;
-}
-function adminLogin(){
- let cell=document.getElementById('aCell').value.trim(), pass=document.getElementById('aPass').value.trim();
- if(pass!=='admin123') return alert('Wrong admin password');
- isAdminMode=true; currentAdminCell=cell; localStorage.setItem('dms_currentAdmin',cell); renderNav(); renderAdminDash();
-}
-function logout(){ localStorage.removeItem('dms_currentUser'); localStorage.removeItem('dms_currentAdmin'); currentUser=null; isAdminMode=false; location.reload(); }
-function renderPackages(){
- setActive('renderPackages');
- let h='<div class="card"><h3>Choose Package</h3>';
- for(let k in PACKAGES){ let p=PACKAGES[k]; h+=`<div class="card" style="border:1px solid #27ae60"><b>${p.name}</b><br>Price: R${p.price} | Daily: R${p.daily} | Days: ${p.days}<br>Total Return: R${p.daily*p.days}<br><button class="btn" onclick="buyPackage('${k}')">Buy ${k}</button></div>`; }
- h+='</div>'; document.getElementById('app').innerHTML=h;
-}
-function buyPackage(k){
- let p=PACKAGES[k]; if(!currentUser) return alert('Login first');
- pendingAction={type:'buy',pkg:k};
- genOtp=Math.floor(100000+Math.random()*900000).toString();
- document.getElementById('otpEmail').innerText=currentUser.cell; document.getElementById('otpShow').innerText=genOtp; document.getElementById('otpOverlay').style.display='flex';
-}
-function confirmOtpAction(){
- let input=document.getElementById('otpInput').value.trim(); if(input!==genOtp){ document.getElementById('otpErr').innerText='Wrong OTP'; return; }
- if(pendingAction&&pendingAction.type==='buy'){
-   let k=pendingAction.pkg, p=PACKAGES[k];
-   if(currentUser.wallets.main<p.price && currentUser.wallets.bonus<p.price){ alert('Insufficient balance. Add funds or use bonus'); closeOtp(); return; }
-   // Deduct - try main first
-   if(currentUser.wallets.main>=p.price) currentUser.wallets.main-=p.price; else currentUser.wallets.bonus-=p.price;
-   let pkg={...p, pkgId:k, startDate:new Date().toISOString(), creditedDays:0, totalDays:p.days, completed:false};
-   currentUser.activePackages.push(pkg);
-   txs.push({cell:currentUser.cell,type:'purchase',wallet:'main',amount:p.price,fee:0,desc:`Bought ${p.name}`,date:new Date().toISOString(),status:'completed'});
-   saveCurrent(); localStorage.setItem('dms_txs',JSON.stringify(txs)); alert('Package bought! Daily credits started.');
- }
- if(pendingAction&&pendingAction.type==='withdraw'){
-   finalizeWithdraw();
- }
- closeOtp();
-}
-function closeOtp(){ document.getElementById('otpOverlay').style.display='none'; document.getElementById('otpInput').value=''; document.getElementById('otpErr').innerText=''; }function openWithdraw(wallet){
- if(!isWithdrawOpen()) return alert('Withdrawals open Mon-Sat 08:00-18:00 only!');
- document.getElementById('wWalletName').innerText=wallet;
- let bankName = currentUser.bank?.name||'Bank Zero';
- document.getElementById('wBankName').innerText=bankName;
- document.getElementById('wAccNum').value=currentUser.bank?.acc||'';
- document.getElementById('withdrawOverlay').style.display='flex';
- document.getElementById('wAmount').oninput=calcFee;
- calcFee();
-}
-function closeWithdraw(){ document.getElementById('withdrawOverlay').style.display='none'; }
-function calcFee(){
- let amt=parseFloat(document.getElementById('wAmount').value||0);
- let fee = amt*0.08; if(fee<5) fee=5;
- let net=amt-fee; if(amt===0) net=0;
- document.getElementById('wFeeText').innerText='R'+fee.toFixed(2)+' (8%)';
- document.getElementById('wNetText').innerText='R'+net.toFixed(2);
-}
-function requestWithdraw(){
- let amt=parseFloat(document.getElementById('wAmount').value||0);
- let acc=document.getElementById('wAccNum').value.trim();
- let wallet=document.getElementById('wWalletName').innerText;
- if(!acc) return document.getElementById('wErr').innerText='Enter Account Number';
- if(amt<MIN_WITHDRAW) return document.getElementById('wErr').innerText='Min R'+MIN_WITHDRAW;
- if(currentUser.wallets[wallet]<amt) return document.getElementById('wErr').innerText='Insufficient in '+wallet;
- currentUser.bank={name:'Bank Zero',acc:acc}; saveCurrent();
- pendingAction={type:'withdraw',wallet,amount:amt};
- genOtp=Math.floor(100000+Math.random()*900000).toString();
- document.getElementById('otpEmail').innerText=currentUser.cell; document.getElementById('otpShow').innerText=genOtp;
- closeWithdraw(); document.getElementById('otpOverlay').style.display='flex';
-}
-function finalizeWithdraw(){
- let {wallet,amount}=pendingAction;
- let fee=amount*0.08; if(fee<5) fee=5; let net=amount-fee;
- currentUser.wallets[wallet]-=amount;
- txs.push({cell:currentUser.cell,type:'withdraw',wallet,amount,fee,net,acc:currentUser.bank.acc,bank:'Bank Zero Branch 888000',desc:`Withdraw ${wallet}`,date:new Date().toISOString(),status:'pending'});
- localStorage.setItem('dms_txs',JSON.stringify(txs)); saveCurrent();
- alert('Withdraw Request Sent! Pending Admin Approval. You will receive R'+net.toFixed(2));
- pendingAction=null;
-}
-function renderWallets(){
- setActive('renderWallets'); runDailyCredits(currentUser);
- let u=currentUser;
- document.getElementById('app').innerHTML=`<div class="card"><h3>My Wallets</h3>
- <div class="wallet">Main: <b>${fmtR(u.wallets.main)}</b></div>
- <div class="wallet bonus">Bonus: <b>${fmtR(u.wallets.bonus)}</b></div>
- <div class="wallet loyal">Loyalty: <b>${fmtR(u.wallets.loyal)}</b></div>
- <p class="small">Bank: Bank Zero | Branch: 888000 | Acc: ${u.bank?.acc||'Not set'}</p></div>
- <div class="card"><h4>Active Packages</h4>${(u.activePackages||[]).map(p=>`<div style="border-bottom:1px solid #eee;padding:6px 0">${p.name} - Day ${p.creditedDays}/${p.totalDays} ${p.completed?'(Completed)':'(Active)'}</div>`).join('')||'No active package'}</div>`;
-}
-function renderTeam(){
- setActive('renderTeam');
- let myTeam=users.filter(x=>x.invitedBy===currentUser.inviteCode||x.invitedBy===currentUser.cell);
- document.getElementById('app').innerHTML=`<div class="card"><h3>My Team (${myTeam.length})</h3><p>Invite Code: <b>${currentUser.inviteCode}</b> | Link: devine-money-savings.vercel.app?ref=${currentUser.inviteCode}</p>
- <table><tr><th>Name</th><th>Cell</th><th>Date</th></tr>${myTeam.map(m=>`<tr><td>${m.name}</td><td>${m.cell}</td><td>${new Date(m.activePackages[0]?.startDate||Date.now()).toLocaleDateString()}</td></tr>`).join('')}</table></div>`;
-}
-function renderHistory(){
- setActive('renderHistory');
- let myTxs=txs.filter(t=>t.cell===currentUser.cell).reverse();
- document.getElementById('app').innerHTML=`<div class="card"><h3>Transaction History</h3><table><tr><th>Type</th><th>Amount</th><th>Status</th><th>Date</th></tr>${myTxs.map(t=>`<tr><td>${t.type}<br><span class="small">${t.desc}</span></td><td>${fmtR(t.amount)}<br><span class="small">Fee ${fmtR(t.fee||0)}</span></td><td>${t.status}</td><td>${new Date(t.date).toLocaleDateString()}</td></tr>`).join('')}</table></div>`;
-}
-function renderAdminDash(){
- setActive('renderAdminDash');
- let totalUsers=users.length, totalMain=users.reduce((a,b)=>a+(b.wallets?.main||0),0), pendingW=txs.filter(t=>t.type==='withdraw'&&t.status==='pending').length;
- document.getElementById('app').innerHTML=`<div class="card"><h3>Admin Dashboard</h3><p>Total Members: ${totalUsers}</p><p>Total Main Balance: ${fmtR(totalMain)}</p><p>Pending Withdrawals: ${pendingW}</p></div>`;
-}
-function renderAdminMembers(){
- setActive('renderAdminMembers');
- document.getElementById('app').innerHTML=`<div class="card"><h3>All Members (${users.length})</h3><table><tr><th>Name</th><th>Cell</th><th>Wallets</th><th>Action</th></tr>${users.map((u,i)=>`<tr><td>${u.name}<br><span class="small">${u.inviteCode}</span></td><td>${u.cell}</td><td>Main:${fmtR(u.wallets.main)}<br>Bonus:${fmtR(u.wallets.bonus)}</td><td><button onclick="deleteUser(${i})" style="background:red;color:#fff;border:none;padding:4px 8px;border-radius:4px">Del</button></td></tr>`).join('')}</table></div>`;
-}
-function deleteUser(i){ if(confirm('Delete?')){ users.splice(i,1); saveUsers(); renderAdminMembers(); } }
-function renderAdminWithdraw(){
- setActive('renderAdminWithdraw');
- let pend=txs.filter(t=>t.type==='withdraw'&&t.status==='pending');
- document.getElementById('app').innerHTML=`<div class="card"><h3>Pending Withdrawals (${pend.length})</h3><table><tr><th>User</th><th>Amount</th><th>Bank</th><th>Action</th></tr>${pend.map((t,idx)=>{let realIdx=txs.indexOf(t); return `<tr><td>${t.cell}<br>${t.wallet}</td><td>${fmtR(t.amount)} Fee:${fmtR(t.fee)} Net:${fmtR(t.net)}</td><td>${t.bank}<br>${t.acc}</td><td><button onclick="approveW(${realIdx})" style="background:green;color:#fff;border:none;padding:4px 8px;border-radius:4px">Approve</button> <button onclick="rejectW(${realIdx})" style="background:red;color:#fff;border:none;padding:4px 8px;border-radius:4px">Reject</button></td></tr>`}).join('')}</table></div>`;
-}
-function approveW(i){ txs[i].status='approved'; localStorage.setItem('dms_txs',JSON.stringify(txs)); alert('Approved!'); renderAdminWithdraw(); }
-function rejectW(i){ let amt=txs[i].amount; let u=users.find(x=>x.cell===txs[i].cell); if(u){ u.wallets[txs[i].wallet]+=amt; saveUsers(); } txs[i].status='rejected'; localStorage.setItem('dms_txs',JSON.stringify(txs)); alert('Rejected & refunded'); renderAdminWithdraw(); }
-function renderAdminTx(){
- setActive('renderAdminTx');
- document.getElementById('app').innerHTML=`<div class="card"><h3>All Transactions (${txs.length})</h3><table><tr><th>User</th><th>Type</th><th>Amount</th><th>Status</th></tr>${txs.slice(-100).reverse().map(t=>`<tr><td>${t.cell}</td><td>${t.type}</td><td>${fmtR(t.amount)}</td><td>${t.status}</td></tr>`).join('')}</table></div>`;
-}
-// INIT
-(function(){
- if(currentUser){ document.getElementById('userInfo').innerText=currentUser.cell; }
- renderNav();
- if(isAdminMode) renderAdminDash(); else renderHome();
-})();
-</script>
-</body>
-</html>
-function saveCurrent(){ localStorage.setItem('dms_currentUser',JSON.stringify(currentUser)); saveUsers(); }
+ <input id="rName" class="input" placeholder="Full Name *">
+ <input id="rCell" class="input" placeholder="Cellphone *">
+ <input id="rEmail" class="input" placeholder="Email *">
+ <select id="rProvince" class="input"><option value="">Select Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select>
+ <select id="rGender" class="input"><option value="">
