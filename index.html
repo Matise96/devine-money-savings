@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Devine Money Savings</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:sans-serif}
+body{background:#080f18;color:white}
+.header{padding:24px 20px 8px}
+.header h1{font-size:32px;font-weight:800}
+.header p{color:#8a9bb0;margin-top:6px;font-size:14px}
+.grid{padding:16px;display:flex;flex-direction:column;gap:16px;max-width:480px;margin:0 auto}
+.card{background:#111c27;border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:20px}
+.badge{color:#3de68c;font-size:12px;font-weight:700}
+.price{font-size:44px;font-weight:800;margin:6px 0 12px}
+.line{display:flex;gap:10px;font-size:14px;margin:8px 0}
+.dot{width:22px;height:22px;background:#3de68c;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#080f18;font-weight:800;font-size:12px}
+.btn{margin-top:16px;width:100%;background:#3de68c;color:#080f18;border:none;padding:14px;border-radius:999px;font-weight:800;font-size:15px;cursor:pointer}
+.popup{position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:999;padding:20px}
+.popup.show{display:flex}
+.box{background:#111c27;border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:24px;width:100%;max-width:360px;text-align:center}
+.box h3{font-size:20px;margin-bottom:10px}
+.box p{color:#8a9bb0;font-size:14px;line-height:1.5;margin-bottom:20px}
+.row{display:flex;gap:12px}
+.yes{flex:1;background:#3de68c;color:#080f18;border:none;padding:12px;border-radius:999px;font-weight:800;cursor:pointer}
+.no{flex:1;background:#ff4d4d;color:white;border:none;padding:12px;border-radius:999px;font-weight:800;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="header"><h1>Financial Packages</h1><p>Choose your plan & start earning daily cashback</p></div>
+<div class="grid">
+<div class="card"><div class="badge">PACKAGE A</div><div class="price">R160</div><div class="line"><div class="dot">✓</div> R10 daily cashback</div><div class="line"><div class="dot">✓</div> Earliest withdrawal: 7 days</div><button class="btn" onclick="openWithdraw()">Register to buy</button></div>
+<div class="card"><div class="badge">PACKAGE B</div><div class="price">R250</div><div class="line"><div class="dot">✓</div> R10 daily cashback</div><div class="line"><div class="dot">✓</div> Earliest withdrawal: 7 days</div><button class="btn" onclick="openWithdraw()">Register to buy</button></div>
+<div class="card"><div class="badge">PACKAGE C</div><div class="price">R340</div><div class="line"><div class="dot">✓</div> R10 daily cashback</div><div class="line"><div class="dot">✓</div> Earliest withdrawal: 7 days</div><button class="btn" onclick="openWithdraw()">Register to buy</button></div>
+<div class="card"><div class="badge">PACKAGE D</div><div class="price">R430</div><div class="line"><div class="dot">✓</div> R35 daily cashback</div><div class="line"><div class="dot">✓</div> Earliest withdrawal: 2 days</div><button class="btn" onclick="openWithdraw()">Register to buy</button></div>
+<div class="card"><div class="badge">PACKAGE E</div><div class="price">R520</div><div class="line"><div class="dot">✓</div> R70 daily cashback</div><div class="line"><div class="dot">✓</div> Earliest withdrawal: 24 hrs / 1 day</div><button class="btn" onclick="openWithdraw()">Register to buy</button></div>
+</div>
+
+<!-- WITHDRAWAL FEE POPUP -->
+<div id="withdrawPopup" class="popup">
+<div class="box">
+<h3>Withdrawal Notice</h3>
+<p>Please note that all withdrawals carry a <b style="color:white">25% withdrawal fee</b>. Do you consent to proceed?</p>
+<div class="row">
+<button class="yes" onclick="consentYes()">Yes, I Consent</button>
+<button class="no" onclick="closeWithdraw()">No</button>
+</div>
+</div>
+</div>
+
+<script>
+function openWithdraw(){document.getElementById('withdrawPopup').classList.add('show')}
+function closeWithdraw(){document.getElementById('withdrawPopup').classList.remove('show')}
+function consentYes(){closeWithdraw(); alert('Thank you! You can now proceed to register/withdraw.')}
+</script>
+</body>
+</html>
