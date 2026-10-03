@@ -2,41 +2,82 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DMS96 Deposit</title>
+<title>DMS - Deposit</title>
 <style>
-body{font-family:sans-serif;text-align:center;padding:20px;background:#f5f5f5}
-input{padding:12px;margin:5px;width:80%;border-radius:8px;border:1px solid #ccc}
-button{padding:12px 25px;background:#00a651;color:white;border:none;border-radius:8px;margin-top:10px;font-weight:bold}
-#msg{margin-top:15px;color:green;font-weight:bold}
+body{background:#111;color:#fff;font-family:Arial,sans-serif;margin:0;padding:0}
+.header{background:#000;padding:12px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #d4af37}
+.header h1{color:#d4af37;font-size:16px;margin:0}
+.logout{background:#e53935;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:bold}
+.card{margin:20px;border:1px solid #d4af37;border-radius:16px;padding:18px;background:#1a1a1a}
+h2{color:#d4af37}
+.bank-box{background:#000;border:1px solid #d4af37;border-radius:12px;padding:14px;margin:15px 0;text-align:left;line-height:1.8}
+.bank-box b{color:#d4af37}
+.note{font-size:13px;color:#ccc;margin:8px 0}
+.green{color:#4caf50;font-weight:bold}
+.btn-gold{background:#d4af37;color:#000;border:none;padding:12px 20px;border-radius:8px;font-weight:bold;width:100%;margin-top:10px}
+input{width:95%;padding:12px;border-radius:8px;border:1px solid #d4af37;background:#000;color:#fff;margin:5px 0}
+.whatsapp{background:#25D366;color:#fff}
 </style>
 </head>
 <body>
-<h2>💰 DMS96 Deposit</h2>
-<input id="userId" placeholder="User ID e.g. user123">
-<input id="amount" type="number" placeholder="Amount R100">
+
+<div class="header">
+<h1>DMS - Devine Money Savings</h1>
+<button class="logout" onclick="location.href='index.html'">Home</button>
+</div>
+
+<div class="card">
+<h2>💰 DEPOSIT FUNDS</h2>
+
+<div class="bank-box">
+<b>BANK ZERO</b><br>
+ACCOUNT NO : <b style="color:white">8020 5598 418</b><br>
+BRANCH CODE: <b style="color:white">888000</b><br>
+SWIFT CODE : <b style="color:white">ZERMZAJJ</b><br>
 <br>
-<button id="btn">DEPOSIT NOW</button>
+<span class="note">(We recommend Payshap and Immediate payment to avoid delays)</span>
+</div>
+
+<div class="bank-box">
+<b>FOR CASHSEND;</b><br><br>
+WE ONLY ACCEPT (NEDBANK, ABSA, STANDARD BANK & FNB)<br><br>
+<span class="note">(Please send proof of payment to our WhatsApp channel to avoid fraud)</span>
+</div>
+
+<p class="note"><b>NB:</b> Users are urged to use the payment method that is easy and convenient for them.</p>
+
+<hr style="border-color:#d4af37;margin:20px 0">
+
+<h3 style="color:#d4af37">Confirm Your Deposit</h3>
+<input id="cell" placeholder="Your Cell e.g. 0796330451">
+<input id="amount" type="number" placeholder="Amount Deposited e.g. 500">
+<input id="ref" placeholder="Payment Reference / Name">
+<button class="btn-gold" id="saveBtn">I HAVE PAID - SUBMIT</button>
+<button class="btn-gold whatsapp" onclick="window.open('https://wa.me/27796330451?text=Hi%20DMS96%20I%20have%20made%20a%20deposit%20please%20verify','_blank')">📲 Send POP on WhatsApp</button>
 <p id="msg"></p>
+</div>
 
 <script type="module">
 import { db } from './firebase-config.js';
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-document.getElementById('btn').onclick=async()=>{
-  const amt=document.getElementById('amount').value;
-  const uid=document.getElementById('userId').value||"test_user_"+Date.now();
-  if(!amt){alert("Enter amount");return;}
-  document.getElementById('msg').innerText="Saving to Firestore...";
+document.getElementById('saveBtn').onclick = async () => {
+  const cell = document.getElementById('cell').value;
+  const amount = document.getElementById('amount').value;
+  const ref = document.getElementById('ref').value;
+  if(!cell || !amount){alert("Enter cell and amount");return;}
+  document.getElementById('msg').innerText="Saving...";
   try{
     await addDoc(collection(db,"deposits"),{
-      userId:uid,
-      amount:Number(amt),
-      status:"pending",
-      createdAt:serverTimestamp()
+      cell, amount: Number(amount), reference: ref,
+      method: "BANK ZERO / CASHSEND",
+      status: "pending",
+      createdAt: serverTimestamp()
     });
-    document.getElementById('msg').innerText="✅ R"+amt+" Saved! Check Firebase Console";
-  }catch(e){document.getElementById('msg').innerText="❌ Error: "+e.message}
+    document.getElementById('msg').innerHTML="<span class='green'>✅ Deposit R"+amount+" recorded! Please send POP on WhatsApp for fast approval.</span>";
+  }catch(e){document.getElementById('msg').innerText="Error: "+e.message}
 }
 </script>
+
 </body>
 </html>
