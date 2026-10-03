@@ -14,59 +14,46 @@ function doRegister(){var n=document.getElementById("rN").value.trim(),c=documen
 function doLogin(){var c=document.getElementById("lC").value.trim(),p=document.getElementById("lP").value.trim();if(c==="0510011039"&&p==="Tiisetso#96"){cur={cell:"ADMIN"};save();goAdmin();return;}for(var i=0;i<users.length;i++){if(users[i].cell===c&&users[i].pass===p){ensureWallets(users[i]);cur={cell:users[i].cell};save();goHome();return;}}alert("Wrong");}
 function adminLogin(){var c=document.getElementById("aC").value.trim(),p=document.getElementById("aP").value.trim();if(c==="0510011039"&&p==="Tiisetso#96"){cur={cell:"ADMIN"};save();goAdmin();}else{alert("Wrong");}}
 function goPackages(){setActive("bP");checkLogout();var h='<div class="card"><h3 class="gold">Packages</h3>';for(var i=0;i<PKGS.length;i++){var pk=PKGS[i];h+='<div class="pkg"><span class="badge">'+pk.name+'</span> <b style="float:right">R'+pk.price+'</b><br><br><b>R'+pk.price+' > R'+pk.daily+' daily</b><br><span class="small">'+pk.desc+'</span><br><br><button class="btn2" onclick="buyPkg('+i+')">Buy '+pk.name+'</button></div>';}h+='</div>';document.getElementById("app").innerHTML=h;}
- function buyPkg(i){var u=getUser();if(!u){alert("Login first");return;}var price=PKGS[i].price||160;var b1=u.w.main||0;var b2=u.w.ref||0;var b3=u.w.bonus||0;if(Math.max(b1,b2,b3)<price){alert("Insufficient funds / Not enough funds. Deposit to purchase.\nMain: R"+b1+" Referral: R"+b2+" Bonus: R"+b3+"\nNeed R"+price);return;}
-  pkgPrice = pkgPrice || 160; // Minimum R160 for Package A
-  // Get 3 wallets - try localStorage and page
-  let w1 = parseFloat(localStorage.getItem('wallet_main') || localStorage.getItem('mainBalance') || document.getElementById('mainWallet')?.innerText?.replace('R','') || 0) || 0;
-  let w2 = parseFloat(localStorage.getItem('wallet_referral') || localStorage.getItem('referralBalance') || document.getElementById('referralWallet')?.innerText?.replace('R','') || 0) || 0;
-  let w3 = parseFloat(localStorage.getItem('wallet_income') || localStorage.getItem('incomeBalance') || document.getElementById('incomeWallet')?.innerText?.replace('R','') || 0) || 0;
 
-  // If no localStorage, check all wallet elements containing R
-  if(w1==0 && w2==0 && w3==0){
-    let vals = [...document.querySelectorAll('[class*=wallet]')].map(e=>parseFloat(e.innerText.replace(/[^0-9.]/g,''))||0).filter(v=>v>=0);
-    if(vals.length>=3){ w1=vals[0]; w2=vals[1]; w3=vals[2]; }
-  }
+function buyPkg(i){
+  var u=getUser();if(!u){alert("Login first");return;}
+  var pkg=PKGS[i];
+  var price=pkg.price||160;
+  var b1=u.w.main||0;
+  var b2=u.w.inviter||0;
+  var b3=u.w.loyalty||0;
+  var maxBal=Math.max(b1,b2,b3);
 
-  let maxBal = Math.max(w1,w2,w3);
-
-  // R0 - R159 = Block
-  if(maxBal < pkgPrice){
-    alert("Insufficient funds / Not enough funds. Deposit to purchase.\n\nYour balances:\nMain: R"+w1+"\nReferral: R"+w2+"\nIncome: R"+w3+"\n\nMinimum required: R"+pkgPrice+"\nPlease deposit first via Deposit page (BANK ZERO 8020 5598 418)");
+  if(maxBal < price){
+    alert("Insufficient funds / Not enough funds. Deposit to purchase.\n\nMain: R"+b1.toFixed(2)+"\nInviter: R"+b2.toFixed(2)+"\nLoyalty: R"+b3.toFixed(2)+"\n\nNeed R"+price+" for "+pkg.name+"\nPlease deposit via Deposit page.");
     return;
   }
 
-  // R160+ = Let them CHOOSE wallet
-  let choice = prompt(
-    "You have enough funds!\n\nMain Wallet: R"+w1+"\nReferral Wallet: R"+w2+"\nIncome Wallet: R"+w3+"\n\nWhich wallet to buy "+pkgName+" (R"+pkgPrice+") from?\n\nType: 1 = Main, 2 = Referral, 3 = Income"
-  );
+  var choice=prompt("You have enough funds!\n\n1 = Main Wallet: R"+b1.toFixed(2)+"\n2 = Inviter Bonus: R"+b2.toFixed(2)+"\n3 = Loyalty Bonus: R"+b3.toFixed(2)+"\n\nWhich wallet to buy "+pkg.name+" (R"+price+") from?\nType 1, 2 or 3");
+  if(choice==null)return;
 
-  if(choice==null) return; // cancelled
+  var bal=0;var key="";
+  if(choice=="1"){bal=b1;key="main";}
+  else if(choice=="2"){bal=b2;key="inviter";}
+  else if(choice=="3"){bal=b3;key="loyalty";}
+  else{alert("Invalid choice. Type 1,2,3 only.");return;}
 
-  let selectedBal = 0;
-  let walletName = "";
-  let walletKey = "";
-
-  if(choice=="1"){ selectedBal=w1; walletName="Main Wallet"; walletKey="wallet_main"; }
-  else if(choice=="2"){ selectedBal=w2; walletName="Referral Wallet"; walletKey="wallet_referral"; }
-  else if(choice=="3"){ selectedBal=w3; walletName="Income Wallet"; walletKey="wallet_income"; }
-  else { alert("Invalid choice. Please type 1, 2 or 3."); return; }
-
-  if(selectedBal < pkgPrice){
-    alert("Not enough funds in "+walletName+" (R"+selectedBal+"). You need R"+pkgPrice+". Try another wallet or deposit.");
+  if(bal < price){
+    alert("Not enough in selected wallet. Need R"+price+" but have R"+bal.toFixed(2));
     return;
   }
 
-  // Deduct
-  let newBal = selectedBal - pkgPrice;
-  localStorage.setItem(walletKey, newBal);
-  // Also try generic keys
-  if(walletKey=="wallet_main") localStorage.setItem('mainBalance', newBal);
-  if(walletKey=="wallet_referral") localStorage.setItem('referralBalance', newBal);
-  if(walletKey=="wallet_income") localStorage.setItem('incomeBalance', newBal);
+  if(key=="main")u.w.main-=price;
+  if(key=="inviter")u.w.inviter-=price;
+  if(key=="loyalty")u.w.loyalty-=price;
 
-  alert("Success! Package "+pkgName+" bought from "+walletName+" for R"+pkgPrice+"!\nNew "+walletName+" balance: R"+newBal+"\nGo to Wallets to claim daily.");
-  location.reload();
-  }! Track it in 24hrs.");goWallets();}
+  u.pkgs.push({id:pkg.id,price:price,daily:pkg.daily,earliest:pkg.earliest,boughtAt:new Date().toISOString(),lastClaim:null,totalEarned:0,done:false});
+  txs.push({cell:u.cell,type:"buy",amount:price,fee:0,note:"Bought "+pkg.name+" from "+key+" wallet",date:new Date().toISOString(),status:"done",wallet:key});
+  save();
+  alert("Success! "+pkg.name+" bought from "+key+" wallet for R"+price+". Go to Wallets to claim daily.");
+  goWallets();
+}
+
 function goWallets(){setActive("bW");var u=getUser();if(!u){document.getElementById("app").innerHTML="<div class=card>Login</div>";return;}checkLogout();var h='<div class="card"><h3 class="gold">Wallets</h3>';h+='<div class="walletBox">Main Wallet: <b>R'+u.w.main.toFixed(2)+'</b> <button class="btn2" onclick="doWithdraw()">Withdraw</button></div>';h+='<div class="walletBox">Inviter Bonus: <b>R'+u.w.inviter.toFixed(2)+'</b> <button class="btn2" onclick="doWithdraw()">Withdraw</button></div>';h+='<div class="walletBox">Loyalty Bonus: <b>R'+u.w.loyalty.toFixed(2)+'</b> <button class="btn2" onclick="doWithdraw()">Withdraw</button></div>';h+='<hr><h4 class="gold">My Packages ('+u.pkgs.length+')</h4>';if(u.pkgs.length===0){h+="<p class=small>No packages. Buy one.</p>";}else{for(var i=0;i<u.pkgs.length;i++){var p=u.pkgs[i];var bought=new Date(p.boughtAt);var diffDays=Math.floor((new Date()-bought)/(1000*60*60*24));var canClaim=false;var msg="";if(p.done){msg="Completed";}else if(diffDays < p.earliest){msg="Earliest in "+(p.earliest-diffDays)+" day(s)";}else{var last=p.lastClaim?new Date(p.lastClaim):null;if(!last|| (new Date()-last) >= 24*60*60*1000){canClaim=true;msg="Ready to claim R"+p.daily;}else{msg="Come back tomorrow";}}h+='<div class="pkg"><span class="badge">'+p.id+'</span> R'+p.price+' -> R'+p.daily+'/day | Earned R'+p.totalEarned+'<br><span class="small">Bought '+bought.toLocaleDateString()+' - '+msg+'</span><br>';if(canClaim){h+='<button class="btn2" onclick="claimPkg('+i+')">Claim R'+p.daily+'</button>';}h+='</div>';}}h+='</div>';document.getElementById("app").innerHTML=h;}
 function claimPkg(idx){var u=getUser();if(!u)return;var p=u.pkgs[idx];if(!p||p.done)return;var bought=new Date(p.boughtAt);var diffDays=Math.floor((new Date()-bought)/(1000*60*60*24));if(diffDays < p.earliest){alert("Earliest withdrawal in "+(p.earliest-diffDays)+" days");return;}var last=p.lastClaim?new Date(p.lastClaim):null;if(last && (new Date()-last) < 24*60*60*1000){alert("Come back tomorrow");return;}var earned=p.daily;p.totalEarned+=earned;if(p.totalEarned>=p.price*2){p.done=true;}p.lastClaim=new Date().toISOString();if(earned===0){return doWithdraw();}u.w.main+=earned;txs.push({cell:u.cell,type:"earn",amount:earned,fee:0,note:"Daily from "+p.id,date:new Date().toISOString(),status:"done"});save();goWallets();}
 function doWithdraw(){var u=getUser();if(!u){alert("Login first");return;}var w=prompt("Choose wallet to withdraw from:\n1 = Main Wallet (R"+(u.w.main||0).toFixed(2)+")\n2 = Inviter Bonus Wallet (R"+(u.w.inviter||0).toFixed(2)+")\n3 = Loyalty Bonus Wallet (R"+(u.w.loyalty||0).toFixed(2)+")\n\nType 1, 2 or 3");if(!w)return;var bal=0;var wName="";var wKey="";if(w=="1"){bal=u.w.main||0;wName="Main";wKey="main";}else if(w=="2"){bal=u.w.inviter||0;wName="Inviter Bonus";wKey="inviter";}else if(w=="3"){bal=u.w.loyalty||0;wName="Loyalty";wKey="loyalty";}else{alert("Invalid choice");return;}if(bal<=0){alert("Insufficient funds");return;}if(bal<70){alert("Minimum withdrawal is R70");return;}if(!u.bank||!u.bank.acc){alert("Please upload your banking details first");return goBankForm(wKey);}if(!u.bank.approved){alert("Your banking details are pending admin approval. Please wait.");return;}var amtStr=prompt("Withdraw from "+wName+" (Available R"+bal.toFixed(2)+")\nEnter amount (Min R70):");if(!amtStr)return;var amt=parseFloat(amtStr);if(isNaN(amt)||amt<70){alert("Minimum withdrawal is R70");return;}if(amt>bal){alert("Insufficient funds");return;}var fee=amt*0.1;if(wKey==="main")u.w.main-=amt;if(wKey==="inviter")u.w.inviter-=amt;if(wKey==="loyalty")u.w.loyalty-=amt;txs.push({cell:u.cell,type:"withdraw",wallet:wKey,amount:amt,fee:fee,note:"Withdraw from "+wName,status:"pending",date:new Date().toISOString()});save();alert("Withdrawal request of R"+amt+" from "+wName+" submitted! You will receive R"+(amt-fee).toFixed(2)+" after fee. Awaiting admin.");goWallets();}
