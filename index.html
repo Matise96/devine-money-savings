@@ -59,8 +59,6 @@ function buyPkg(i){
   if(tryGiveInviterBonus(u)){alert("Success! "+pkg.name+" bought - Inviter R10 bonus triggered!");} else {alert("Success! "+pkg.name+" bought");}
   goActivePackages();
 }
-
-// NEW ACTIVE PACKAGES PAGE
 function goActivePackages(){
   setActive("bAP");var u=getUser();if(!u){document.getElementById("app").innerHTML="<div class=card>Login first</div>";return;}checkLogout();
   var activePkgs=u.pkgs.filter(p=>!p.done);
@@ -71,18 +69,10 @@ function goActivePackages(){
     var p=u.pkgs[i];
     var bought=new Date(p.boughtAt);
     var boughtStr=bought.toLocaleString();
-    // Calculate next 08:00 AM after 24hrs
-    var nextCredit=new Date(bought);
-    nextCredit.setDate(nextCredit.getDate()+1);
-    nextCredit.setHours(8,0,0,0);
-    // If already past earliest and 24h passed, next is tomorrow 08:00 or today 08:00 if claimable
-    var now=new Date();
-    var diffMs=now - bought;
-    var diffDays=Math.floor(diffMs/(1000*60*60*24));
+    var nextCredit=new Date(bought);nextCredit.setDate(nextCredit.getDate()+1);nextCredit.setHours(8,0,0,0);
+    var now=new Date();var diffMs=now - bought;var diffDays=Math.floor(diffMs/(1000*60*60*24));
     var isEligibleForDaily=diffDays>=1;
-    var canClaimNow=false;
-    var statusText="";
-    var statusColor="#aaa";
+    var canClaimNow=false;var statusText="";var statusColor="#aaa";
     if(p.done){statusText="✅ COMPLETED";statusColor="#aaa";}
     else if(diffDays<p.earliest){statusText="⏳ Waiting - earliest withdrawal in "+(p.earliest-diffDays)+" day(s)";statusColor="orange";}
     else {
@@ -90,14 +80,11 @@ function goActivePackages(){
       if(!last||(now-last)>=24*60*60*1000){canClaimNow=true;statusText="✅ READY TO CLAIM NOW";statusColor="#2ee89e";}
       else{statusText="Already claimed today - next tomorrow 08:00 AM";statusColor="#d4af37";}
     }
-    // Next credit time logic: if not yet 24h, show nextCredit, else show tomorrow 08:00
     var displayNextCredit="";
     if(p.done){displayNextCredit="Package completed - no more credits";}
-    else if(!isEligibleForDaily){
-      displayNextCredit=nextCredit.toLocaleString()+" (First credit - 24hrs after purchase at 08:00 AM)";
-    } else {
+    else if(!isEligibleForDaily){displayNextCredit=nextCredit.toLocaleString()+" (First credit - 24hrs after purchase at 08:00 AM)";}
+    else {
       var tomorrow8am=new Date();tomorrow8am.setDate(tomorrow8am.getDate()+1);tomorrow8am.setHours(8,0,0,0);
-      var today8am=new Date();today8am.setHours(8,0,0,0);
       if(canClaimNow){displayNextCredit="Today at 08:00 AM - CLAIM NOW! (Main wallet)";}
       else{displayNextCredit=tomorrow8am.toLocaleString()+" (Daily at 08:00 AM sharp)";}
     }
@@ -107,7 +94,7 @@ function goActivePackages(){
       '<div style="display:flex;justify-content:space-between;align-items:center"><span class="badge">'+fullNameStr+'</span><span style="color:'+statusColor+';font-weight:800;font-size:12px">'+statusText+'</span></div>'+
       '<div style="margin-top:10px"><b style="color:#fff">Price: R'+p.price+'</b> → <b style="color:#2ee89e">R'+p.daily+' daily</b></div>'+
       '<div class="small" style="margin-top:8px">📅 Bought: <b style="color:#fff">'+boughtStr+'</b></div>'+
-      '<div class="small">💰 Total Earned: <b style="color:#2ee89e">R'+p.totalEarned+'</b> / R'+(p.price*2)+' (Max)</div>'+
+      '<div class="small">💰 Total Earned: <b style="color:#2ee89e">R'+p.totalEarned+'</b></div>'+
       '<div class="small">📊 Status: '+(p.done?'Completed':'Active')+' | Earliest: '+p.earliest+' day(s)</div>'+
       '<div style="margin-top:10px"><div class="small">⏰ Next Daily Credit:</div><div class="nextCredit">🕗 '+displayNextCredit+'</div></div>'+
       (canClaimNow &&!p.done?'<div style="margin-top:12px"><button class="btn" onclick="claimPkgFromActive('+i+')" style="background:#2ee89e">CLAIM R'+p.daily+' NOW → Main Wallet</button></div>':'')+
@@ -125,7 +112,6 @@ function claimPkgFromActive(idx){
   var earned=p.daily;p.totalEarned+=earned;if(p.totalEarned>=p.price*2)p.done=true;p.lastClaim=new Date().toISOString();u.w.main+=earned;
   txs.push({cell:u.cell,type:"earn",amount:earned,fee:0,note:"Daily from "+p.id+" claimed at 08:00 AM cycle",date:new Date().toISOString(),status:"approved"});save();alert("✅ R"+earned+" credited to Main Wallet! Next credit tomorrow 08:00 AM sharp");goActivePackages();
 }
-
 function goWallets(){setActive("bW");var u=getUser();if(!u){document.getElementById("app").innerHTML="<div class=card>Login</div>";return;}checkLogout();var bankInfo="";if(!u.bank){bankInfo='<div style="padding:8px;border:1px dashed #d4af37;border-radius:8px;margin:8px 0;background:#111"><span class="small">No banking details saved yet. You will be asked once on first withdrawal.</span></div>';}else{bankInfo='<div style="padding:8px;border:1px solid '+(u.bank.approved?"lightgreen":"orange") +';border-radius:8px;margin:8px 0;background:#111"><b>Bank Saved:</b> '+(u.bank.bankName||"")+' - '+(u.bank.acc||"")+'<br><b>Holder:</b> '+(u.bank.holder||"")+'<br><b>Status:</b> '+(u.bank.approved?'<span style="color:lightgreen">APPROVED ✓</span>':'<span style="color:orange">PENDING APPROVAL</span>')+'<br><button class="btn2" style="margin-top:6px" onclick="goBankForm()">Edit Bank Details</button></div>';}var activeCount=u.pkgs.filter(p=>!p.done).length;var h='<div class="card"><h3 class="gold">Wallets</h3>'+bankInfo;h+='<button class="btn" onclick="goActivePackages()" style="background:#0f2a22;color:#2ee89e;border:1px solid #2ee89e;margin-bottom:12px">📦 View Active Packages ('+activeCount+' active) - 08:00 AM Daily</button>';h+='<div class="walletBox">Main: <b>R'+u.w.main.toFixed(2)+'</b> <button class="btn2" onclick="doWithdraw()">Withdraw</button></div><div class="walletBox">Inviter: <b>R'+u.w.inviter.toFixed(2)+'</b> <button class="btn2" onclick="doWithdraw()">Withdraw</button></div><div class="walletBox">Loyalty: <b>R'+u.w.loyalty.toFixed(2)+'</b> <button class="btn2" onclick="doWithdraw()">Withdraw</button></div></div>';document.getElementById("app").innerHTML=h;}
 function claimPkg(idx){var u=getUser();if(!u)return;var p=u.pkgs[idx];if(!p||p.done)return;var diffDays=Math.floor((new Date()-new Date(p.boughtAt))/(1000*60*60*24));if(diffDays<p.earliest){alert("Earliest in "+(p.earliest-diffDays));return;}var last=p.lastClaim?new Date(p.lastClaim):null;if(last&&(new Date()-last)<24*60*60*1000){alert("Tomorrow 08:00 AM");return;}var earned=p.daily;p.totalEarned+=earned;if(p.totalEarned>=p.price*2)p.done=true;p.lastClaim=new Date().toISOString();u.w.main+=earned;txs.push({cell:u.cell,type:"earn",amount:earned,fee:0,note:"Daily from "+p.id,date:new Date().toISOString(),status:"approved"});save();goActivePackages();}
 function doWithdraw(){var u=getUser();if(!u){alert("Login");return;}var w=prompt("Choose wallet:\n1=Main R"+(u.w.main||0).toFixed(2)+"\n2=Inviter R"+(u.w.inviter||0).toFixed(2)+"\n3=Loyalty R"+(u.w.loyalty||0).toFixed(2));if(!w)return;var bal=0,wName="",wKey="";if(w=="1"){bal=u.w.main;wName="Main";wKey="main";}else if(w=="2"){bal=u.w.inviter;wName="Inviter";wKey="inviter";}else if(w=="3"){bal=u.w.loyalty;wName="Loyalty";wKey="loyalty";}else{alert("Invalid");return;}if(bal<70){alert("Min R70");return;}if(wKey==="main"){if(bal>=160){if(!u.pkgs||u.pkgs.length===0){alert("Purchase a package first to withdraw");return;}var totalSpent=0;for(var sp=0;sp<u.pkgs.length;sp++){totalSpent+=u.pkgs[sp].price||0;}var totalDeposited=bal+totalSpent;var needed=Math.floor(totalDeposited/160);if(u.pkgs.length<needed){var needMore=needed-u.pkgs.length;alert("Every R160 must buy a package. You deposited ~R"+totalDeposited.toFixed(0)+" which needs "+needed+" package(s). You have "+u.pkgs.length+". Buy "+needMore+" more package(s) first.");return;}var free=bal%160;if(free<70&&bal>=160){if(bal%160===0){alert("Main has R"+bal.toFixed(0)+". Every R160 must buy a package. Buy package first.");}else{alert("Main R"+bal.toFixed(0)+". Free only R"+free.toFixed(0)+" (<R70). Buy package.");}return;}}}if(!u.bank){alert("Upload banking - one time");return goBankForm();}if(!u.bank.approved){alert("Bank saved, pending approval - will not ask again");return;}var amtStr=prompt("Withdraw "+wName+" R"+bal.toFixed(2)+"\nBank: "+u.bank.bankName+" "+u.bank.acc+"\n"+(wKey==="main"&&bal>=160?"FREE max: R"+(bal%160).toFixed(2)+"\n":"")+"Amount:");if(!amtStr)return;var amt=parseFloat(amtStr);if(isNaN(amt)||amt<70||amt>bal){alert("Invalid");return;}if(wKey==="main"&&bal>=160){var free2=bal%160;if(amt>free2){alert("Cannot withdraw R"+amt+". Max free is R"+free2.toFixed(2)+".");return;}}var fee=amt*0.25;if(wKey=="main")u.w.main-=amt;if(wKey=="inviter")u.w.inviter-=amt;if(wKey=="loyalty")u.w.loyalty-=amt;txs.push({cell:u.cell,type:"withdraw",wallet:wKey,amount:amt,fee:fee,note:"Withdraw from "+wName+" to "+u.bank.bankName+" "+u.bank.acc,status:"pending",date:new Date().toISOString()});save();alert("Request R"+amt+" - 25% fee submitted");goWallets();}
