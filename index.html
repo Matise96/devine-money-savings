@@ -56,7 +56,6 @@ function autoCreditAll(){
         if(daysSinceLast > 1) daysToCredit = daysSinceLast;
         if(daysToCredit > 10) daysToCredit = 10;
       } else {
-        // First credit after purchase - calculate missed days after earliest
         var daysSinceBought = Math.floor((today8am - bought)/(1000*60*60*24));
         if(daysSinceBought > p.earliest) {
           daysToCredit = daysSinceBought - p.earliest + 1;
@@ -78,14 +77,11 @@ function autoCreditAll(){
   if(totalCredited>0) save();
   return totalCredited;
 }
-// RUN AUTO-CREDIT IMMEDIATELY ON LOAD - FOR ALL USERS
 try{ autoCreditAll(); }catch(e){}
-// CHECK EVERY 60 SECONDS - SO IF PAGE LEFT OPEN, IT WILL AUTO-CREDIT AT EXACTLY 08:00
 setInterval(function(){
   var credited = autoCreditAll();
   if(credited>0){
     console.log("AUTO CREDITED R"+credited+" at 08:00 AM for all users");
-    // If user is on active packages page, refresh it
     try{ if(document.getElementById("bAP") && document.getElementById("bAP").classList.contains("active")){ goActivePackages(); } }catch(e){}
   }
 }, 60000);
@@ -124,8 +120,8 @@ function goActivePackages(){
   var credited = autoCreditAll();
   var activePkgs=u.pkgs.filter(p=>!p.done);
   var completedPkgs=u.pkgs.filter(p=>p.done);
-  var autoBanner = credited>0? '<div style="background:#0a1f18;border:2px solid #2ee89e;padding:12px;border-radius:12px;margin-bottom:12px;text-align:center"><b style="color:#2ee89e;font-size:16px">🎉 AUTO CREDITED R'+credited+' TODAY at 08:00 AM!</b><br><span class="small">Added to Main Wallet automatically - even without login!</span></div>' : '';
-  var h='<div class="card">'+autoBanner+'<h2 class="gold">📦 Active Packages (FULL AUTO)</h2><p>You have <b style="color:#2ee89e;font-size:20px">'+activePkgs.length+'</b> active | <span class="small">'+completedPkgs.length+' completed</span></p><p class="small" style="color:#2ee89e">✅ Daily cashback AUTO at 08:00 AM to Main Wallet - credited for ALL users when anyone opens app</p><hr>';
+  var autoBanner = credited>0? '<div style="background:#0a1f18;border:2px solid #2ee89e;padding:12px;border-radius:12px;margin-bottom:12px;text-align:center"><b style="color:#2ee89e;font-size:16px">🎉 AUTO CREDITED R'+credited+' TODAY at 08:00 AM!</b><br><span class="small">Added to Main Wallet automatically</span></div>' : '';
+  var h='<div class="card">'+autoBanner+'<h2 class="gold">📦 Active Packages (FULL AUTO)</h2><p>You have <b style="color:#2ee89e;font-size:20px">'+activePkgs.length+'</b> active | <span class="small">'+completedPkgs.length+' completed</span></p><p class="small" style="color:#2ee89e">✅ Daily cashback AUTO at 08:00 AM to Main Wallet</p><hr>';
   if(u.pkgs.length===0){h+='<p class="small">No packages bought yet. Buy a package to start earning daily at 08:00 AM automatically.</p></div>';document.getElementById("app").innerHTML=h;return;}
   for(var i=0;i<u.pkgs.length;i++){
     var p=u.pkgs[i];
@@ -145,7 +141,7 @@ function goActivePackages(){
       '<div style="display:flex;justify-content:space-between;align-items:center"><span class="badge">'+fullNameStr+'</span><span style="color:'+statusColor+';font-weight:800;font-size:12px">'+statusText+'</span></div>'+
       '<div style="margin-top:10px"><b style="color:#fff">Price: R'+p.price+'</b> → <b style="color:#2ee89e">R'+p.daily+' daily AUTO</b></div>'+
       '<div class="small" style="margin-top:8px">📅 Bought: <b style="color:#fff">'+boughtStr+'</b></div>'+
-      '<div class="small">💰 Total Earned: <b style="color:#2ee89e">R'+p.totalEarned+'</b> / R'+(p.price*2)+'</div>'+
+      '<div class="small">💰 Total Earned: <b style="color:#2ee89e">R'+p.totalEarned+'</b></div>'+
       '<div class="small">📊 Status: '+(p.done?'Completed':'Active')+'</div>'+
       '<div style="margin-top:10px"><div class="small">⏰ Next Auto Credit:</div><div class="nextCredit">🕗 '+displayNextCredit+'</div></div>'+
       '</div>';
@@ -197,7 +193,7 @@ function rejectWithdraw(idx){var t=txs[idx];if(!t||t.status!=="pending")return;i
 function exportData(){var data={users:users,txs:txs,date:new Date().toISOString()};var blob=new Blob([JSON.stringify(data)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="DMS_backup_"+new Date().toISOString().slice(0,10)+".json";a.click();}
 function importData(){var inp=document.getElementById("importFile");if(!inp||!inp.files[0]){alert("Choose file");return;}var reader=new FileReader();reader.onload=function(e){try{var data=JSON.parse(e.target.result);if(data.users&&data.txs){if(confirm("Import "+data.users.length+" users?")){users=data.users;txs=data.txs;save();alert("Imported!");goAdmin();}}else{alert("Invalid");}}catch(err){alert(err.message);}};reader.readAsText(inp.files[0]);}
 function goAdmin(){setActive("bA");if(!cur||cur.cell!=="ADMIN"){document.getElementById("app").innerHTML='<div class="card"><h3>Admin Login</h3><input id="aC" class="input" placeholder="Cell" value="0510011039"><input id="aP" class="input" type="password" placeholder="Pass"><button class="btn" onclick="adminLogin()">Login</button></div>';return;}for(var i=0;i<users.length;i++){var exp="DMS"+String(i+1).padStart(3,"0");users[i].invite=exp;ensureWallets(users[i]);}var autoAll = autoCreditAll(); var totalMain=0,totalInv=0,totalLoy=0,totalPaid=0;users.forEach(function(u){ensureWallets(u);totalMain+=u.w.main;totalInv+=u.w.inviter;totalLoy+=u.w.loyalty;});txs.forEach(function(t){if(t.type==="withdraw"&&(t.status==="approved"||t.status==="done"))totalPaid+=t.amount;});var pend=txs.filter(function(t){return t.status==="pending"});
-var h='<div class="card">'+(autoAll>0?'<div style="background:#0a1f18;border:1px solid #2ee89e;padding:8px;border-radius:8px;margin-bottom:8px;color:#2ee89e">🎉 Auto-credited R'+autoAll+' to ALL users at 08:00 AM today! (Even offline users)</div>':'')+'<h2 class="gold">Admin Dashboard (FULL AUTO)</h2><div class="statBox"><b>'+users.length+'</b><br><span class="small">Users</span></div><div class="statBox"><b>'+pend.length+'</b><br><span class="small">Pending</span></div><div class="statBox"><b>R'+totalMain.toFixed(0)+'</b><br><span class="small">Total Main</span></div><div class="statBox"><b>R'+totalInv.toFixed(0)+'</b><br><span class="small">Inviter</span></div><div class="statBox"><b>R'+totalLoy.toFixed(0)+'</b><br><span class="small">Loyalty</span></div><div class="statBox"><b>R'+totalPaid.toFixed(0)+'</b><br><span class="small">Paid Out</span></div><hr><div class="adminTab"><button onclick="setAdminSub(\'dashboard\')" class="'+(adminSub==="dashboard"?"active":"")+'">Dashboard</button><button onclick="setAdminSub(\'withdrawals\')" class="'+(adminSub==="withdrawals"?"active":"")+'">Withdrawals ('+pend.length+')</button><button onclick="setAdminSub(\'users\')" class="'+(adminSub==="users"?"active":"")+'">Users ('+users.length+')</button><button onclick="setAdminSub(\'leaderboard\')" class="'+(adminSub==="leaderboard"?"active":"")+'" style="background:#0f2a22;color:#2ee89e;border-color:#2ee89e">🏆 Leader Board</button><button onclick="setAdminSub(\'settings\')" class="'+(adminSub==="settings"?"active":"")+'">Settings</button></div><hr>';
+var h='<div class="card">'+(autoAll>0?'<div style="background:#0a1f18;border:1px solid #2ee89e;padding:8px;border-radius:8px;margin-bottom:8px;color:#2ee89e">🎉 Auto-credited R'+autoAll+' to ALL users at 08:00 AM today!</div>':'')+'<h2 class="gold">Admin Dashboard (FULL AUTO)</h2><div class="statBox"><b>'+users.length+'</b><br><span class="small">Users</span></div><div class="statBox"><b>'+pend.length+'</b><br><span class="small">Pending</span></div><div class="statBox"><b>R'+totalMain.toFixed(0)+'</b><br><span class="small">Total Main</span></div><div class="statBox"><b>R'+totalInv.toFixed(0)+'</b><br><span class="small">Inviter</span></div><div class="statBox"><b>R'+totalLoy.toFixed(0)+'</b><br><span class="small">Loyalty</span></div><div class="statBox"><b>R'+totalPaid.toFixed(0)+'</b><br><span class="small">Paid Out</span></div><hr><div class="adminTab"><button onclick="setAdminSub(\'dashboard\')" class="'+(adminSub==="dashboard"?"active":"")+'">Dashboard</button><button onclick="setAdminSub(\'withdrawals\')" class="'+(adminSub==="withdrawals"?"active":"")+'">Withdrawals ('+pend.length+')</button><button onclick="setAdminSub(\'users\')" class="'+(adminSub==="users"?"active":"")+'">Users ('+users.length+')</button><button onclick="setAdminSub(\'leaderboard\')" class="'+(adminSub==="leaderboard"?"active":"")+'" style="background:#0f2a22;color:#2ee89e;border-color:#2ee89e">🏆 Leader Board</button><button onclick="setAdminSub(\'settings\')" class="'+(adminSub==="settings"?"active":"")+'">Settings</button></div><hr>';
 if(adminSub==="dashboard"||adminSub==="withdrawals"){h+='<h3 class="gold">Pending Withdrawals</h3>';if(pend.length===0)h+="<p>No pending</p>";for(var i=0;i<pend.length;i++){var t=pend[i];var idx=txs.indexOf(t);h+='<div style="border:1px solid #d4af37;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+t.cell+'</b><br>R'+t.amount+' - 25% fee Receive R'+(t.amount-t.fee).toFixed(2)+'<br><button class="btn2" onclick="approveWithdraw('+idx+')">Approve</button><button class="btnRed" onclick="rejectWithdraw('+idx+')">Reject</button></div>';}}
 if(adminSub==="leaderboard"){
   var board=[];
