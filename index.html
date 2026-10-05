@@ -316,9 +316,9 @@ function goActivePackages(){
     var fullNameStr=pkgFullName?pkgFullName.name:"PACKAGE "+p.id;
     h+='<div class="activePkgCard" style="'+(p.done?'opacity:0.6;border-color:#444':'')+'">'+
       '<div style="display:flex;justify-content:space-between;align-items:center"><span class="badge">'+fullNameStr+'</span><span style="color:'+statusColor+';font-weight:800;font-size:12px">'+statusText+'</span></div>'+
-      '<div style="margin-top:10px"><b style="color:#fff">Price: R'+p.price+'</b> → <b style="color:#2ee89e">R'+p.daily+' daily cashback</b> | Target R'+p.target+'</div>'+
+      '<div style="margin-top:10px"><b style="color:#fff">Price: R'+p.price+'</b> → <b style="color:#2ee89e">R'+p.daily+' daily cashback</b></div>'+
       '<div class="small" style="margin-top:8px">📅 Bought: <b style="color:#fff">'+boughtStr+'</b></div>'+
-      '<div class="small">💰 Total Earned: <b style="color:#2ee89e">R'+p.totalEarned+'</b> / R'+p.target+'</div>'+
+      '<div class="small">💰 Total Earned: <b style="color:#2ee89e">R'+p.totalEarned+'</b></div>'+
       '<div class="small">📊 Status: '+(p.done?'<b style="color:#ff3b3b">your circle has ended deposit to start another</b>':'Active')+'</div>'+
       '<div style="margin-top:10px"><div class="small">⏰ Next Auto Credit:</div><div class="nextCredit">🕗 '+displayNextCredit+'</div></div>'+
       '</div>';
