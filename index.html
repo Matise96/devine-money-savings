@@ -402,7 +402,7 @@ function goHistory(){
   for(var i=list.length-1;i>=0;i--){
     var t=list[i];var typeDisplay=t.type;if(typeDisplay==="buy")typeDisplay="bought";var feeDisplay="";if(t.type==="withdraw"&&t.fee>0){feeDisplay=" - 25% fee";}
     var st=t.status;if(st==="done")st="approved";if(!st)st="approved";
-    h+='<div style="border-bottom:1px solid #222;padding:6px 0"><b>'+typeDisplay+'</b> R'+t.amount+feeDisplay+'<br><span class="small">'+new Date(t.date).toLocaleString()+" "+(t.note||"")+" "+st+" ["+(t.wallet||"")+']</span></div>';
+   if(typeDisplay==="earn")typeDisplay="earned"; h+='<div style="border-bottom:1px solid #222;padding:6px 0"><b>'+typeDisplay+'</b> R'+t.amount+feeDisplay+'<br><span class="small">'+new Date(t.date).toLocaleString()+" "+(t.note||"")+" "+st+" ["+(t.wallet||"")+']</span></div>';
   }
   if(list.length===0)h+="No history";h+="</div>";document.getElementById("app").innerHTML=h;
 }
