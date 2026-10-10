@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<head><img src="DMS_HEADER_GOLD.jpg" alt="Header" style="width:100%;display:block;max-height:320px;object-fit:cover">
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DMS - Devine Money Savings</title>
@@ -57,9 +57,8 @@ nav button.active{background:#d4af37;color:#000}
 .annImg{width:100%;max-height:380px;object-fit:cover;border-radius:10px;border:1px solid #333;margin-top:10px}
 nav button{position:relative}
 </style>
-</style>
 </head>
-<body>
+<body>   <img src="DMS_HEADER_GOLD.jpg" alt="Header" style="width:100%;display:block;max-height:320px;object-fit:cover">
 <header>
 <div class="logo">DMS - Devine Money Savings</div>
 <button class="btn2" onclick="logout()" id="logoutBtn" style="display:none;background:#ff3b3b;color:#fff">Logout</button>
@@ -565,8 +564,20 @@ function goAdmin(){
     }
     h+='</table></div>';
   }
-    if(adminSub==="announcements"){
-    h+='<h3 class="gold">📢 Post Announcement to ALL Users</h3><div style="border:2px solid #d4af37;padding:14px;border-radius:14px;background:#1a1a1a"><label class="small">Title *</label><input id="annTitle" class="input" placeholder="Title"><label class="small">Message *</label><textarea id="annText" class="input" rows="5" placeholder="Write message..."></textarea><label class="small">Upload Picture</label><input type="file" id="annImg" class="input" accept="image/*" onchange="previewAnnImg()"><div id="annPreview"></div><br><button class="btn" onclick="postAnnouncement()">📢 POST TO ALL USERS</button></div><h3 class="gold">Existing ('+anns.length+')</h3>';if(anns.length===0){h+='<p class="small">No announcements yet.</p>';}else{for(var i=anns.length-1;i>=0;i--){var a=anns[i];h+='<div class="annItem"><b style="color:#d4af37">'+a.title+'</b> <span class="small">'+new Date(a.date).toLocaleString()+'</span><p>'+a.text+'</p>'+(a.img?'<img src="'+a.img+'" class="annImg">':'')+'<br><button class="btnRed" onclick="deleteAnn('+a.id+')">Delete</button></div>';}}
+
+  if(adminSub==="announcements"){
+    h+='<h3 class="gold">Post Announcement to ALL Users</h3>';
+    h+='<div style="border:2px solid #d4af37;padding:14px;border-radius:14px;background:#1a1a1a;margin-bottom:16px">';
+    h+='<label class="small">Title *</label><input id="annTitle" class="input" placeholder="Title">';
+    h+='<label class="small">Message *</label><textarea id="annText" class="input" rows="5" placeholder="Write message..."></textarea>';
+    h+='<label class="small">Upload Picture (optional)</label><input type="file" id="annImg" class="input" accept="image/*" onchange="previewAnnImg()"><div id="annPreview"></div>';
+    h+='<br><button class="btn" onclick="postAnnouncement()" style="background:#d4af37;color:#000">POST TO ALL USERS</button>';
+    h+='</div>';
+    h+='<h3 class="gold">Existing ('+anns.length+')</h3>';
+    if(anns.length===0){h+='<p class="small">No announcements yet.</p>';}
+    else{for(var i=anns.length-1;i>=0;i--){var a=anns[i];h+='<div class="annItem"><div style="display:flex;justify-content:space-between"><b style="color:#d4af37">'+a.title+'</b><span class="small">'+new Date(a.date).toLocaleString()+'</span></div><p style="white-space:pre-wrap;margin:8px 0">'+a.text+'</p>'+(a.img?'<img src="'+a.img+'" class="annImg">':'')+'<br><button class="btnRed" onclick="deleteAnn('+a.id+')" style="margin-top:8px">Delete</button></div>';}}
+  }
+  
   }
   if(adminSub==="users"){
     h+='<h3 class="gold">Users (Auto credits ALL when admin opens)</h3><input id="searchUser" class="input" placeholder="Search Email Cell" oninput="filterUsers(this.value)"><div id="userList">';
