@@ -565,6 +565,9 @@ function goAdmin(){
     }
     h+='</table></div>';
   }
+    if(adminSub==="announcements"){
+    h+='<h3 class="gold">📢 Post Announcement to ALL Users</h3><div style="border:2px solid #d4af37;padding:14px;border-radius:14px;background:#1a1a1a"><label class="small">Title *</label><input id="annTitle" class="input" placeholder="Title"><label class="small">Message *</label><textarea id="annText" class="input" rows="5" placeholder="Write message..."></textarea><label class="small">Upload Picture</label><input type="file" id="annImg" class="input" accept="image/*" onchange="previewAnnImg()"><div id="annPreview"></div><br><button class="btn" onclick="postAnnouncement()">📢 POST TO ALL USERS</button></div><h3 class="gold">Existing ('+anns.length+')</h3>';if(anns.length===0){h+='<p class="small">No announcements yet.</p>';}else{for(var i=anns.length-1;i>=0;i--){var a=anns[i];h+='<div class="annItem"><b style="color:#d4af37">'+a.title+'</b> <span class="small">'+new Date(a.date).toLocaleString()+'</span><p>'+a.text+'</p>'+(a.img?'<img src="'+a.img+'" class="annImg">':'')+'<br><button class="btnRed" onclick="deleteAnn('+a.id+')">Delete</button></div>';}}
+  }
   if(adminSub==="users"){
     h+='<h3 class="gold">Users (Auto credits ALL when admin opens)</h3><input id="searchUser" class="input" placeholder="Search Email Cell" oninput="filterUsers(this.value)"><div id="userList">';
     for(var j=0;j<users.length;j++){
@@ -574,6 +577,7 @@ function goAdmin(){
       if(uu.bank){h+='<div style="margin-top:8px;padding:8px;border:1px solid gold;border-radius:8px;background:#1a1a1a"><b>Bank:</b> '+(uu.bank.bankName||"")+'<br><b>Holder:</b> '+(uu.bank.holder||"")+'<br><b>Acc:</b> '+(uu.bank.acc||"")+'<br><b>Status:</b> '+(uu.bank.approved?'<span style="color:lightgreen">APPROVED ✓</span>':'<span style="color:orange">PENDING</span>')+'<br><button class="btn2" onclick="approveBank(\''+uu.cell+'\')" style="background:green;color:#fff">Approve Banking</button> <button class="btnRed" onclick="rejectBank(\''+uu.cell+'\')">Reject Bank</button></div>';}
       h+='<br><button class="btn2" onclick="editUserWallets(\''+uu.cell+'\')">Edit 3 Wallets</button><button class="btn2" onclick="editUserDetails(\''+uu.cell+'\')" style="background:#5dade2;color:#000">Edit Personal Details</button><button class="btn2" onclick="editAdminBank(\''+uu.cell+'\')" style="background:#1a1a1a;color:#d4af37;border:1px solid #d4af37">Edit Banking Details</button><button class="btn2" onclick="editUserPackages(\''+uu.cell+'\')" style="background:#d4af37">Packages ('+uu.pkgs.length+')</button><br><br><button class="btnRed" onclick="deleteUser(\''+uu.cell+'\')">Delete User</button></div>';
     }
+   
     h+='</div>';
   }
   if(adminSub==="settings"){h+='<h3 class="gold">Settings - Backup</h3><div style="border:2px solid #d4af37;padding:10px;border-radius:10px"><button class="btn" onclick="exportData()" style="background:#90ee90">Export Backup</button><br><br><input type="file" id="importFile" class="input" accept=".json"><button class="btn2" onclick="importData()">Import Backup</button><p class="small">Upload 4 reward images as R70.jpg, R660.jpg, R1000.jpg, R5000.jpg in same folder as this html for popup</p></div>';}
