@@ -1,1 +1,574 @@
-
+<!DOCTYPE html>
+<html>
+<head><img src="DMS_HEADER_GOLD.jpg" alt="Header" style="width:100%;display:block;max-height:320px;object-fit:cover">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DMS - Devine Money Savings</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui;background:#0a0a0a;color:#fff;padding-bottom:20px}
+header{background:#000;border-bottom:2px solid #d4af37;padding:14px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.logo{color:#d4af37;font-weight:900}
+.gold{color:#d4af37}
+.card{background:#141414;border:1px solid #333;margin:12px;border-radius:14px;padding:16px}
+.input{width:100%;padding:13px;margin:8px 0;border-radius:10px;border:1px solid #444;background:#0f0f0f;color:#fff}
+.input:disabled,.input[readonly]{background:#1e1e1e;color:#d4af37;border-color:#d4af37;font-weight:700}
+.btn{width:100%;padding:14px;background:#d4af37;color:#000;border:none;border-radius:10px;font-weight:900}
+.btn2{padding:9px 14px;background:#d4af37;color:#000;border:none;border-radius:8px;font-weight:700;margin:4px}
+.btnRed{padding:9px 14px;background:#ff3b3b;color:#fff;border:none;border-radius:8px;font-weight:700;margin:4px}
+.badge{display:inline-block;background:#d4af37;color:#000;padding:6px 12px;border-radius:20px;font-weight:800;font-size:12px}
+.pkg{border:1px solid #333;background:#1c1c1c;padding:14px;border-radius:12px;margin:10px 0}
+.small{font-size:12px;color:#aaa}
+nav{display:flex;gap:6px;overflow:auto;padding:10px;background:#111}
+nav button{padding:9px 14px;border-radius:20px;border:1px solid #444;background:#1a1a1a;color:#d4af37;white-space:nowrap}
+nav button.active{background:#d4af37;color:#000}
+.walletBox{border:1px solid #d4af37;background:#1a1a1a;padding:10px;border-radius:10px;margin:6px 0}
+.statBox{display:inline-block;border:1px solid #d4af37;background:#1e1e1e;padding:12px;border-radius:12px;margin:5px;min-width:130px;text-align:center}
+.adminTab{display:flex;gap:6px;overflow:auto;margin:10px 0}
+.adminTab button{padding:8px 12px;border-radius:20px;border:1px solid #d4af37;background:#111;color:#d4af37}
+.adminTab button.active{background:#d4af37;color:#000}
+.contactWrap{background:#0f1419;border:1px solid #1e2a35;border-radius:28px;padding:28px 20px;margin:20px 12px}
+.contactWrap h2{margin:0 0 18px 0;font-size:26px;font-weight:800;color:#fff}
+.contactItem{display:flex;align-items:center;background:#141c24;border:1px solid #1e2a35;border-radius:22px;padding:18px 16px;margin:14px 0;text-decoration:none}
+.iconBox{width:56px;height:56px;background:#0f2a22;border-radius:16px;display:flex;align-items:center;justify-content:center;margin-right:14px;flex-shrink:0}
+.iconBox svg{width:28px;height:28px;stroke:#2ee89e;fill:none;stroke-width:2}
+.cLabel{color:#8a9bb0;font-size:14px;margin:0}
+.cValue{color:#fff;font-size:18px;font-weight:700;margin:2px 0 0 0;word-break:break-all}
+.footerReg{text-align:center;color:#6b7d93;font-size:13px;padding:24px 12px;border-top:1px solid #1a1a1a;margin-top:10px;line-height:1.5}
+.activePkgCard{border:2px solid #d4af37;background:linear-gradient(135deg,#1a1a1a,#0f2a22);padding:16px;border-radius:16px;margin:12px 0}
+.nextCredit{color:#2ee89e;font-weight:800;background:#0a1f18;padding:8px 12px;border-radius:10px;display:inline-block;margin-top:6px;border:1px solid #2ee89e}
+.leadTable{width:100%;border-collapse:collapse;margin-top:10px}
+.leadTable th{background:#d4af37;color:#000;padding:10px;text-align:left;font-size:13px}
+.leadTable td{padding:10px;border-bottom:1px solid #333;font-size:13px}
+.leadTable tr:nth-child(even){background:#1a1a1a}
+.pwdWrap{position:relative;display:flex;align-items:center;width:100%}
+.eyeBtn{position:absolute;right:12px;background:none;border:none;font-size:20px;cursor:pointer;color:#d4af37}
+/* --- DMS LOYALTY REWARD POPUP - ADDED FOR LOYALTY WALLET ONLY --- */
+#dmsRewardOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;animation:fadeIn 0.3s}
+#dmsRewardPopup{background:linear-gradient(135deg,#1a1a1a,#000);border:3px solid #d4af37;border-radius:20px;padding:20px;max-width:380px;width:90%;text-align:center;box-shadow:0 0 30px rgba(212,175,55,0.6);animation:popScale 0.4s}
+#dmsRewardPopup img{width:100%;border-radius:12px;border:2px solid #d4af37;margin:10px 0}
+#dmsRewardPopup h3{color:#d4af37;margin:10px 0;font-size:20px}
+#dmsRewardPopup p{color:#fff;font-size:16px;font-weight:700}
+@keyframes popScale{0%{transform:scale(0.5)}100%{transform:scale(1)}}
+@keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">DMS - Devine Money Savings</div>
+<button class="btn2" onclick="logout()" id="logoutBtn" style="display:none;background:#ff3b3b;color:#fff">Logout</button>
+</header>
+<!-- LOYALTY REWARD POPUP OVERLAY - LOYALTY WALLET ONLY -->
+<div id="dmsRewardOverlay" onclick="hideLoyaltyPopupNow()">
+<div id="dmsRewardPopup">
+<h3>🥳💃 Congratulations!</h3>
+<p id="dmsRewardText">The company has rewarded you!</p>
+<img id="dmsRewardImg" src="" alt="Reward Card">
+<p class="small" style="color:#d4af37">This will show every 60 seconds until you withdraw and admin approves.</p>
+</div>
+</div>
+<nav>
+<button onclick="goHome()" id="bH" class="active">Home</button>
+<button onclick="goWallets()" id="bW">Wallets</button>
+<button onclick="goPackages()" id="bP">Packages</button>
+<button onclick="goActivePackages()" id="bAP" style="background:#0f2a22;color:#2ee89e;border-color:#2ee89e;font-weight:900;">Active Packages</button>
+<button onclick="goBonus()" id="bBO" style="background:#d4af37;color:#000;font-weight:900;border:2px solid #fff;">Bonus</button>
+<button onclick="goTeam()" id="bT">Team</button>
+<button onclick="goHistory()" id="bHI">History</button>
+<button onclick="location.href='deposit.html'" id="bDEP" style="background:#d4af37;color:#000;font-weight:bold;">Deposit</button>
+<button onclick="goAdmin()" id="bA">Admin</button>
+</nav>
+<div id="app"></div>
+<div class="contactWrap">
+<h2>Contact us</h2>
+<a class="contactItem" href="https://wa.me/27510011039?text=Hello%20Devine%20Money%20Savings%20Support">
+<div class="iconBox"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.5 8.5 0 0 1-12.5 7.5L3 21l2-5.5A8.5 8.5 0 0 1 21 11.5z"></path></svg></div>
+<div><p class="cLabel">WhatsApp</p><p class="cValue">051 001 1039</p></div>
+</a>
+<a class="contactItem" href="mailto:devine9606@gmail.com">
+<div class="iconBox"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"></rect><path d="M2 6l10 8 10-8"></path></svg></div>
+<div><p class="cLabel">Email</p><p class="cValue">devine9606@gmail.com</p></div>
+</a>
+<a class="contactItem" href="https://www.devinemoneysavings.co.za" target="_blank">
+<div class="iconBox"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg></div>
+<div><p class="cLabel">Website</p><p class="cValue">www.devinemoneysavings.co.za</p></div>
+</a>
+</div>
+<div class="footerReg">Devine Pty-Ltd trading as Devine Money Savings - Reg no<br>2024/344088/07</div>
+<script>
+// === DMS LOYALTY REWARD POPUP CONFIG - LOYALTY WALLET ONLY - ADDED ===
+var DMS_REWARD_IMAGES = {
+  "Lime": "R70.jpg",
+  "Gold": "R660.jpg",
+  "Silver": "R1000.jpg",
+  "Platinum": "R5000.jpg",
+  "R70": "R70.jpg",
+  "R660": "R660.jpg",
+  "R1000": "R1000.jpg",
+  "R5000": "R5000.jpg"
+};
+var dmsRewardInterval = null;
+var dmsRewardTimeout = null;
+function getTierByAmount(amt){
+  amt = parseFloat(amt)||0;
+  if(amt <= 75) return {key:"R70", name:"Lime", file:"R70.jpg", label:"Lime"};
+  if(amt <= 700) return {key:"R660", name:"Gold", file:"R660.jpg", label:"Gold"};
+  if(amt <= 1200) return {key:"R1000", name:"Silver", file:"R1000.jpg", label:"Silver"};
+  return {key:"R5000", name:"Platinum", file:"R5000.jpg", label:"Platinum"};
+}
+function getActiveLoyaltyReward(u){
+  if(!u) return null;
+  if(!u.activeLoyaltyReward) return null;
+  if(u.activeLoyaltyReward.cleared) return null;
+  return u.activeLoyaltyReward;
+}
+function showLoyaltyRewardPopup(){
+  var u = getUser();
+  if(!u) return;
+  var reward = getActiveLoyaltyReward(u);
+  if(!reward) { clearLoyaltyIntervals(); return; }
+  var tier = getTierByAmount(reward.amount);
+  var txtEl = document.getElementById("dmsRewardText");
+  var imgEl = document.getElementById("dmsRewardImg");
+  var overlay = document.getElementById("dmsRewardOverlay");
+  if(!txtEl ||!imgEl ||!overlay) return;
+  txtEl.innerHTML = "🥳💃 Congratulations the company has rewarded you <b style='color:#d4af37'>"+tier.label+"</b> reward";
+  var imgSrc = DMS_REWARD_IMAGES[tier.key] || tier.file;
+  imgEl.src = imgSrc;
+  imgEl.alt = tier.label + " Reward R"+reward.amount;
+  overlay.style.display = "flex";
+  if(dmsRewardTimeout) clearTimeout(dmsRewardTimeout);
+  dmsRewardTimeout = setTimeout(function(){
+    overlay.style.display = "none";
+  }, 10000);
+}
+function hideLoyaltyPopupNow(){
+  var overlay = document.getElementById("dmsRewardOverlay");
+  if(overlay) overlay.style.display = "none";
+}
+function clearLoyaltyIntervals(){
+  if(dmsRewardInterval){ clearInterval(dmsRewardInterval); dmsRewardInterval = null; }
+  if(dmsRewardTimeout){ clearTimeout(dmsRewardTimeout); dmsRewardTimeout = null; }
+  var overlay = document.getElementById("dmsRewardOverlay");
+  if(overlay) overlay.style.display = "none";
+}
+function startLoyaltyRewardLoop(){
+  clearLoyaltyIntervals();
+  var u = getUser();
+  if(!u) return;
+  var reward = getActiveLoyaltyReward(u);
+  if(!reward) return;
+  setTimeout(function(){ showLoyaltyRewardPopup(); }, 800);
+  dmsRewardInterval = setInterval(function(){
+    showLoyaltyRewardPopup();
+  }, 60000);
+}
+function checkAndInitLoyaltyPopup(){
+  var u = getUser();
+  if(!u){ clearLoyaltyIntervals(); return; }
+  var reward = getActiveLoyaltyReward(u);
+  if(reward){
+    startLoyaltyRewardLoop();
+  } else {
+    clearLoyaltyIntervals();
+  }
+}
+function safeParse(k,f){try{var v=localStorage.getItem(k);if(!v) return JSON.parse(f);return JSON.parse(v);}catch(e){return JSON.parse(f);}}
+var PKGS=[
+{id:"A",name:"PACKAGE A",price:160,daily:10,earliest:7,duration:14,target:140,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
+{id:"B",name:"PACKAGE B",price:250,daily:10,earliest:7,duration:21,target:210,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
+{id:"C",name:"PACKAGE C",price:340,daily:10,earliest:7,duration:30,target:300,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
+{id:"D",name:"PACKAGE D",price:430,daily:35,earliest:2,duration:11,target:385,desc:"Earliest withdrawal in 2 days. Minimum withdrawal at R70."},
+{id:"E",name:"PACKAGE E",price:520,daily:70,earliest:1,duration:6,target:480,desc:"Earliest withdrawal in 24hrs. Minimum withdrawal at R70."}
+];
+var users=safeParse("dms_users","[]");
+var txs=safeParse("dms_txs","[]");
+var cur=safeParse("dms_cur","null");
+var adminSub="leaderboard";
+var VALID_DEPOSITS=[160,250,340,430,520];
+function save(){localStorage.setItem("dms_users",JSON.stringify(users));localStorage.setItem("dms_txs",JSON.stringify(txs));localStorage.setItem("dms_cur",JSON.stringify(cur));}
+function ensureWallets(u){if(!u.w) u.w={main:0,inviter:0,loyalty:0};if(u.w.bonus!==undefined&&u.w.inviter===undefined){u.w.inviter=u.w.bonus;delete u.w.bonus;}if(u.w.main===undefined) u.w.main=0;if(u.w.inviter===undefined) u.w.inviter=0;if(u.w.loyalty===undefined) u.w.loyalty=0;if(!u.hasOwnProperty('bank')) u.bank=null;if(!u.hasOwnProperty('inviterBonusGiven')) u.inviterBonusGiven=false;if(!u.hasOwnProperty('activeLoyaltyReward')) u.activeLoyaltyReward=null;}
+function setActive(id){try{document.querySelectorAll("nav button").forEach(function(b){b.classList.remove("active")});var e=document.getElementById(id);if(e) e.classList.add("active");}catch(e){}}
+function getUser(){if(!cur||cur.cell==="ADMIN") return null;for(var i=0;i<users.length;i++){if(users[i].cell===cur.cell){ensureWallets(users[i]);return users[i];}}return null;}
+function toggleEye(a,b){var x=document.getElementById(a);var y=document.getElementById(b);if(!x) return;if(x.type==="password"){x.type="text";y.textContent="🙈";}else{x.type="password";y.textContent="👁️";}}
+function isQualifiedInvite(invitedUser){if(!invitedUser) return false;var hasValidDeposit = VALID_DEPOSITS.includes(Math.round(invitedUser.w.main));var hasBoughtPackage = invitedUser.pkgs && invitedUser.pkgs.length > 0;return hasValidDeposit || hasBoughtPackage;}
+function tryGiveInviterBonus(invitedUser){if(!invitedUser ||!invitedUser.by) return false;if(invitedUser.inviterBonusGiven) return false;if(!isQualifiedInvite(invitedUser)) return false;for(var k=0;k<users.length;k++){if(users[k].invite===invitedUser.by || users[k].cell===invitedUser.by){ensureWallets(users[k]);users[k].w.inviter+=10;invitedUser.inviterBonusGiven=true;txs.push({cell:users[k].cell,type:"bonus",amount:10,fee:0,note:"Inviter bonus from "+invitedUser.cell+" ("+invitedUser.invite+") - QUALIFIED",date:new Date().toISOString(),status:"approved"});save();return true;}}return false;}
+function autoCreditAll(){
+  var now = new Date();
+  var today8am = new Date(); today8am.setHours(8,0,0,0);
+  var totalCredited = 0;
+  for(var uIdx=0; uIdx<users.length; uIdx++){
+    var u = users[uIdx]; ensureWallets(u);
+    for(var pIdx=0; pIdx<u.pkgs.length; pIdx++){
+      var p = u.pkgs[pIdx];
+      if(p.done) continue;
+      if(!p.target) p.target = p.daily * p.duration;
+      var bought = new Date(p.boughtAt);
+      var firstCredit = new Date(bought); firstCredit.setDate(firstCredit.getDate()+1); firstCredit.setHours(8,0,0,0);
+      var diffDays = Math.floor((now - bought)/(1000*60*60*24));
+      if(diffDays < 1) continue;
+      if(now < firstCredit &&!p.lastClaim) continue;
+      var last = p.lastClaim? new Date(p.lastClaim) : null;
+      if(last){if(last.toDateString() === now.toDateString()) continue;}
+      var daysToCredit = 1;
+      if(!last){
+        var daysSinceFirst = Math.floor((today8am - firstCredit)/(1000*60*60*24)) + 1;
+        if(daysSinceFirst < 1) daysSinceFirst = 1;
+        if(daysSinceFirst > 14) daysSinceFirst = 14;
+        daysToCredit = daysSinceFirst;
+      }
+      for(var d=0; d<daysToCredit; d++){
+        if(p.done) break;
+        if(p.totalEarned >= p.target){p.done=true; break;}
+        var remaining = p.target - p.totalEarned;
+        var toCredit = p.daily;
+        if(toCredit > remaining) toCredit = remaining;
+        p.totalEarned += toCredit;
+        if(p.totalEarned >= p.target) p.done=true;
+        p.lastClaim = now.toISOString();
+        u.w.main += toCredit;
+        totalCredited += toCredit;
+        txs.push({cell:u.cell,type:"earn",amount:toCredit,fee:0,note:"AUTO Daily from "+p.id+" at 08:00 AM - Package "+p.price+" (Target "+p.target+")", date:now.toISOString(), status:"approved"});
+      }
+    }
+  }
+  if(totalCredited>0) save();
+  return totalCredited;
+}
+try{ autoCreditAll(); }catch(e){}
+setInterval(function(){var credited = autoCreditAll();if(credited>0){try{ if(document.getElementById("bAP") && document.getElementById("bAP").classList.contains("active")){ goActivePackages(); } }catch(e){}}}, 60000);
+function logout(){clearLoyaltyIntervals();cur=null;localStorage.removeItem("dms_cur");var b=document.getElementById("logoutBtn");if(b)b.style.display="none";goHome();}
+function checkLogout(){var b=document.getElementById("logoutBtn");if(b)b.style.display=cur?"block":"none";}
+function goHome(){
+  setActive("bH");checkLogout();
+  try{
+    var autoAmt = autoCreditAll();
+    var u=getUser();
+    if(!u&&(!cur||cur.cell!=="ADMIN")){
+      var html='<div class="card" style="text-align:center;border:2px solid #d4af37"><div class="badge">EXCLUSIVE PACKAGES</div><h2 class="gold">DEVINE MONEY SAVINGS</h2><div style="text-align:left;margin-top:12px">';
+      for(var i=0;i<PKGS.length;i++){var p=PKGS[i];html+='<div class="pkg"><span class="badge">'+p.name+'</span> <b style="float:right">R'+p.price+'</b><br><br><b>R'+p.price+' > R'+p.daily+' daily cashback at 08:00 AM</b><br><span class="small">'+p.desc+'</span></div>';}
+      html+='</div><hr><h3>Login</h3><input id="lC" class="input" placeholder="Cellphone"><div class="pwdWrap"><input id="lP" class="input" type="password" placeholder="Password"><button class="eyeBtn" id="eyeLP" onclick="toggleEye(&quot;lP&quot;,&quot;eyeLP&quot;)">👁️</button></div><button class="btn" onclick="doLogin()">Login</button><p class="small">No account? <a href="#" onclick="goRegister()" style="color:#d4af37">Register here</a></p><p class="small" style="color:#2ee89e;margin-top:10px">✅ Daily cashback AUTO credited at 08:00 AM daily to Main Wallet</p></div>';
+      document.getElementById("app").innerHTML=html;return;
+    }
+    if(cur&&cur.cell==="ADMIN"){goAdmin();return;}
+    var totalDaily=0;for(var j=0;j<u.pkgs.length;j++){if(!u.pkgs[j].done)totalDaily+=u.pkgs[j].daily;}
+    var totalBal=u.w.main+u.w.inviter+u.w.loyalty;
+    var autoMsg = autoAmt>0? '<div style="background:#0a1f18;border:1px solid #2ee89e;padding:10px;border-radius:10px;margin-bottom:10px;color:#2ee89e;font-weight:800">🎉 AUTO CREDITED R'+autoAmt+' at 08:00 AM to Main Wallet!</div>' : '';
+    var h='<div class="card">'+autoMsg+'<h3 class="gold">Welcome '+u.name+'</h3><p>Cell: '+u.cell+'<br>Invite: <b class="gold">'+u.invite+'</b></p><hr><div class="walletBox">Main Wallet: <b>R'+u.w.main.toFixed(2)+'</b></div><div class="walletBox">Inviter Bonus Wallet: <b>R'+u.w.inviter.toFixed(2)+'</b></div><div class="walletBox">Loyalty Bonus Wallet: <b>R'+u.w.loyalty.toFixed(2)+'</b></div><p>Total: <b class="gold">R'+totalBal.toFixed(2)+'</b> Daily: R'+totalDaily+'</p><p class="small" style="color:#2ee89e">✅ Daily cashback AUTO credited at 08:00 AM - even if you do not login, admin login will credit you!</p><button class="btn2" onclick="goWallets()">Wallets</button><button class="btn2" onclick="goActivePackages()" style="background:#2ee89e;color:#000">Active Packages ('+u.pkgs.filter(p=>!p.done).length+')</button><button class="btn2" onclick="goPackages()">Buy Package</button><button class="btn2" onclick="goTeam()">My Team</button><button class="btn2" onclick="goBonus()" style="background:#d4af37">Bonus Info</button></div>';
+    document.getElementById("app").innerHTML=h;
+    setTimeout(function(){ checkAndInitLoyaltyPopup(); }, 500);
+  }catch(e){document.getElementById("app").innerHTML='<div class="card"><h3>Error</h3><p>'+e.message+'</p><button class="btn" onclick="localStorage.clear();location.reload()">Fix</button></div>';}
+}
+function goBonus(){
+  setActive("bBO");checkLogout();
+  var h='<div class="card" style="border:2px solid #d4af37"><h2 class="gold">BONUS BUTTON</h2><div style="background:#1a1a1a;border:1px solid #d4af37;border-radius:12px;padding:16px;line-height:1.8;text-align:left"><p><b>#Earn R10 per invite.</b></p><p><b>#Invites are unlimited</b></p><p>#You do not have to invite many people you can invite 7 people once-off and everytime they all deposit you earn your bonus and can be immediately withdrawn as minimum withdrawal is at R70.</p><p style="color:#ffcc00"><b>#NB:Invitee must deposit first or purchase a package from other wallets for the Inviter to be rewarded.</b></p></div><br><button class="btn" onclick="goTeam()">Go to My Team</button><br><br><button class="btn2" onclick="goHome()">Home</button></div>';
+  document.getElementById("app").innerHTML=h;
+}
+function goRegister(){
+  var inv=new URLSearchParams(location.search).get("invite")||"";
+  var h='<div class="card"><h3 class="gold">Register</h3><input id="rN" class="input" placeholder="Full Name *"><input id="rC" class="input" placeholder="Cellphone *"><input id="rE" class="input" placeholder="Email *"><select id="rPr" class="input"><option value="">Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select><select id="rG" class="input"><option value="">Gender *</option><option>Male</option><option>Female</option></select><div class="pwdWrap"><input id="rP" class="input" type="password" placeholder="Password *"><button class="eyeBtn" id="eyeRP" onclick="toggleEye(&quot;rP&quot;,&quot;eyeRP&quot;)">👁️</button></div><input id="rI" class="input" placeholder="Invite Code (optional)" value="'+inv+'"><button class="btn" onclick="doRegister()">Create Account</button></div>';
+  document.getElementById("app").innerHTML=h;
+}
+function doRegister(){
+  var n=document.getElementById("rN").value.trim(),c=document.getElementById("rC").value.trim(),e=document.getElementById("rE").value.trim(),pr=document.getElementById("rPr").value,g=document.getElementById("rG").value,p=document.getElementById("rP").value.trim(),inv=document.getElementById("rI").value.trim().toUpperCase();
+  if(!n||!c||!e||!pr||!g||!p){alert("Fill all *");return;}
+  for(var i=0;i<users.length;i++){if(users[i].cell===c){alert("Cell exists");return;}}
+  var code="DMS"+String(users.length+1).padStart(3,"0");
+  var u={cell:c,name:n,email:e,prov:pr,gender:g,pass:p,invite:code,by:inv||null,w:{main:0,inviter:0,loyalty:0},pkgs:[],bank:null,inviterBonusGiven:false,activeLoyaltyReward:null};
+  users.push(u);save();alert("Registered! "+code+"!");goHome();
+}
+function doLogin(){
+  var c=document.getElementById("lC").value.trim(),p=document.getElementById("lP").value.trim();
+  if(c==="0510011039"&&p==="Tiisetso#96"){cur={cell:"ADMIN"};save();goAdmin();return;}
+  for(var i=0;i<users.length;i++){if(users[i].cell===c&&users[i].pass===p){ensureWallets(users[i]);cur={cell:users[i].cell};save();goHome();return;}}
+  alert("Wrong");
+}
+function adminLogin(){
+  var c=document.getElementById("aC").value.trim(),p=document.getElementById("aP").value.trim();
+  if(c==="0510011039"&&p==="Tiisetso#96"){cur={cell:"ADMIN"};save();goAdmin();}else{alert("Wrong");}
+}
+function goPackages(){
+  setActive("bP");checkLogout();
+  var h='<div class="card"><h3 class="gold">Packages - Daily cashback at 08:00 AM</h3>';
+  for(var i=0;i<PKGS.length;i++){var pk=PKGS[i];h+='<div class="pkg"><span class="badge">'+pk.name+'</span> <b style="float:right">R'+pk.price+'</b><br><br><b>R'+pk.price+' > R'+pk.daily+' daily cashback at 08:00 AM</b><br><span class="small">'+pk.desc+'</span><br><br><button class="btn2" onclick="buyPkg('+i+')">Buy '+pk.name+'</button></div>';}
+  h+='</div>';document.getElementById("app").innerHTML=h;
+}
+function buyPkg(i){
+  var u=getUser();if(!u){alert("Login first");return;}
+  var pkg=PKGS[i];var price=pkg.price||160;
+  var b1=u.w.main||0;var b2=u.w.inviter||0;var b3=u.w.loyalty||0;
+  var maxBal=Math.max(b1,b2,b3);if(maxBal<price){alert("Insufficient funds");return;}
+  var choice=prompt("1=Main R"+b1.toFixed(2)+"\n2=Inviter R"+b2.toFixed(2)+"\n3=Loyalty R"+b3.toFixed(2)+"\nType 1,2,3");if(choice==null)return;
+  var bal=0,key="";if(choice=="1"){bal=b1;key="main";}else if(choice=="2"){bal=b2;key="inviter";}else if(choice=="3"){bal=b3;key="loyalty";}else{alert("Invalid");return;}
+  if(bal<price){alert("Not enough");return;}
+  if(key=="main")u.w.main-=price;if(key=="inviter")u.w.inviter-=price;if(key=="loyalty")u.w.loyalty-=price;
+  u.pkgs.push({id:pkg.id,price:price,daily:pkg.daily,earliest:pkg.earliest,duration:pkg.duration,target:pkg.target,boughtAt:new Date().toISOString(),lastClaim:null,totalEarned:0,done:false});
+  txs.push({cell:u.cell,type:"bought",amount:price,fee:0,note:"Bought "+pkg.name+" from "+key+" wallet",date:new Date().toISOString(),status:"approved",wallet:key});
+  save();
+  if(tryGiveInviterBonus(u)){alert("Success! "+pkg.name+" bought - Inviter R10 bonus triggered! Auto starts tomorrow 08:00 AM");} else {alert("Success! "+pkg.name+" bought - Auto daily R"+pkg.daily+" starts tomorrow 08:00 AM to Main Wallet");}
+  goActivePackages();
+}
+function goActivePackages(){
+  setActive("bAP");var u=getUser();if(!u){document.getElementById("app").innerHTML="<div class=card>Login first</div>";return;}checkLogout();
+  var credited = autoCreditAll();
+  var activePkgs=u.pkgs.filter(p=>!p.done);
+  var completedPkgs=u.pkgs.filter(p=>p.done);
+  var autoBanner = credited>0? '<div style="background:#0a1f18;border:2px solid #2ee89e;padding:12px;border-radius:12px;margin-bottom:12px;text-align:center"><b style="color:#2ee89e;font-size:16px">🎉 AUTO CREDITED R'+credited+' TODAY at 08:00 AM!</b><br><span class="small">Added to Main Wallet automatically</span></div>' : '';
+  var h='<div class="card">'+autoBanner+'<h2 class="gold">📦 Active Packages</h2><p>You have <b style="color:#2ee89e;font-size:20px">'+activePkgs.length+'</b> active | <span class="small">'+completedPkgs.length+' completed</span></p><p class="small" style="color:#2ee89e">✅ Daily cashback AUTO at 08:00 AM to Main Wallet</p><hr>';
+  if(u.pkgs.length===0){h+='<p class="small">No packages bought yet. Buy a package to start earning daily at 08:00 AM automatically.</p></div>';document.getElementById("app").innerHTML=h;return;}
+  for(var i=0;i<u.pkgs.length;i++){
+    var p=u.pkgs[i];
+    var bought=new Date(p.boughtAt);
+    var boughtStr=bought.toLocaleString();
+    var statusText=p.done?"⭕ CIRCLE ENDED":"✅ ACTIVE - Auto at 08:00 AM";var statusColor=p.done?"#ff3b3b":"#2ee89e";
+    var nextCreditTime = new Date(); nextCreditTime.setDate(nextCreditTime.getDate()+1); nextCreditTime.setHours(8,0,0,0);
+    var displayNextCredit = p.done? "your circle has ended deposit to start another" : nextCreditTime.toLocaleString()+" (Auto to Main Wallet)";
+    var pkgFullName=PKGS.find(x=>x.id===p.id);
+    var fullNameStr=pkgFullName?pkgFullName.name:"PACKAGE "+p.id;
+    h+='<div class="activePkgCard" style="'+(p.done?'opacity:0.6;border-color:#444':'')+'">'+
+      '<div style="display:flex;justify-content:space-between;align-items:center"><span class="badge">'+fullNameStr+'</span><span style="color:'+statusColor+';font-weight:800;font-size:12px">'+statusText+'</span></div>'+
+      '<div style="margin-top:10px"><b style="color:#fff">Price: R'+p.price+'</b> → <b style="color:#2ee89e">R'+p.daily+' daily cashback</b></div>'+
+      '<div class="small" style="margin-top:8px">📅 Bought: <b style="color:#fff">'+boughtStr+'</b></div>'+
+      '<div class="small">💰 Total Earned: <b style="color:#2ee89e">R'+p.totalEarned+'</b></div>'+
+      '<div style="margin-top:10px"><div class="small">⏰ Next Auto Credit:</div><div class="nextCredit">🕗 '+displayNextCredit+'</div></div>'+
+      '</div>';
+  }
+  h+='<hr><button class="btn2" onclick="goWallets()">Back to Wallets</button><button class="btn2" onclick="goPackages()">Buy More Packages</button></div>';
+  document.getElementById("app").innerHTML=h;
+  setTimeout(function(){ checkAndInitLoyaltyPopup(); }, 500);
+}
+function goWallets(){
+  setActive("bW");var u=getUser();if(!u){document.getElementById("app").innerHTML="<div class=card>Login</div>";return;}checkLogout();
+  var credited = autoCreditAll();var bankInfo="";
+  if(!u.bank){bankInfo='<div style="padding:8px;border:1px dashed #d4af37;border-radius:8px;margin:8px 0;background:#111"><span class="small">No banking details saved yet. You will be asked once on first withdrawal.</span></div>';}
+  else{bankInfo='<div style="padding:8px;border:1px solid '+(u.bank.approved?"lightgreen":"orange") +';border-radius:8px;margin:8px 0;background:#111"><b>Bank Saved:</b> '+(u.bank.bankName||"")+' - '+(u.bank.acc||"")+'<br><b>Holder:</b> '+(u.bank.holder||"")+'<br><b>Status:</b> '+(u.bank.approved?'<span style="color:lightgreen">APPROVED ✓</span>':'<span style="color:orange">PENDING APPROVAL</span>')+'<br><button class="btn2" style="margin-top:6px" onclick="goBankForm()">Edit Bank Details</button></div>';}
+  var activeCount=u.pkgs.filter(p=>!p.done).length;
+  var autoMsg = credited>0? '<div style="background:#0a1f18;border:1px solid #2ee89e;padding:10px;border-radius:10px;margin-bottom:10px;color:#2ee89e;font-weight:800">🎉 AUTO CREDITED R'+credited+' at 08:00 AM to Main Wallet!</div>' : '';
+  var h='<div class="card">'+autoMsg+'<h3 class="gold">Wallets (FULL AUTO 08:00)</h3>'+bankInfo;
+  h+='<button class="btn" onclick="goActivePackages()" style="background:#0f2a22;color:#2ee89e;border:1px solid #2ee89e;margin-bottom:12px">📦 View Active Packages ('+activeCount+' active) - Auto 08:00 AM</button>';
+  h+='<div class="walletBox">Main: <b>R'+u.w.main.toFixed(2)+'</b> <button class="btn2" onclick="doWithdraw()">Withdraw</button></div><div class="walletBox">Inviter: <b>R'+u.w.inviter.toFixed(2)+'</b> <button class="btn2" onclick="doWithdraw()">Withdraw</button></div><div class="walletBox">Loyalty: <b>R'+u.w.loyalty.toFixed(2)+'</b> <button class="btn2" onclick="doWithdraw()">Withdraw</button></div></div>';
+  document.getElementById("app").innerHTML=h;
+  setTimeout(function(){ checkAndInitLoyaltyPopup(); }, 500);
+}
+function doWithdraw(){
+  var nowCheck = new Date();var dayCheck = nowCheck.getDay();var hourCheck = nowCheck.getHours();var minCheck = nowCheck.getMinutes();
+  var isSunday = dayCheck===0;var before8am = hourCheck < 8;var after6pm = hourCheck > 18 || (hourCheck===18 && minCheck>0);
+  if(isSunday || before8am || after6pm){alert("Withdrawal runs from Mon-Sat 08:00 am - 18:00 pm");return;}
+  var u=getUser();if(!u){alert("Login");return;}
+  var w=prompt("Choose wallet:\n1=Main R"+(u.w.main||0).toFixed(2)+"\n2=Inviter R"+(u.w.inviter||0).toFixed(2)+"\n3=Loyalty R"+(u.w.loyalty||0).toFixed(2));if(!w)return;
+  var bal=0,wName="",wKey="";if(w=="1"){bal=u.w.main;wName="Main";wKey="main";}else if(w=="2"){bal=u.w.inviter;wName="Inviter";wKey="inviter";}else if(w=="3"){bal=u.w.loyalty;wName="Loyalty";wKey="loyalty";}else{alert("Invalid");return;}
+  if(bal<70){alert("Min R70");return;}
+  if(wKey==="main"){if(bal>=160){if(!u.pkgs||u.pkgs.length===0){alert("Purchase a package first to withdraw");return;}var totalSpent=0;for(var sp=0;sp<u.pkgs.length;sp++){totalSpent+=u.pkgs[sp].price||0;}var totalDeposited=bal+totalSpent;var needed=Math.floor(totalDeposited/160);if(u.pkgs.length<needed){var needMore=needed-u.pkgs.length;alert("Every R160 must buy a package. You deposited ~R"+totalDeposited.toFixed(0)+" which needs "+needed+" package(s). You have "+u.pkgs.length+". Buy "+needMore+" more package(s) first.");return;}var free=bal%160;if(free<70&&bal>=160){if(bal%160===0){alert("Main has R"+bal.toFixed(0)+". Every R160 must buy a package. Buy package first.");}else{alert("Main R"+bal.toFixed(0)+". Free only R"+free.toFixed(0)+" (<R70). Buy package.");}return;}}}
+  if(!u.bank){alert("Upload banking - one time");return goBankForm();}
+  if(!u.bank.approved){alert("Bank saved, pending approval - will not ask again");return;}
+  var amtStr=prompt("Withdraw "+wName+" R"+bal.toFixed(2)+"\nBank: "+u.bank.bankName+" "+u.bank.acc+"\n"+(wKey==="main"&&bal>=160?"FREE max: R"+(bal%160).toFixed(2)+"\n":"")+"Amount:");if(!amtStr)return;
+  var amt=parseFloat(amtStr);if(isNaN(amt)||amt<70||amt>bal){alert("Invalid");return;}
+  if(wKey==="main"&&bal>=160){var free2=bal%160;if(amt>free2){alert("Cannot withdraw R"+amt+". Max free is R"+free2.toFixed(2)+".");return;}}
+  var fee=amt*0.25;if(wKey=="main")u.w.main-=amt;if(wKey=="inviter")u.w.inviter-=amt;if(wKey=="loyalty")u.w.loyalty-=amt;
+  if(wKey==="loyalty" && u.activeLoyaltyReward &&!u.activeLoyaltyReward.cleared){
+    u.activeLoyaltyReward.withdrawPending = true;
+    u.activeLoyaltyReward.pendingAmount = amt;
+  }
+  txs.push({cell:u.cell,type:"withdraw",wallet:wKey,amount:amt,fee:fee,note:"Withdraw from "+wName+" to "+u.bank.bankName+" "+u.bank.acc,status:"pending",date:new Date().toISOString()});
+  save();alert("Request R"+amt+" - 25% fee submitted");goWallets();
+}
+function goBankForm(){
+  var u=getUser();var holder=u&&u.bank?u.bank.holder:"";var acc=u&&u.bank?u.bank.acc:"";
+  var h='<div class="card"><h3 class="gold">Upload Banking Details</h3><p class="small">Required before withdrawal. Admin will approve.</p><label class="small">Account Holder Name *</label><input id="bName" class="input" placeholder="Account Holder Name" value="'+holder+'"><label class="small">Bank Name</label><input id="bBank" class="input" value="Bank Zero" readonly disabled style="background:#1e1e1e;color:#d4af37;border-color:#d4af37;font-weight:800"><label class="small">Account Number *</label><input id="bAcc" class="input" placeholder="Account Number" value="'+acc+'"><label class="small">Branch Code</label><input id="bBranch" class="input" value="888000" readonly disabled style="background:#1e1e1e;color:#d4af37;border-color:#d4af37;font-weight:800"><button class="btn" onclick="saveBank()">Submit for Approval</button><br><br><button class="btn2" onclick="goWallets()">Back to Wallets</button></div>';
+  document.getElementById("app").innerHTML=h;
+}
+function saveBank(){
+  var name=document.getElementById("bName").value.trim();var acc=document.getElementById("bAcc").value.trim();var bank="Bank Zero";var branch="888000";
+  if(!name||!acc){alert("Fill Account Holder and Account Number");return;}
+  var u=getUser();if(!u)return;
+  var wasApproved=u.bank&&u.bank.approved;var wasBank=u.bank?u.bank.bankName:"";var wasAcc=u.bank?u.bank.acc:"";var isSame=wasBank===bank&&wasAcc===acc;
+  if(isSame&&wasApproved){u.bank.holder=name;u.bank.bankName=bank;u.bank.acc=acc;u.bank.branch=branch;save();alert("Updated - still APPROVED");goWallets();return;}
+  u.bank={holder:name,bankName:bank,acc:acc,branch:branch,approved:false,pending:true};save();alert("Bank saved! Awaiting approval - will not ask again");goWallets();
+}
+function approveBank(cell){var u=users.find(function(x){return x.cell===cell});if(!u||!u.bank)return;u.bank.approved=true;u.bank.pending=false;save();alert("Bank Approved "+cell);goAdmin();}
+function rejectBank(cell){if(!confirm("Reject "+cell+"?"))return;var u=users.find(function(x){return x.cell===cell});if(!u)return;u.bank=null;save();goAdmin();}
+function goTeam(){
+  setActive("bT");var u=getUser();if(!u){document.getElementById("app").innerHTML="<div class=card>Login</div>";return;}
+  var code=u.invite;var team=[];for(var i=0;i<users.length;i++){if(users[i].by===code||users[i].by===u.cell)team.push(users[i]);}
+  var link=location.origin+location.pathname+"?invite="+code;
+  var h='<div class="card"><h3 class="gold">My Team '+team.length+'</h3><p>Code <b>'+code+'</b></p><input class="input" value="'+link+'" readonly><button class="btn2" onclick="navigator.clipboard.writeText(\''+link+'\')">Copy Link</button><hr>';
+  for(var k=0;k<team.length;k++){h+='<div>'+team[k].name+' '+team[k].cell+'</div>';}if(team.length===0)h+="No team";h+="<p>Inviter: R"+u.w.inviter.toFixed(2)+"</p></div>";
+  document.getElementById("app").innerHTML=h;
+}
+function goHistory(){
+  setActive("bHI");if(!cur){document.getElementById("app").innerHTML="<div class=card>Login</div>";return;}
+  var list=[];if(cur.cell==="ADMIN"){list=txs;}else{var gu=getUser();if(!gu){document.getElementById("app").innerHTML="<div class=card>Login</div>";return;}for(var i=0;i<txs.length;i++){if(txs[i].cell===gu.cell)list.push(txs[i]);}}
+  var h='<div class="card"><h3 class="gold">History</h3>';
+  for(var i=list.length-1;i>=0;i--){
+    var t=list[i];var typeDisplay=t.type;if(typeDisplay==="buy")typeDisplay="bought";var feeDisplay="";if(t.type==="withdraw"&&t.fee>0){feeDisplay=" - 25% fee";}
+    var st=t.status;if(st==="done")st="approved";if(!st)st="approved";
+   if(typeDisplay==="earn")typeDisplay="earned"; h+='<div style="border-bottom:1px solid #222;padding:6px 0"><b>'+typeDisplay+'</b> R'+t.amount+feeDisplay+'<br><span class="small">'+new Date(t.date).toLocaleString()+" "+(t.note||"")+" "+st+" ["+(t.wallet||"")+']</span></div>';
+  }
+  if(list.length===0)h+="No history";h+="</div>";document.getElementById("app").innerHTML=h;
+}
+function setAdminSub(s){adminSub=s;goAdmin();}
+function editUserWallets(cell){var u=users.find(function(x){return x.cell===cell});if(!u)return;ensureWallets(u);var h='<div class="card" style="border:2px solid #d4af37"><h3 class="gold">Edit 3 Wallets - '+u.name+'<br><span class="small">'+u.cell+' - '+u.invite+'</span></h3><label>Main Wallet</label><input id="editMain" class="input" type="number" value="'+u.w.main.toFixed(2)+'"><label>Inviter Bonus</label><input id="editInv" class="input" type="number" value="'+u.w.inviter.toFixed(2)+'"><label>Loyalty Bonus (Will trigger popup)</label><input id="editLoy" class="input" type="number" value="'+u.w.loyalty.toFixed(2)+'"><button class="btn" onclick="saveWallets(\''+u.cell+'\')">Save Wallets</button><br><br><button class="btn2" onclick="goAdmin()">Cancel</button></div>';document.getElementById("app").innerHTML=h;}
+function saveWallets(cell){
+  var u=users.find(function(x){return x.cell===cell});if(!u)return;ensureWallets(u);
+  var oldMain=u.w.main;
+  var oldLoy=u.w.loyalty;
+  var newMain=parseFloat(document.getElementById("editMain").value)||0;
+  var newInv=parseFloat(document.getElementById("editInv").value)||0;
+  var newLoy=parseFloat(document.getElementById("editLoy").value)||0;
+  var diff=newMain-oldMain;
+  if(diff>0 && u.pkgs.length>0){
+    var active=u.pkgs.find(function(p){return!p.done;});
+    if(active){
+      active.totalEarned+=diff;
+      txs.push({cell:u.cell,type:"earn",amount:diff,fee:0,note:"Manual credit by admin - synced to Total Earned",date:new Date().toISOString(),status:"approved"});
+    }
+  }
+  var loyDiff = newLoy - oldLoy;
+  if(loyDiff > 0){
+    var tier = getTierByAmount(loyDiff);
+    u.activeLoyaltyReward = {
+      amount: loyDiff,
+      tierName: tier.name,
+      tierKey: tier.key,
+      file: tier.file,
+      createdAt: new Date().toISOString(),
+      cleared: false,
+      withdrawPending: false,
+      pendingAmount: 0
+    };
+    txs.push({cell:u.cell,type:"loyalty_reward",amount:loyDiff,fee:0,note:"LOYALTY REWARD "+tier.label+" R"+loyDiff+" credited by admin - Popup active",date:new Date().toISOString(),status:"approved",wallet:"loyalty"});
+  }
+  u.w.main=newMain;u.w.inviter=newInv;u.w.loyalty=newLoy;save();
+  if(tryGiveInviterBonus(u)){alert("Wallets Saved + Inviter bonus R10 triggered! Loyalty diff: R"+loyDiff+" ("+(loyDiff>0?getTierByAmount(loyDiff).label:"")+") - Popup will start!");} else {alert("Wallets Saved - Loyalty credited R"+loyDiff+" ("+(loyDiff>0?getTierByAmount(loyDiff).label:"none")+") - Popup active every 60s");}goAdmin();
+}
+function editUserDetails(cell){var u=users.find(function(x){return x.cell===cell});if(!u)return;var h='<div class="card" style="border:2px solid #d4af37"><h3 class="gold">Edit Personal Details - '+u.cell+'<br><span class="small">'+u.invite+'</span></h3><label>Name & Surname</label><input id="editName" class="input" value="'+(u.name||"")+'"><label>Email</label><input id="editEmail" class="input" value="'+(u.email||"")+'"><label>Gender</label><select id="editGender" class="input"><option value="Male" '+(u.gender==="Male"?"selected":"")+' >Male</option><option value="Female" '+(u.gender==="Female"?"selected":"")+' >Female</option></select><label>Province</label><select id="editProv" class="input"><option '+(u.prov==="Free State"?"selected":"")+' >Free State</option><option '+(u.prov==="Gauteng"?"selected":"")+' >Gauteng</option><option '+(u.prov==="KwaZulu-Natal"?"selected":"")+' >KwaZulu-Natal</option><option '+(u.prov==="Eastern Cape"?"selected":"")+' >Eastern Cape</option><option '+(u.prov==="Western Cape"?"selected":"")+' >Western Cape</option><option '+(u.prov==="Limpopo"?"selected":"")+' >Limpopo</option><option '+(u.prov==="Mpumalanga"?"selected":"")+' >Mpumalanga</option><option '+(u.prov==="North West"?"selected":"")+' >North West</option><option '+(u.prov==="Northern Cape"?"selected":"")+' >Northern Cape</option></select><button class="btn" onclick="saveUserDetails(\''+u.cell+'\')">Save Details</button><br><br><button class="btn2" onclick="goAdmin()">Cancel</button></div>';document.getElementById("app").innerHTML=h;}
+function saveUserDetails(cell){var u=users.find(function(x){return x.cell===cell});if(!u)return;u.name=document.getElementById("editName").value.trim();u.email=document.getElementById("editEmail").value.trim();u.gender=document.getElementById("editGender").value;u.prov=document.getElementById("editProv").value;save();alert("Details Updated");goAdmin();}
+function editAdminBank(cell){
+  var u=users.find(function(x){return x.cell===cell});if(!u)return;
+  if(!u.bank)u.bank={holder:u.name,bankName:"Bank Zero",acc:"",branch:"888000",approved:false,pending:false};
+  var h='<div class="card" style="border:2px solid #d4af37"><h3 class="gold">Edit Banking Details - '+u.name+'<br><span class="small">'+u.cell+'</span></h3><label>Account Holder Name</label><input id="editBankHolder" class="input" value="'+(u.bank.holder||u.name||"")+'"><label>Bank Name</label><input id="editBankName" class="input" value="'+(u.bank.bankName||"Bank Zero")+'"><label>Account Number</label><input id="editBankAcc" class="input" value="'+(u.bank.acc||"")+'"><label>Branch Code</label><input id="editBankBranch" class="input" value="'+(u.bank.branch||"888000")+'"><label>Bank Status</label><select id="editBankStatus" class="input"><option value="approved" '+(u.bank.approved?"selected":"")+' >APPROVED ✓</option><option value="pending" '+(!u.bank.approved?"selected":"")+' >PENDING</option></select><button class="btn" onclick="saveAdminBank(\''+u.cell+'\')">Save Banking Details</button><br><br><button class="btn2" onclick="goAdmin()">Cancel</button></div>';
+  document.getElementById("app").innerHTML=h;
+}
+function saveAdminBank(cell){
+  var u=users.find(function(x){return x.cell===cell});if(!u)return;if(!u.bank)u.bank={};
+  u.bank.holder=document.getElementById("editBankHolder").value.trim();
+  u.bank.bankName=document.getElementById("editBankName").value.trim()||"Bank Zero";
+  u.bank.acc=document.getElementById("editBankAcc").value.trim();
+  u.bank.branch=document.getElementById("editBankBranch").value.trim()||"888000";
+  var st=document.getElementById("editBankStatus").value;
+  u.bank.approved=(st==="approved");u.bank.pending=!u.bank.approved;
+  save();alert("Banking Details Updated - "+(u.bank.approved?"APPROVED ✓":"PENDING"));goAdmin();
+}
+function editUserPackages(cell){
+  var u=users.find(function(x){return x.cell===cell});if(!u)return;
+  var h='<div class="card" style="border:2px solid #d4af37"><h3 class="gold">Edit Packages - '+u.name+'<br><span class="small">'+u.cell+' - '+u.pkgs.length+' pkgs</span></h3>';
+  if(u.pkgs.length===0){h+='<p class="small">No packages bought</p>';}
+  else{
+    for(var i=0;i<u.pkgs.length;i++){
+      var p=u.pkgs[i];
+      if(!p.target) p.target = p.daily * p.duration;
+      h+='<div style="border:1px solid #444;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+p.id+'</b> - R'+p.price+' -> R'+p.daily+'/day | Target R'+p.target+'<br><span class="small">Bought: '+new Date(p.boughtAt).toLocaleString()+' | Earned: R'+p.totalEarned+'/'+p.target+' | '+(p.done?"<b style=color:#ff3b3b>your circle has ended deposit to start another</b>":"Active")+'</span><br><button class="btnRed" onclick="removePackage(\''+cell+'\','+i+')">Remove Package</button> ';
+      if(p.done){h+='<button class="btn2" onclick="reinstatePackage(\''+cell+'\','+i+')">Reinstate</button>';}
+      else{h+='<button class="btn2" onclick="completePackage(\''+cell+'\','+i+')">Mark Completed</button>';}
+      h+='</div>';
+    }
+  }
+  h+='<hr><h4 class="gold">Add Package Manually</h4>';
+  for(var j=0;j<PKGS.length;j++){h+='<button class="btn2" onclick="addPackage(\''+cell+'\','+j+')">+ '+PKGS[j].name+' R'+PKGS[j].price+'</button> ';}
+  h+='<br><br><button class="btn2" onclick="goAdmin()">Back</button></div>';
+  document.getElementById("app").innerHTML=h;
+}
+function removePackage(cell,idx){if(!confirm("Remove this package?"))return;var u=users.find(function(x){return x.cell===cell});if(!u)return;u.pkgs.splice(idx,1);save();alert("Package removed");editUserPackages(cell);}
+function reinstatePackage(cell,idx){var u=users.find(function(x){return x.cell===cell});if(!u||!u.pkgs[idx])return;u.pkgs[idx].done=false;save();alert("Reinstated");editUserPackages(cell);}
+function completePackage(cell,idx){var u=users.find(function(x){return x.cell===cell});if(!u||!u.pkgs[idx])return;u.pkgs[idx].done=true;save();alert("Completed");editUserPackages(cell);}
+function addPackage(cell,pkgIdx){
+  var u=users.find(function(x){return x.cell===cell});if(!u)return;
+  var pkg=PKGS[pkgIdx];
+  u.pkgs.push({id:pkg.id,price:pkg.price,daily:pkg.daily,earliest:pkg.earliest,duration:pkg.duration,target:pkg.target,boughtAt:new Date().toISOString(),lastClaim:null,totalEarned:0,done:false});
+  txs.push({cell:u.cell,type:"bought",amount:pkg.price,fee:0,note:"Admin added "+pkg.name,date:new Date().toISOString(),status:"approved",wallet:"admin"});
+  save();
+  if(tryGiveInviterBonus(u)){alert(pkg.name+" added + Inviter R10 bonus given!");} else {alert(pkg.name+" added");}
+  editUserPackages(cell);
+}
+function deleteUser(cell){if(!confirm("Delete "+cell+"?"))return;users=users.filter(function(x){return x.cell!==cell});txs=txs.filter(function(t){return t.cell!==cell});save();goAdmin();}
+function approveWithdraw(idx){
+  var t=txs[idx];if(!t||t.status!=="pending")return;
+  t.status="approved";
+  if(t.wallet==="loyalty"){
+    var u=users.find(function(x){return x.cell===t.cell});
+    if(u && u.activeLoyaltyReward &&!u.activeLoyaltyReward.cleared){
+      if(t.amount >= u.activeLoyaltyReward.amount - 1){
+        u.activeLoyaltyReward.cleared = true;
+        u.activeLoyaltyReward.approvedAt = new Date().toISOString();
+        u.activeLoyaltyReward.withdrawPending = false;
+      } else {
+        u.activeLoyaltyReward.amount = Math.max(0, u.activeLoyaltyReward.amount - t.amount);
+        if(u.activeLoyaltyReward.amount <= 0){
+          u.activeLoyaltyReward.cleared = true;
+        }
+      }
+    }
+  }
+  save();alert("Approved R"+t.amount+" - Loyalty popup will stop now if it was loyalty withdrawal");goAdmin();
+}
+function rejectWithdraw(idx){var t=txs[idx];if(!t||t.status!=="pending")return;if(!confirm("Reject and refund?"))return;var u=users.find(function(x){return x.cell===t.cell});if(u){ensureWallets(u);if(t.wallet==="main")u.w.main+=t.amount;else if(t.wallet==="inviter")u.w.inviter+=t.amount;else if(t.wallet==="loyalty")u.w.loyalty+=t.amount;else u.w.main+=t.amount; if(t.wallet==="loyalty" && u.activeLoyaltyReward){ u.activeLoyaltyReward.withdrawPending=false; }}t.status="rejected";save();goAdmin();}
+function exportData(){var data={users:users,txs:txs,date:new Date().toISOString()};var blob=new Blob([JSON.stringify(data)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="DMS_backup_"+new Date().toISOString().slice(0,10)+".json";a.click();}
+function importData(){var inp=document.getElementById("importFile");if(!inp||!inp.files[0]){alert("Choose file");return;}var reader=new FileReader();reader.onload=function(e){try{var data=JSON.parse(e.target.result);if(data.users&&data.txs){if(confirm("Import "+data.users.length+" users?")){users=data.users;txs=data.txs;save();alert("Imported!");goAdmin();}}else{alert("Invalid");}}catch(err){alert(err.message);}};reader.readAsText(inp.files[0]);}
+function goAdmin(){
+  setActive("bA");
+  if(!cur||cur.cell!=="ADMIN"){
+    document.getElementById("app").innerHTML='<div class="card"><h3>Admin Login</h3><input id="aC" class="input" placeholder="Cell" value="0510011039"><div class="pwdWrap"><input id="aP" class="input" type="password" placeholder="Pass"><button class="eyeBtn" id="eyeAP" onclick="toggleEye(&quot;aP&quot;,&quot;eyeAP&quot;)">👁️</button></div><button class="btn" onclick="adminLogin()">Login</button></div>';return;
+  }
+  for(var i=0;i<users.length;i++){var exp="DMS"+String(i+1).padStart(3,"0");users[i].invite=exp;ensureWallets(users[i]);}
+  var autoAll = autoCreditAll();
+  var totalMain=0,totalInv=0,totalLoy=0,totalPaid=0;
+  users.forEach(function(u){ensureWallets(u);totalMain+=u.w.main;totalInv+=u.w.inviter;totalLoy+=u.w.loyalty;});
+  txs.forEach(function(t){if(t.type==="withdraw"&&(t.status==="approved"||t.status==="done"))totalPaid+=t.amount;});
+  var pend=txs.filter(function(t){return t.status==="pending"});
+  var h='<div class="card">'+(autoAll>0?'<div style="background:#0a1f18;border:1px solid #2ee89e;padding:8px;border-radius:8px;margin-bottom:8px;color:#2ee89e">🎉 Auto-credited R'+autoAll+' to ALL users at 08:00 AM today!</div>':'')+'<h2 class="gold">Admin Dashboard</h2><div class="statBox"><b>'+users.length+'</b><br><span class="small">Users</span></div><div class="statBox"><b>'+pend.length+'</b><br><span class="small">Pending</span></div><div class="statBox"><b>R'+totalMain.toFixed(0)+'</b><br><span class="small">Total Main</span></div><div class="statBox"><b>R'+totalInv.toFixed(0)+'</b><br><span class="small">Inviter</span></div><div class="statBox"><b>R'+totalLoy.toFixed(0)+'</b><br><span class="small">Loyalty</span></div><div class="statBox"><b>R'+totalPaid.toFixed(0)+'</b><br><span class="small">Paid Out</span></div><hr><div class="adminTab"><button onclick="setAdminSub(\'dashboard\')" class="'+(adminSub==="dashboard"?"active":"")+'">Dashboard</button><button onclick="setAdminSub(\'withdrawals\')" class="'+(adminSub==="withdrawals"?"active":"")+'">Withdrawals ('+pend.length+')</button><button onclick="setAdminSub(\'users\')" class="'+(adminSub==="users"?"active":"")+'">Users ('+users.length+')</button><button onclick="setAdminSub(\'leaderboard\')" class="'+(adminSub==="leaderboard"?"active":"")+'" style="background:#0f2a22;color:#2ee89e;border-color:#2ee89e">🏆 Leader Board</button><button onclick="setAdminSub(\'settings\')" class="'+(adminSub==="settings"?"active":"")+'">Settings</button></div><hr>';
+  if(adminSub==="dashboard"||adminSub==="withdrawals"){
+    h+='<h3 class="gold">Pending Withdrawals</h3>';if(pend.length===0)h+="<p>No pending</p>";
+    for(var i=0;i<pend.length;i++){var t=pend[i];var idx=txs.indexOf(t);h+='<div style="border:1px solid #d4af37;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+t.cell+'</b><br>R'+t.amount+' - 25% fee Receive R'+(t.amount-t.fee).toFixed(2)+'<br>'+(t.wallet==="loyalty"?'<span style="color:#2ee89e">LOYALTY REWARD - popup active until approved</span><br>':'')+'<button class="btn2" onclick="approveWithdraw('+idx+')">Approve</button><button class="btnRed" onclick="rejectWithdraw('+idx+')">Reject</button></div>';}
+  }
+  if(adminSub==="leaderboard"){
+    var board=[];
+    for(var uIdx=0;uIdx<users.length;uIdx++){
+      var u=users[uIdx];ensureWallets(u);
+      var totalInvites=0; var qualifiedCount=0;
+      for(var j=0;j<users.length;j++){
+        if(users[j].by===u.invite || users[j].by===u.cell){
+          totalInvites++;ensureWallets(users[j]);
+          if(isQualifiedInvite(users[j])){qualifiedCount++;}
+        }
+      }
+      var earned = qualifiedCount * 10;
+      board.push({name:u.name,invite:u.invite,cell:u.cell,total:totalInvites,qualified:qualifiedCount,earned:earned});
+    }
+    board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
+    h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
+    h+='<div style="overflow:auto"><table class="leadTable"><tr><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
+    for(var r=0;r<board.length;r++){
+      var row=board[r];var medal=r===0?'🥇':r===1?'🥈':r===2?'🥉':(r+1)+'.';
+      h+='<tr style="'+(r<3 && row.total>0?'background:#1a2a1a;border-left:3px solid #2ee89e':'')+'"><td><b>'+medal+'</b></td><td><b>'+row.name+'</b><br><span class="gold">'+row.invite+'</span><br><span class="small">'+row.cell+'</span></td><td><b style="color:#2ee89e;font-size:16px">'+row.total+' invites</b><br><span class="small">'+row.qualified+' qualified</span></td><td><b>Total Earned= R'+row.earned+'</b></td></tr>';
+    }
+    h+='</table></div>';
+  }
+  if(adminSub==="users"){
+    h+='<h3 class="gold">Users (Auto credits ALL when admin opens)</h3><input id="searchUser" class="input" placeholder="Search Email Cell" oninput="filterUsers(this.value)"><div id="userList">';
+    for(var j=0;j<users.length;j++){
+      var uu=users[j];ensureWallets(uu);
+      var rewardInfo = uu.activeLoyaltyReward &&!uu.activeLoyaltyReward.cleared? '<div style="background:#0a1f18;border:1px solid #2ee89e;padding:6px;border-radius:8px;margin:6px 0;color:#2ee89e">🎁 ACTIVE LOYALTY REWARD: R'+uu.activeLoyaltyReward.amount+' '+uu.activeLoyaltyReward.tierName+' - Popup every 60s - '+(uu.activeLoyaltyReward.withdrawPending?'PENDING WITHDRAWAL':'ACTIVE')+'</div>' : '';
+      h+='<div style="border:1px solid #444;padding:10px;margin:8px 0;border-radius:10px" class="userItem" data-search="'+uu.cell+' '+uu.invite+' '+uu.name.toLowerCase()+' '+(uu.email||"").toLowerCase()+'"><b>'+uu.name+'</b><br>'+uu.cell+' - <b class="gold">'+uu.invite+'</b><br>Main R'+uu.w.main.toFixed(2)+' | Inviter R'+uu.w.inviter.toFixed(2)+' | Loyalty R'+uu.w.loyalty.toFixed(2)+' | '+uu.pkgs.length+' pkgs<br>By: '+(uu.by||"None")+'<br>'+rewardInfo;
+      if(uu.bank){h+='<div style="margin-top:8px;padding:8px;border:1px solid gold;border-radius:8px;background:#1a1a1a"><b>Bank:</b> '+(uu.bank.bankName||"")+'<br><b>Holder:</b> '+(uu.bank.holder||"")+'<br><b>Acc:</b> '+(uu.bank.acc||"")+'<br><b>Status:</b> '+(uu.bank.approved?'<span style="color:lightgreen">APPROVED ✓</span>':'<span style="color:orange">PENDING</span>')+'<br><button class="btn2" onclick="approveBank(\''+uu.cell+'\')" style="background:green;color:#fff">Approve Banking</button> <button class="btnRed" onclick="rejectBank(\''+uu.cell+'\')">Reject Bank</button></div>';}
+      h+='<br><button class="btn2" onclick="editUserWallets(\''+uu.cell+'\')">Edit 3 Wallets</button><button class="btn2" onclick="editUserDetails(\''+uu.cell+'\')" style="background:#5dade2;color:#000">Edit Personal Details</button><button class="btn2" onclick="editAdminBank(\''+uu.cell+'\')" style="background:#1a1a1a;color:#d4af37;border:1px solid #d4af37">Edit Banking Details</button><button class="btn2" onclick="editUserPackages(\''+uu.cell+'\')" style="background:#d4af37">Packages ('+uu.pkgs.length+')</button><br><br><button class="btnRed" onclick="deleteUser(\''+uu.cell+'\')">Delete User</button></div>';
+    }
+    h+='</div>';
+  }
+  if(adminSub==="settings"){h+='<h3 class="gold">Settings - Backup</h3><div style="border:2px solid #d4af37;padding:10px;border-radius:10px"><button class="btn" onclick="exportData()" style="background:#90ee90">Export Backup</button><br><br><input type="file" id="importFile" class="input" accept=".json"><button class="btn2" onclick="importData()">Import Backup</button><p class="small">Upload 4 reward images as R70.jpg, R660.jpg, R1000.jpg, R5000.jpg in same folder as this html for popup</p></div>';}
+  h+='</div>';document.getElementById("app").innerHTML=h;
+}
+function filterUsers(q){q=q.toLowerCase();document.querySelectorAll(".userItem").forEach(function(el){var s=el.getAttribute("data-search");el.style.display=s.includes(q)?"block":"none";});}
+try{goHome();}catch(e){document.getElementById("app").innerHTML='<div class="card">Error: '+e.message+'<br><button class="btn" onclick="localStorage.clear();location.reload()">Clear</button></div>';}
+</script>
+</body>
+</html>
