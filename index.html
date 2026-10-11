@@ -191,7 +191,17 @@ var txs=safeParse("dms_txs","[]");
 var cur=safeParse("dms_cur","null");var anns=safeParse("dms_anns","[]");
 var adminSub="leaderboard";
 var VALID_DEPOSITS=[160,250,340,430,520];
-function save(){localStorage.setItem("dms_users",JSON.stringify(users));localStorage.setItem("dms_txs",JSON.stringify(txs));localStorage.setItem("dms_cur",JSON.stringify(cur));localStorage.setItem("dms_anns",JSON.stringify(anns));}
+function save(){
+  localStorage.setItem("dms_users",JSON.stringify(users));
+  localStorage.setItem("dms_txs",JSON.stringify(txs));
+  localStorage.setItem("dms_cur",JSON.stringify(cur));
+  localStorage.setItem("dms_anns",JSON.stringify(anns));
+  try{
+    if(window.fbSaveUser){ users.forEach(function(u){ window.fbSaveUser(u); }); }
+    if(window.fbSaveTx){ txs.slice(-3).forEach(function(t){ window.fbSaveTx(t); }); }
+    if(window.fbSaveAnn){ anns.slice(-3).forEach(function(a){ window.fbSaveAnn(a); }); }
+  }catch(e){}
+}
 function ensureWallets(u){if(!u.w) u.w={main:0,inviter:0,loyalty:0};if(u.w.bonus!==undefined&&u.w.inviter===undefined){u.w.inviter=u.w.bonus;delete u.w.bonus;}if(u.w.main===undefined) u.w.main=0;if(u.w.inviter===undefined) u.w.inviter=0;if(u.w.loyalty===undefined) u.w.loyalty=0;if(!u.hasOwnProperty('bank')) u.bank=null;if(!u.hasOwnProperty('inviterBonusGiven')) u.inviterBonusGiven=false;if(!u.hasOwnProperty('activeLoyaltyReward')) u.activeLoyaltyReward=null;if(!u.hasOwnProperty('annReadIds')) u.annReadIds=[];}
 function setActive(id){try{document.querySelectorAll("nav button").forEach(function(b){b.classList.remove("active")});var e=document.getElementById(id);if(e) e.classList.add("active");}catch(e){}}function getUnreadAnnCount(){var u=getUser();if(!u) return anns.length;ensureWallets(u);if(!u.annReadIds) u.annReadIds=[];var unread=0;for(var i=0;i<anns.length;i++){if(u.annReadIds.indexOf(anns[i].id)===-1) unread++;}return unread;}
 function updateAnnBadge(){var b=document.getElementById("annBadge");if(!b) return;try{var c=getUnreadAnnCount();if(c>0){b.textContent=c;b.style.display="inline-block";}else{b.style.display="none";}}catch(e){b.style.display="none";}}
@@ -595,6 +605,25 @@ function goAdmin(){
 }
 function filterUsers(q){q=q.toLowerCase();document.querySelectorAll(".userItem").forEach(function(el){var s=el.getAttribute("data-search");el.style.display=s.includes(q)?"block":"none";});}
 try{goHome();}catch(e){document.getElementById("app").innerHTML='<div class="card">Error: '+e.message+'<br><button class="btn" onclick="localStorage.clear();location.reload()">Clear</button></div>';}
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyBI8hNag3bNUYPgWQyjK2LlNbBkLWbrWUA",
+  authDomain: "dms96-5b0a1.firebaseapp.com",
+  projectId: "dms96-5b0a1",
+  storageBucket: "dms96-5b0a1.firebasestorage.app",
+  messagingSenderId: "230194828323",
+  appId: "1:230194828323:web:597f93d5ad4306aafd0d96"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+window.db = db;
+window.fbSaveUser = async (u) => { try{ await setDoc(doc(db,"users",u.cell), u); console.log("🔥 Saved:", u.cell); }catch(e){} };
+window.fbSaveTx = async (t) => { try{ const id="tx_"+Date.now()+"_"+Math.random().toString(36).slice(2,4); await setDoc(doc(db,"transactions",id), t); }catch(e){} };
+window.fbSaveAnn = async (a) => { try{ await setDoc(doc(db,"announcements", String(a.id)), a); }catch(e){} };
+console.log("🔥 Firebase dms96-5b0a1 ready");
 </script>
 </body>
 </html>
