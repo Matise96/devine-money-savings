@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>DMS - Devine Money Savings</title>
 <style>
+  .badge-pending{color:#a16207;background:#fef9c3;border:1px solid #fde68a;padding:3px 10px;border-radius:999px;font-weight:800;font-size:12px}
+.badge-approved{color:#15803d;background:#dcfce7;border:1px solid #86efac;padding:3px 10px;border-radius:999px;font-weight:800;font-size:12px}
+.badge-rejected{color:#991b1b;background:#fee2e2;border:1px solid #fca5a5;padding:3px 10px;border-radius:999px;font-weight:800;font-size:12px}
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui;background:#0a0a0a;color:#fff;padding-bottom:20px}
 header{background:#000;border-bottom:2px solid #d4af37;padding:14px 12px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
@@ -624,6 +627,33 @@ window.fbSaveUser = async (u) => { try{ await setDoc(doc(db,"users",u.cell), u);
 window.fbSaveTx = async (t) => { try{ const id="tx_"+Date.now()+"_"+Math.random().toString(36).slice(2,4); await setDoc(doc(db,"transactions",id), t); }catch(e){} };
 window.fbSaveAnn = async (a) => { try{ await setDoc(doc(db,"announcements", String(a.id)), a); }catch(e){} };
 console.log("🔥 Firebase dms96-5b0a1 ready");
+</script>
+  <script>
+// Auto yellow pending / green approved for withdrawals + bank only
+function colorStatus(){
+  document.querySelectorAll('div,span,p,td,b').forEach(function(el){
+    if(el.children.length>0) return;
+    var txt=(el.innerText||'').trim().toLowerCase();
+    if(txt==='pending'){
+      if(el.closest('#app') && el.innerText.length<20){
+        el.className='badge-pending';
+      }
+    }
+    if(txt==='approved'){
+      if(el.closest('#app') && el.innerText.length<20){
+        el.className='badge-approved';
+      }
+    }
+    if(txt==='rejected'){
+      if(el.closest('#app') && el.innerText.length<20){
+        el.className='badge-rejected';
+      }
+    }
+  });
+}
+setInterval(colorStatus, 600);
+// also helper you can use manually: fmt("pending")
+function fmt(s){s=(s||'').toLowerCase();if(s.includes('pend'))return'<span class="badge-pending">pending</span>';if(s.includes('approv'))return'<span class="badge-approved">approved</span>';if(s.includes('reject'))return'<span class="badge-rejected">rejected</span>';return s;}
 </script>
 </body>
 </html>
