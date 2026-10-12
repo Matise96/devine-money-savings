@@ -629,31 +629,45 @@ window.fbSaveAnn = async (a) => { try{ await setDoc(doc(db,"announcements", Stri
 console.log("🔥 Firebase dms96-5b0a1 ready");
 </script>
   <script>
-// Auto yellow pending / green approved for withdrawals + bank only
-function colorStatus(){
-  document.querySelectorAll('div,span,p,td,b').forEach(function(el){
-    if(el.children.length>0) return;
-    var txt=(el.innerText||'').trim().toLowerCase();
-    if(txt==='pending'){
-      if(el.closest('#app') && el.innerText.length<20){
-        el.className='badge-pending';
+// FIXED - colors pending/approved inside History sentence
+function colorStatusHistory(){
+  const badges = document.querySelectorAll('#app *');
+  badges.forEach(el=>{
+    // skip if already has badge inside
+    if(el.querySelector && el.querySelector('.badge-pending, .badge-approved, .badge-rejected')) return;
+    let html = el.innerHTML;
+    if(!html || el.children.length>0) return; // only leaf text nodes
+    // don't touch big sections
+    if(el.innerText && el.innerText.length>200) return;
+  });
+  
+  // main fix for History page
+  document.querySelectorAll('*').forEach(el=>{
+    if(!el.innerText) return;
+    // only fix small transaction lines that contain pending/approved
+    if(el.innerText.includes('pending') && el.innerText.length<150 && el.innerText.toLowerCase().includes('withdraw')){
+      if(!el.innerHTML.includes('badge-pending')){
+        el.innerHTML = el.innerHTML.replace(/pending/gi, '<span class="badge-pending">pending</span>');
       }
     }
-    if(txt==='approved'){
-      if(el.closest('#app') && el.innerText.length<20){
-        el.className='badge-approved';
+    if(el.innerText.includes('approved') && el.innerText.length<150 && el.innerText.toLowerCase().includes('withdraw')){
+      if(!el.innerHTML.includes('badge-approved')){
+        el.innerHTML = el.innerHTML.replace(/approved/gi, '<span class="badge-approved">approved</span>');
       }
     }
-    if(txt==='rejected'){
-      if(el.closest('#app') && el.innerText.length<20){
-        el.className='badge-rejected';
+    if(el.innerText.includes('rejected') && el.innerText.length<150){
+      if(!el.innerHTML.includes('badge-rejected')){
+        el.innerHTML = el.innerHTML.replace(/rejected/gi, '<span class="badge-rejected">rejected</span>');
       }
     }
+    // also lone statuses (bank details page)
+    let t = el.innerText.trim().toLowerCase();
+    if(t==='pending' && el.children.length===0){ el.className='badge-pending'; }
+    if(t==='approved' && el.children.length===0){ el.className='badge-approved'; }
+    if(t==='rejected' && el.children.length===0){ el.className='badge-rejected'; }
   });
 }
-setInterval(colorStatus, 600);
-// also helper you can use manually: fmt("pending")
-function fmt(s){s=(s||'').toLowerCase();if(s.includes('pend'))return'<span class="badge-pending">pending</span>';if(s.includes('approv'))return'<span class="badge-approved">approved</span>';if(s.includes('reject'))return'<span class="badge-rejected">rejected</span>';return s;}
+setInterval(colorStatusHistory, 700);
 </script>
 </body>
 </html>
