@@ -740,10 +740,7 @@ function colorStatusHistory(){
 }
 setInterval(colorStatusHistory, 700);
  
-  document.getElementById("app").innerHTML=h;
-  updateAnnBadge();
-  updateInboxBadge();
-}
+  
 function filterUsers(q){
   q=(q||"").toLowerCase();
   document.querySelectorAll(".userItem").forEach(function(el){
