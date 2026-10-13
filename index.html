@@ -756,22 +756,21 @@ function colorStatusHistory(){
   });
 }
 setInterval(colorStatusHistory, 700);
-</script>
-  // SHOW PENDING DEPOSITS FOR ONE USER
+ // SHOW PENDING DEPOSITS FOR ONE USER
 function viewPD(uid){
-  var list = (txs||[]).filter(x=>x.uid==uid && x.type=="deposit" && x.status=="pending");
+  var list = (txs||[]).filter(function(x){ return x.uid===uid && x.type=="deposit" && x.status=="pending"; });
   if(!list.length){ alert("No pending deposits for this user"); return; }
   var h='<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;padding:15px;overflow:auto"><div style="background:#111;border:2px solid #d4af37;border-radius:12px;padding:15px"><h3 style="color:#d4af37">Pending Deposits - '+uid+'</h3>';
-  list.forEach((t,i)=>{
-    h+='<div style="border:1px solid #444;padding:10px;margin:10px 0;border-radius:8px">'
-     +'<b>R'+t.amount+'</b> - '+t.date+'<br>Ref: '+(t.ref||"N/A")+'<br>'
-     +'<button onclick="confirmDeposit(\''+t.id+'\')" style="background:#16a34a;color:#fff;padding:8px 14px;border-radius:8px;border:0;margin:5px;font-weight:bold">Confirmed / Acknowledged</button>'
-     +'<button onclick="notYetDeposit(\''+t.id+'\')" style="background:#eab308;color:#000;padding:8px 14px;border-radius:8px;border:0;margin:5px;font-weight:bold">Payment not yet reflecting</button>'
-     +'</div>';
-  });
-  h+='<button onclick="this.parentElement.parentElement.remove()" style="background:#dc2626;color:#fff;padding:10px;width:100%;border-radius:8px;border:0;margin-top:10px">Close</button></div></div>';
+  for(var i=0;i<list.length;i++){
+    var t=list[i];
+    h+='<div style="border:1px solid #444;padding:10px;margin:10px 0;border-radius:8px"><b>R'+t.amount+'</b> - '+t.date+'<br>Ref: '+(t.ref||"N/A")+'<br><button onclick="confirmDeposit(\''+t.id+'\')" style="background:#16a34a;color:#fff;padding:8px 12px;border-radius:6px;border:0;margin:4px">Confirmed / Acknowledged</button><button onclick="notYetDeposit(\''+t.id+'\')" style="background:#facc15;color:#000;padding:8px 12px;border-radius:6px;border:0;margin:4px">Payment not yet reflecting</button></div>';
+  }
+  h+='<button onclick="document.querySelectorAll(\'[style*=fixed]\').forEach(function(e){e.remove()})" style="background:red;color:#fff;width:100%;padding:10px;border-radius:8px;border:0">Close</button></div></div>';
   document.body.insertAdjacentHTML('beforeend',h);
-}
+}   
+     
+  
+
 function confirmDeposit(tid){
   var t=txs.find(x=>x.id==tid); if(!t) return;
   var u=users[t.uid]; if(!u) return;
