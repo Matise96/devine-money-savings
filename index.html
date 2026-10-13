@@ -739,23 +739,7 @@ function colorStatusHistory(){
   });
 }
 setInterval(colorStatusHistory, 700);
- // SHOW PENDING DEPOSITS FOR ONE USER
-function viewPD(uid){
-  var list = (txs||[]).filter(function(x){ return x.uid===uid && x.type=="deposit" && x.status=="pending"; });
-  if(!list.length){ alert("No pending deposits for this user"); return; }
-  var h='<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;padding:15px;overflow:auto"><div style="background:#111;border:2px solid #d4af37;border-radius:12px;padding:15px"><h3 style="color:#d4af37">Pending Deposits - '+uid+'</h3>';
-  for(var i=0;i<list.length;i++){
-    var t=list[i];
-    h+='<div style="border:1px solid #444;padding:10px;margin:10px 0;border-radius:8px"><b>R'+t.amount+'</b> - '+t.date+'<br>Ref: '+(t.ref||"N/A")+'<br><button onclick="confirmDeposit(\''+t.id+'\')" style="background:#16a34a;color:#fff;padding:8px 12px;border-radius:6px;border:0;margin:4px">Confirmed / Acknowledged</button><button onclick="notYetDeposit(\''+t.id+'\')" style="background:#facc15;color:#000;padding:8px 12px;border-radius:6px;border:0;margin:4px">Payment not yet reflecting</button></div>';
-  }
-        h+='<div style="border:1px solid #444;padding:10px;margin:8px 0;border-radius:10px" class="userItem" data-search="'+uu.cell+' '+uu.invite+' '+uu.name+' '+uu.email+'"><b>'+uu.name+'</b> ('+uu.cell+') - '+uu.invite+'<br>Main:R'+uu.w.main.toFixed(0)+' Inv:R'+uu.w.inviter.toFixed(0)+' Loy:R'+uu.w.loyalty.toFixed(0)+' Pkgs:'+uu.pkgs.length+rewardInfo+'<br><button class="btn2" onclick="editUserWallets(\''+uu.cell+'\')">Edit Wallets</button><button class="btn2" onclick="editUserPackages(\''+uu.cell+'\')">Pkgs</button><button class="btn2" style="background:#2C2E6B;color:#fff" onclick="openInboxModal(\''+uu.cell+'\')">Inbox</button><button class="btn2" style="background:#16a34a" onclick="viewPendingDeposits(\''+uu.cell+'\')">Pending Deposit ('+getPendingDeposits(uu.cell).length+')</button><button class="btnRed" onclick="deleteUser(\''+uu.cell+'\')">Del</button></div>';
-    }
-    h+='</div></div>';
-  }
-  if(adminSub==="settings"){
-    h+='<h3 class="gold">Settings - Backup</h3><button class="btn2" onclick="exportData()">Export JSON</button><br><br><input type="file" id="importFile" class="input"><button class="btn2" onclick="importData()">Import JSON</button><hr><p class="small">Backup includes users and txs</p>';
-  }
-  h+='</div>';
+ 
   document.getElementById("app").innerHTML=h;
   updateAnnBadge();
   updateInboxBadge();
@@ -767,26 +751,7 @@ function filterUsers(q){
     el.style.display=s.indexOf(q)===-1?"none":"block";
   });
 }
-function colorStatusHistory(){
-  document.querySelectorAll(".badge-pending,.badge-approved,.badge-rejected").forEach(function(el){
-    var t=el.innerText.toLowerCase();
-    if(t.includes("pending")){el.className="badge-pending";}
-    else if(t.includes("approved")){el.className="badge-approved";}
-    else if(t.includes("rejected")||t.includes("not_reflecting")){el.className="badge-rejected";}
-  });
-}
-setInterval(colorStatusHistory,700);
-</script>
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {getFirestore,doc,setDoc,getDoc,collection,getDocs} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSy...",authDomain:"devine-money-savings.firebaseapp.com",projectId:"devine-money-savings"};
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
-window.fbSaveUser=async function(u){try{await setDoc(doc(db,"users",u.cell),u,{merge:true});}catch(e){}}
-window.fbSaveTx=async function(t){try{await setDoc(doc(db,"txs",Date.now()+""+Math.random()),t);}catch(e){}}
-window.fbSaveAnn=async function(a){try{await setDoc(doc(db,"anns",a.id+""),a);}catch(e){}}
-window.fbSaveInbox=async function(cell,msg){try{await setDoc(doc(db,"inbox",cell+"_"+msg.id),{cell:cell,msg:msg});}catch(e){}}
+
 </script>
 </body>
 </html>
