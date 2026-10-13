@@ -310,7 +310,7 @@ function doLogin(){
   var c=document.getElementById("lC").value.trim(),p=document.getElementById("lP").value.trim();
   if(c==="0510011039"&&p==="Tiisetso#96"){cur={cell:"ADMIN"};save();goAdmin();return;}
   for(var i=0;i<users.length;i++){if(users[i].cell===c&&users[i].pass===p){ensureWallets(users[i]);cur={cell:users[i].cell};save();goHome();return;}}
-  alert("Wrong");
+  alert("Incorrect");
 }
 function adminLogin(){
   var c=document.getElementById("aC").value.trim(),p=document.getElementById("aP").value.trim();
@@ -502,7 +502,7 @@ function editUserPackages(cell){
       h+='</div>';
     }
   }
-  h+='<hr><h4 class="gold">Add Package Manually</h4>';
+  +='<hr><h4 class="gold">Add Package Manually</h4>';
   for(var j=0;j<PKGS.length;j++){h+='<button class="btn2" onclick="addPackage(\''+cell+'\','+j+')">+ '+PKGS[j].name+' R'+PKGS[j].price+'</button> ';}
   h+='<br><br><button class="btn2" onclick="goAdmin()">Back</button></div>';
   document.getElementById("app").innerHTML=h;
@@ -519,7 +519,7 @@ function addPackage(cell,pkgIdx){
   if(tryGiveInviterBonus(u)){alert(pkg.name+" added + Inviter R10 bonus given!");} else {alert(pkg.name+" added");}
   editUserPackages(cell);
 }
-function deleteUser(cell){if(!confirm("Delete "+cell+"?"))return;users=users.filter(function(x){return x.cell!==cell});txs=txs.filter(function(t){return t.cell!==cell});save();goAdmin();}
+function deleteUser(cell){if(!confirm("Delete "+cell+"?"))return;users=users.filter(function(x){return x.cell!==cell});txs=txs.filter(function(t){return t.cell!==cell});save();goAdmin();
 function approveWithdraw(idx){
   var t=txs[idx];if(!t||t.status!=="pending")return;
   t.status="approved";
@@ -575,16 +575,29 @@ function openInboxModal(cell){
   var prev = u.inbox.length>0? u.inbox.slice(-3).reverse().map(m=>'<div style="border:1px solid #333;padding:8px;border-radius:8px;margin:6px 0"><b>'+new Date(m.date).toLocaleString()+'</b><br>'+m.text+'</div>').join('') : '<p class="small">No previous messages</p>';
   var html='<div id="inboxModal" class="inboxModal" style="display:flex"><div class="inboxModalBox"><h3 class="gold">Inbox to '+u.name+' ('+u.cell+')</h3><label class="small">Title</label><input id="inboxTitle" class="input" placeholder="Title"><label class="small">Message *</label><textarea id="inboxText" class="input" rows="4" placeholder="Type message to this user only..."></textarea><button class="btn" onclick="sendInboxMsg(\''+cell+'\')">Send to User</button><button class="btn2" onclick="closeInboxModal()" style="width:100%;margin-top:8px">Close</button><hr><h4 class="small">Previous (last 3)</h4>'+prev+'</div></div>';
   document.body.insertAdjacentHTML('beforeend', html);
-}
-function closeInboxModal(){ var m=document.getElementById("inboxModal"); if(m) m.remove(); }
-function sendInboxMsg(cell){
-  var title=document.getElementById("inboxTitle").value.trim()||"Message from Admin";
-  var text=document.getElementById("inboxText").value.trim(); if(!text){ alert("Message required"); return; }
-  var u=users.find(function(x){return x.cell===cell}); if(!u) return; ensureInbox(u);
-  var msg={id:Date.now(), title:title, text:text, date:new Date().toISOString()};
-  u.inbox.push(msg); save();
-  try{ if(window.fbSaveInbox) window.fbSaveInbox(cell, msg); }catch(e){}
-  alert("Inbox sent to "+u.name); closeInboxModal(); goAdmin();
+  }h;
+    
+      function closeInboxModal(){var m=document.getElementById("inboxModal");if(m)m.remove();}
+  function sendInboxMsg(cell){
+   var title=document.getElementById("inboxTitle").value.trim()||"Message from Admin";
+   var text=document.getElementById("inboxText").value.trim();if(!text){alert("Message required");return;}
+   var u=users.find(function(x){return x.cell===cell});if(!u)return;ensureInbox(u);
+   var msg={id:Date.now(),title:title,text:text,date:new Date().toISOString()};u.inbox.push(msg);save();
+   try{if(window.fbSaveInbox)window.fbSaveInbox(u);}catch(e){}
+   alert("Message sent to inbox");closeInboxModal();goAdmin();
+  }
+  function removePackage(cell,idx){if(!confirm("Remove this package?"))return;var u=users.find(function(x){return x.cell===cell});if(!u)return;u.pkgs.splice(idx,1);save();alert("Removed");goAdmin();}
+  function completePackage(cell,idx){var u=users.find(function(x){return x.cell===cell});if(!u||!u.pkgs)return;var p=u.pkgs[idx];if(p)p.done=true;save();alert("Completed");goAdmin();}
+  function addPackage(cell,pkgIdx){
+   var u=users.find(function(x){return x.cell===cell});if(!u)return;
+   var pkg=PKGS[pkgIdx];u.pkgs.push({id:pkg.id,price:pkg.price,daily:pkg.daily,target:pkg.target,totalEarned:0,earliest:pkg.earliest,duration:pkg.duration,boughtAt:new Date().toISOString(),done:false});
+   txs.push({cell:u.cell,type:"bought",amount:pkg.price,fee:0,note:"Admin added "+pkg.name,date:new Date().toISOString()});
+   save();
+   if(tryGiveInviterBonus(u)){alert(pkg.name+" added + R10 bonus");}else{alert(pkg.name+" added");}
+   editUserPackages(cell);
+  }
+  function deleteUser(cell){if(!confirm("Delete "+cell+"?"))return;users=users.filter(function(x){return x.cell!==cell});save();goAdmin();}                      
+  
 }
 // ===== END INBOX SYSTEM =====
   // ===== PENDING DEPOSIT SYSTEM - SAFE =====
