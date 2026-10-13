@@ -587,6 +587,44 @@ function sendInboxMsg(cell){
   alert("Inbox sent to "+u.name); closeInboxModal(); goAdmin();
 }
 // ===== END INBOX SYSTEM =====
+  // ===== PENDING DEPOSIT SYSTEM =====
+function getPendingDeposits(cell){
+  return txs.filter(function(t){return t.cell===cell && t.type==="deposit" && t.status==="pending"});
+}
+function viewPendingDeposits(cell){
+  var u=users.find(function(x){return x.cell===cell});if(!u)return;
+  var list=getPendingDeposits(cell);
+  var html='<div id="depModal" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:10000;display:flex;align-items:center;justify-content:center;padding:15px"><div style="background:#141414;border:2px solid #d4af37;border-radius:16px;padding:18px;width:95%;max-width:460px;max-height:85vh;overflow:auto"><h3 style="color:#d4af37">Pending Deposits - '+u.name+' ('+cell+')</h3>';
+  if(list.length===0) html+='<p class="small">No pending deposits</p>';
+  else{
+    for(var i=0;i<list.length;i++){
+      var t=list[i];var idx=txs.indexOf(t);
+      html+='<div style="border:1px solid #d4af37;padding:10px;margin:10px 0;border-radius:10px;background:#1a1a1a"><b>Deposit R'+t.amount+'</b><br><span class="small">'+new Date(t.date).toLocaleString()+'<br>Ref: '+(t.note||t.ref||"N/A")+'</span><br><br><button onclick="approveDeposit('+idx+')" style="background:#16a34a;color:#fff;padding:9px 14px;border-radius:8px;border:0;font-weight:800;margin:4px">Confirmed / Acknowledged</button><button onclick="markNotReflecting('+idx+')" style="background:#facc15;color:#000;padding:9px 14px;border-radius:8px;border:0;font-weight:800;margin:4px">Payment not yet reflecting</button></div>';
+    }
+  }
+  html+='<button onclick="closeDepModal()" style="background:#ff3b3b;color:#fff;width:100%;padding:10px;border-radius:8px;border:0;margin-top:10px">Close</button></div></div>';
+  document.body.insertAdjacentHTML('beforeend',html);
+}
+function closeDepModal(){var m=document.getElementById("depModal");if(m)m.remove();}
+function approveDeposit(idx){
+  var t=txs[idx];if(!t||t.type!=="deposit")return;
+  var u=users.find(function(x){return x.cell===t.cell});if(!u)return;
+  ensureWallets(u);
+  u.w.main+=Number(t.amount);
+  t.status="approved";
+  save();
+  alert("✅ Confirmed! R"+t.amount+" added to Main Wallet for "+u.name+" - now shows in History");
+  closeDepModal();goAdmin();
+}
+function markNotReflecting(idx){
+  var t=txs[idx];if(!t)return;
+  if(!confirm("Mark R"+t.amount+" as Payment not yet reflecting?"))return;
+  t.status="not_reflecting";
+  save();
+  alert("Marked as Payment not yet reflecting");
+  closeDepModal();goAdmin();
+}
+// ===== END PENDING DEPOSIT =====
 function goAdmin(){
   setActive("bA");
   if(!cur||cur.cell!=="ADMIN"){
@@ -647,7 +685,7 @@ function goAdmin(){
       var rewardInfo = uu.activeLoyaltyReward &&!uu.activeLoyaltyReward.cleared? '<div style="background:#0a1f18;border:1px solid #2ee89e;padding:6px;border-radius:8px;margin:6px 0;color:#2ee89e">🎁 ACTIVE LOYALTY REWARD: R'+uu.activeLoyaltyReward.amount+' '+uu.activeLoyaltyReward.tierName+' - Popup every 60s - '+(uu.activeLoyaltyReward.withdrawPending?'PENDING WITHDRAWAL':'ACTIVE')+'</div>' : '';
       h+='<div style="border:1px solid #444;padding:10px;margin:8px 0;border-radius:10px" class="userItem" data-search="'+uu.cell+' '+uu.invite+' '+uu.name.toLowerCase()+' '+(uu.email||"").toLowerCase()+'"><b>'+uu.name+'</b><br>'+uu.cell+' - <b class="gold">'+uu.invite+'</b><br>Main R'+uu.w.main.toFixed(2)+' | Inviter R'+uu.w.inviter.toFixed(2)+' | Loyalty R'+uu.w.loyalty.toFixed(2)+' | '+uu.pkgs.length+' pkgs<br>By: '+(uu.by||"None")+'<br>'+rewardInfo;
       if(uu.bank){h+='<div style="margin-top:8px;padding:8px;border:1px solid gold;border-radius:8px;background:#1a1a1a"><b>Bank:</b> '+(uu.bank.bankName||"")+'<br><b>Holder:</b> '+(uu.bank.holder||"")+'<br><b>Acc:</b> '+(uu.bank.acc||"")+'<br><b>Status:</b> '+(uu.bank.approved?'<span style="color:darkgreen">APPROVED ✓</span>':'<span style="color:orange">PENDING</span>')+'<br><button class="btn2" onclick="approveBank(\''+uu.cell+'\')" style="background:green;color:#fff">Approve Banking</button> <button class="btnRed" onclick="rejectBank(\''+uu.cell+'\')">Reject Bank</button></div>';}
-      h+='<br><button class="btn2" onclick="editUserWallets(\''+uu.cell+'\')">Edit 3 Wallets</button><button class="btn2" onclick="editUserDetails(\''+uu.cell+'\')" style="background:#5dade2;color:#000">Edit Personal Details</button><button class="btn2" onclick="editAdminBank(\''+uu.cell+'\')" style="background:#1a1a1a;color:#d4af37;border:1px solid #d4af37">Edit Banking Details</button><button class="btn2" onclick="editUserPackages(\''+uu.cell+'\')" style="background:#d4af37">Packages ('+uu.pkgs.length+')</button><br><br><button class="btnRed" onclick="deleteUser(\''+uu.cell+'\')">Delete User</button> <button class="btnInbox" onclick="openInboxModal(\''+uu.cell+'\')">Inbox</button></div>';
+      h+='<br><button class="btn2" onclick="editUserWallets(\''+uu.cell+'\')">Edit 3 Wallets</button><button class="btn2" onclick="editUserDetails(\''+uu.cell+'\')" style="background:#5dade2;color:#000">Edit Personal Details</button><button class="btn2" onclick="editAdminBank(\''+uu.cell+'\')" style="background:#1a1a1a;color:#d4af37;border:1px solid #d4af37">Edit Banking Details</button><button class="btn2" onclick="editUserPackages(\''+uu.cell+'\')" style="background:#d4af37">Packages ('+uu.pkgs.length+')</button><br><br><button class="btnRed" onclick="deleteUser(\''+uu.cell+'\')">Delete User</button> <button class="btnInbox" onclick="openInboxModal(\''+uu.cell+'\')">Inbox</button> <button class="btnDep" onclick="viewPendingDeposits(''+uu.cell+'')" style="background:#444;color:#d4af37;border:1px solid #d4af37;border-radius:8px;padding:9px 14px;margin:4px;font-weight:800">Pending deposit (<span>'+getPendingDeposits(uu.cell).length+'</span>)</button>';
     }
    
     h+='</div>';
@@ -719,5 +757,43 @@ function colorStatusHistory(){
 }
 setInterval(colorStatusHistory, 700);
 </script>
+  // SHOW PENDING DEPOSITS FOR ONE USER
+function viewPD(uid){
+  var list = (txs||[]).filter(x=>x.uid==uid && x.type=="deposit" && x.status=="pending");
+  if(!list.length){ alert("No pending deposits for this user"); return; }
+  var h='<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:9999;padding:15px;overflow:auto"><div style="background:#111;border:2px solid #d4af37;border-radius:12px;padding:15px"><h3 style="color:#d4af37">Pending Deposits - '+uid+'</h3>';
+  list.forEach((t,i)=>{
+    h+='<div style="border:1px solid #444;padding:10px;margin:10px 0;border-radius:8px">'
+     +'<b>R'+t.amount+'</b> - '+t.date+'<br>Ref: '+(t.ref||"N/A")+'<br>'
+     +'<button onclick="confirmDeposit(\''+t.id+'\')" style="background:#16a34a;color:#fff;padding:8px 14px;border-radius:8px;border:0;margin:5px;font-weight:bold">Confirmed / Acknowledged</button>'
+     +'<button onclick="notYetDeposit(\''+t.id+'\')" style="background:#eab308;color:#000;padding:8px 14px;border-radius:8px;border:0;margin:5px;font-weight:bold">Payment not yet reflecting</button>'
+     +'</div>';
+  });
+  h+='<button onclick="this.parentElement.parentElement.remove()" style="background:#dc2626;color:#fff;padding:10px;width:100%;border-radius:8px;border:0;margin-top:10px">Close</button></div></div>';
+  document.body.insertAdjacentHTML('beforeend',h);
+}
+function confirmDeposit(tid){
+  var t=txs.find(x=>x.id==tid); if(!t) return;
+  var u=users[t.uid]; if(!u) return;
+  t.status="approved";
+  u.w.main=(u.w.main||0)+ Number(t.amount);
+  // Add to history
+  if(!u.history) u.history=[];
+  u.history.unshift({type:"deposit",amount:t.amount,date:new Date().toLocaleString(),status:"approved"});
+  saveUsers(); saveTx();
+  alert("Approved! R"+t.amount+" added to Main account for "+t.uid);
+  document.querySelectorAll('[style*="position:fixed"]').forEach(e=>e.remove());
+  goAdmin();
+}
+function notYetDeposit(tid){
+  var t=txs.find(x=>x.id==tid); if(!t) return;
+  t.status="not_yet";
+  saveTx();
+  alert("Marked as: Payment not yet reflecting for R"+t.amount);
+  document.querySelectorAll('[style*="position:fixed"]').forEach(e=>e.remove());
+  goAdmin();
+}
+function saveTx(){ localStorage.setItem("dms_txs",JSON.stringify(txs)); }
+function saveUsers(){ localStorage.setItem("dms_users",JSON.stringify(users)); }
 </body>
 </html>
