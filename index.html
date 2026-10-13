@@ -765,34 +765,45 @@ function viewPD(uid){
     var t=list[i];
     h+='<div style="border:1px solid #444;padding:10px;margin:10px 0;border-radius:8px"><b>R'+t.amount+'</b> - '+t.date+'<br>Ref: '+(t.ref||"N/A")+'<br><button onclick="confirmDeposit(\''+t.id+'\')" style="background:#16a34a;color:#fff;padding:8px 12px;border-radius:6px;border:0;margin:4px">Confirmed / Acknowledged</button><button onclick="notYetDeposit(\''+t.id+'\')" style="background:#facc15;color:#000;padding:8px 12px;border-radius:6px;border:0;margin:4px">Payment not yet reflecting</button></div>';
   }
-  h+='<button onclick="document.querySelectorAll(\'[style*=fixed]\').forEach(function(e){e.remove()})" style="background:red;color:#fff;width:100%;padding:10px;border-radius:8px;border:0">Close</button></div></div>';
-  document.body.insertAdjacentHTML('beforeend',h);
-}   
-     
-  
-
-function confirmDeposit(tid){
-  var t=txs.find(x=>x.id==tid); if(!t) return;
-  var u=users[t.uid]; if(!u) return;
-  t.status="approved";
-  u.w.main=(u.w.main||0)+ Number(t.amount);
-  // Add to history
-  if(!u.history) u.history=[];
-  u.history.unshift({type:"deposit",amount:t.amount,date:new Date().toLocaleString(),status:"approved"});
-  saveUsers(); saveTx();
-  alert("Approved! R"+t.amount+" added to Main account for "+t.uid);
-  document.querySelectorAll('[style*="position:fixed"]').forEach(e=>e.remove());
-  goAdmin();
+        h+='<div style="border:1px solid #444;padding:10px;margin:8px 0;border-radius:10px" class="userItem" data-search="'+uu.cell+' '+uu.invite+' '+uu.name+' '+uu.email+'"><b>'+uu.name+'</b> ('+uu.cell+') - '+uu.invite+'<br>Main:R'+uu.w.main.toFixed(0)+' Inv:R'+uu.w.inviter.toFixed(0)+' Loy:R'+uu.w.loyalty.toFixed(0)+' Pkgs:'+uu.pkgs.length+rewardInfo+'<br><button class="btn2" onclick="editUserWallets(\''+uu.cell+'\')">Edit Wallets</button><button class="btn2" onclick="editUserPackages(\''+uu.cell+'\')">Pkgs</button><button class="btn2" style="background:#2C2E6B;color:#fff" onclick="openInboxModal(\''+uu.cell+'\')">Inbox</button><button class="btn2" style="background:#16a34a" onclick="viewPendingDeposits(\''+uu.cell+'\')">Pending Deposit ('+getPendingDeposits(uu.cell).length+')</button><button class="btnRed" onclick="deleteUser(\''+uu.cell+'\')">Del</button></div>';
+    }
+    h+='</div></div>';
+  }
+  if(adminSub==="settings"){
+    h+='<h3 class="gold">Settings - Backup</h3><button class="btn2" onclick="exportData()">Export JSON</button><br><br><input type="file" id="importFile" class="input"><button class="btn2" onclick="importData()">Import JSON</button><hr><p class="small">Backup includes users and txs</p>';
+  }
+  h+='</div>';
+  document.getElementById("app").innerHTML=h;
+  updateAnnBadge();
+  updateInboxBadge();
 }
-function notYetDeposit(tid){
-  var t=txs.find(x=>x.id==tid); if(!t) return;
-  t.status="not_yet";
-  saveTx();
-  alert("Marked as: Payment not yet reflecting for R"+t.amount);
-  document.querySelectorAll('[style*="position:fixed"]').forEach(e=>e.remove());
-  goAdmin();
+function filterUsers(q){
+  q=(q||"").toLowerCase();
+  document.querySelectorAll(".userItem").forEach(function(el){
+    var s=(el.getAttribute("data-search")||"").toLowerCase();
+    el.style.display=s.indexOf(q)===-1?"none":"block";
+  });
 }
-function saveTx(){ localStorage.setItem("dms_txs",JSON.stringify(txs)); }
-function saveUsers(){ localStorage.setItem("dms_users",JSON.stringify(users)); }
+function colorStatusHistory(){
+  document.querySelectorAll(".badge-pending,.badge-approved,.badge-rejected").forEach(function(el){
+    var t=el.innerText.toLowerCase();
+    if(t.includes("pending")){el.className="badge-pending";}
+    else if(t.includes("approved")){el.className="badge-approved";}
+    else if(t.includes("rejected")||t.includes("not_reflecting")){el.className="badge-rejected";}
+  });
+}
+setInterval(colorStatusHistory,700);
+</script>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getFirestore,doc,setDoc,getDoc,collection,getDocs} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSy...",authDomain:"devine-money-savings.firebaseapp.com",projectId:"devine-money-savings"};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+window.fbSaveUser=async function(u){try{await setDoc(doc(db,"users",u.cell),u,{merge:true});}catch(e){}}
+window.fbSaveTx=async function(t){try{await setDoc(doc(db,"txs",Date.now()+""+Math.random()),t);}catch(e){}}
+window.fbSaveAnn=async function(a){try{await setDoc(doc(db,"anns",a.id+""),a);}catch(e){}}
+window.fbSaveInbox=async function(cell,msg){try{await setDoc(doc(db,"inbox",cell+"_"+msg.id),{cell:cell,msg:msg});}catch(e){}}
+</script>
 </body>
 </html>
