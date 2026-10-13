@@ -59,6 +59,10 @@ nav button.active{background:#d4af37;color:#000}
 .annItem.new{border-color:#d4af37;box-shadow:0 0 12px rgba(212,175,55,0.25)}
 .annImg{width:100%;max-height:380px;object-fit:cover;border-radius:10px;border:1px solid #333;margin-top:10px}
 nav button{position:relative}
+  .inboxBadge{position:absolute;top:-6px;right:-6px;background:#ff1a1a;color:#fff;font-size:11px;font-weight:900;min-width:20px;height:20px;line-height:20px;text-align:center;border-radius:10px;padding:0 6px;border:2px solid #000;display:none;z-index:5}
+.inboxModal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);z-index:9999;display:none;align-items:center;justify-content:center}
+.inboxModalBox{background:#141414;border:2px solid #d4af37;border-radius:16px;padding:18px;width:92%;max-width:420px;max-height:80vh;overflow:auto}
+.btnInbox{background:#2C2E6B;color:#fff;border:none;border-radius:8px;font-weight:800;padding:9px 14px;margin:4px}
 </style>
 </head>
 <body>   <img src="DMS_HEADER_GOLD.jpg" alt="Header" style="width:100%;display:block;max-height:320px;object-fit:cover">
@@ -83,6 +87,7 @@ nav button{position:relative}
 <button onclick="goBonus()" id="bBO" style="background:#d4af37;color:#000;font-weight:900;border:2px solid #fff;">Bonus</button>
 <button onclick="goTeam()" id="bT">Team</button>
 <button onclick="goHistory()" id="bHI">History</button><button onclick="goAnnouncements()" id="bAN" style="background:#111;color:#d4af37;border-color:#d4af37;font-weight:900;">Announcements <span id="annBadge" class="annBadge">0</span></button>
+  <button onclick="goInbox()" id="bIN" style="background:#111;color:#d4af37;border-color:#d4af37;font-weight:900;position:relative;">Inbox <span id="inboxBadge" class="inboxBadge">0</span></button>
 <button onclick="location.href='deposit.html'" id="bDEP" style="background:#d4af37;color:#000;font-weight:bold;">Deposit</button>
 <button onclick="goAdmin()" id="bA">Admin</button>
 </nav>
@@ -538,6 +543,50 @@ function approveWithdraw(idx){
 function rejectWithdraw(idx){var t=txs[idx];if(!t||t.status!=="pending")return;if(!confirm("Reject and refund?"))return;var u=users.find(function(x){return x.cell===t.cell});if(u){ensureWallets(u);if(t.wallet==="main")u.w.main+=t.amount;else if(t.wallet==="inviter")u.w.inviter+=t.amount;else if(t.wallet==="loyalty")u.w.loyalty+=t.amount;else u.w.main+=t.amount; if(t.wallet==="loyalty" && u.activeLoyaltyReward){ u.activeLoyaltyReward.withdrawPending=false; }}t.status="rejected";save();goAdmin();}
 function exportData(){var data={users:users,txs:txs,date:new Date().toISOString()};var blob=new Blob([JSON.stringify(data)],{type:"application/json"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="DMS_backup_"+new Date().toISOString().slice(0,10)+".json";a.click();}
 function importData(){var inp=document.getElementById("importFile");if(!inp||!inp.files[0]){alert("Choose file");return;}var reader=new FileReader();reader.onload=function(e){try{var data=JSON.parse(e.target.result);if(data.users&&data.txs){if(confirm("Import "+data.users.length+" users?")){users=data.users;txs=data.txs;save();alert("Imported!");goAdmin();}}else{alert("Invalid");}}catch(err){alert(err.message);}};reader.readAsText(inp.files[0]);}
+  // ===== INBOX SYSTEM - ADMIN CAN WRITE, USER ONLY READS =====
+function ensureInbox(u){ if(!u.inbox) u.inbox=[]; if(!u.inboxReadIds) u.inboxReadIds=[]; }
+function getUnreadInboxCount(){
+  var u=getUser(); if(!u) return 0; ensureInbox(u);
+  var c=0; for(var i=0;i<u.inbox.length;i++){ if(u.inboxReadIds.indexOf(u.inbox[i].id)===-1) c++; } return c;
+}
+function updateInboxBadge(){
+  var b=document.getElementById("inboxBadge"); if(!b) return;
+  var c=getUnreadInboxCount(); if(c>0){ b.textContent=c; b.style.display="inline-block"; } else { b.style.display="none"; }
+}
+function goInbox(){
+  setActive("bIN"); checkLogout();
+  var u=getUser(); if(!u){ document.getElementById("app").innerHTML="<div class=card>Login first</div>"; return; }
+  ensureInbox(u);
+  var h='<div class="card"><h2 class="gold">📥 My Inbox</h2><p class="small">Messages from admin - read only</p>';
+  if(u.inbox.length===0){ h+='<p class="small">No messages yet</p>'; }
+  else{
+    for(var i=0;i<u.inbox.length;i++){ if(u.inboxReadIds.indexOf(u.inbox[i].id)===-1) u.inboxReadIds.push(u.inbox[i].id); }
+    save(); setTimeout(updateInboxBadge,100);
+    for(var k=u.inbox.length-1;k>=0;k--){
+      var m=u.inbox[k];
+      h+='<div class="annItem new" style="border-color:#2C2E6B"><div class="small">'+new Date(m.date).toLocaleString()+'</div><h3 style="color:#d4af37;margin:6px 0">'+(m.title||"Message from Admin")+'</h3><p style="white-space:pre-wrap">'+m.text+'</p></div>';
+    }
+  }
+  h+='<br><button class="btn2" onclick="goHome()">Home</button></div>';
+  document.getElementById("app").innerHTML=h; updateInboxBadge();
+}
+function openInboxModal(cell){
+  var u=users.find(function(x){return x.cell===cell}); if(!u) return; ensureInbox(u);
+  var prev = u.inbox.length>0? u.inbox.slice(-3).reverse().map(m=>'<div style="border:1px solid #333;padding:8px;border-radius:8px;margin:6px 0"><b>'+new Date(m.date).toLocaleString()+'</b><br>'+m.text+'</div>').join('') : '<p class="small">No previous messages</p>';
+  var html='<div id="inboxModal" class="inboxModal" style="display:flex"><div class="inboxModalBox"><h3 class="gold">Inbox to '+u.name+' ('+u.cell+')</h3><label class="small">Title</label><input id="inboxTitle" class="input" placeholder="Title"><label class="small">Message *</label><textarea id="inboxText" class="input" rows="4" placeholder="Type message to this user only..."></textarea><button class="btn" onclick="sendInboxMsg(\''+cell+'\')">Send to User</button><button class="btn2" onclick="closeInboxModal()" style="width:100%;margin-top:8px">Close</button><hr><h4 class="small">Previous (last 3)</h4>'+prev+'</div></div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+function closeInboxModal(){ var m=document.getElementById("inboxModal"); if(m) m.remove(); }
+function sendInboxMsg(cell){
+  var title=document.getElementById("inboxTitle").value.trim()||"Message from Admin";
+  var text=document.getElementById("inboxText").value.trim(); if(!text){ alert("Message required"); return; }
+  var u=users.find(function(x){return x.cell===cell}); if(!u) return; ensureInbox(u);
+  var msg={id:Date.now(), title:title, text:text, date:new Date().toISOString()};
+  u.inbox.push(msg); save();
+  try{ if(window.fbSaveInbox) window.fbSaveInbox(cell, msg); }catch(e){}
+  alert("Inbox sent to "+u.name); closeInboxModal(); goAdmin();
+}
+// ===== END INBOX SYSTEM =====
 function goAdmin(){
   setActive("bA");
   if(!cur||cur.cell!=="ADMIN"){
@@ -626,6 +675,7 @@ window.db = db;
 window.fbSaveUser = async (u) => { try{ await setDoc(doc(db,"users",u.cell), u); console.log("🔥 Saved:", u.cell); }catch(e){} };
 window.fbSaveTx = async (t) => { try{ const id="tx_"+Date.now()+"_"+Math.random().toString(36).slice(2,4); await setDoc(doc(db,"transactions",id), t); }catch(e){} };
 window.fbSaveAnn = async (a) => { try{ await setDoc(doc(db,"announcements", String(a.id)), a); }catch(e){} };
+  window.fbSaveInbox = async (cell, msg) => { try{ await setDoc(doc(db,"inboxes", cell+"_"+msg.id), {cell:cell,...msg}); await setDoc(doc(db,"users",cell), users.find(x=>x.cell===cell)); console.log("📥 Inbox saved", cell); }catch(e){} };
 console.log("🔥 Firebase dms96-5b0a1 ready");
 </script>
   <script>
