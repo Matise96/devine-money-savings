@@ -274,9 +274,22 @@ function goHome(){
     var autoAmt = autoCreditAll();
     var u=getUser();
     if(!u&&(!cur||cur.cell!=="ADMIN")){
-      var html='<div class="card" style="text-align:center;border:2px solid #d4af37"><div class="badge">EXCLUSIVE PACKAGES</div><h2 class="gold">DEVINE MONEY SAVINGS</h2><div style="text-align:left;margin-top:12px">';
-      for(var i=0;i<PKGS.length;i++){var p=PKGS[i];html+='<div class="pkg"><span class="badge">'+p.name+'</span> <b style="float:right">R'+p.price+'</b><br><br><b>R'+p.price+' > R'+p.daily+' daily cashback at 08:00 AM</b><br><span class="small">'+p.desc+'</span></div>';}
-      html+='</div><hr><h3>Login</h3><input id="lC" class="input" placeholder="Cellphone"><div class="pwdWrap"><input id="lP" class="input" type="password" placeholder="Password"><button class="eyeBtn" id="eyeLP" onclick="toggleEye(&quot;lP&quot;,&quot;eyeLP&quot;)">👁️</button></div><button class="btn" onclick="doLogin()">Login</button><p class="small">No account? <a href="#" onclick="goRegister()" style="color:#d4af37">Register here</a></p><p class="small" style="color:#2ee89e;margin-top:10px">✅ Daily cashback AUTO credited at 08:00 AM daily to Main Wallet</p></div>';
+      var html = ''
+      + '<div style="line-height:0"><img src="office-inside.jpg" style="width:100%;display:block;"></div>'
+      + '<div style="line-height:0"><img src="building-night.jpg" style="width:100%;display:block;border-top:3px solid #d4af37;border-bottom:3px solid #d4af37"></div>'
+      + '<div style="background:#d4af37;color:#000;text-align:center;padding:10px;font-size:12px;font-weight:900;">WhatsApp: 0510011039 • devine9606@gmail.com • www.devinemoneysavings.co.za</div>'
+      + '<div class="card" style="text-align:center;border:2px solid #d4af37;margin-top:12px">'
+      + '<div class="badge">WELCOME TO DEVINE MONEY SAVINGS</div>'
+      + '<h2 class="gold" style="margin:12px 0 6px 0">Secure Savings, Daily Rewards</h2>'
+      + '<p class="small" style="color:#2ee89e">✅ Daily cashback AUTO credited at 08:00 AM daily to Main Wallet</p>'
+      + '<hr style="border-color:#333">'
+      + '<h3>Login</h3>'
+      + '<input id="lC" class="input" placeholder="Cellphone">'
+      + '<div class="pwdWrap"><input id="lP" class="input" type="password" placeholder="Password"><button class="eyeBtn" id="eyeLP" onclick="toggleEye(&quot;lP&quot;,&quot;eyeLP&quot;)">👁️</button></div>'
+      + '<button class="btn" onclick="doLogin()" style="background:#d4af37;padding:16px;border-radius:50px;font-size:18px;margin-top:8px">LOGIN</button>'
+      + '<button class="btn" onclick="goRegister()" style="background:transparent;color:#d4af37;border:2px solid #d4af37;padding:14px;border-radius:50px;font-size:18px;margin-top:12px">REGISTER</button>'
+      + '<p class="small" style="margin-top:12px">No account? <a href="#" onclick="goRegister()" style="color:#d4af37">Create account here</a></p>'
+      + '</div>';
       document.getElementById("app").innerHTML=html;return;
     }
     if(cur&&cur.cell==="ADMIN"){goAdmin();return;}
