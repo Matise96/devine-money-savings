@@ -421,25 +421,18 @@ function goBankForm(){
   +'<div style="margin-top:18px;border:2px solid #d4af37;border-radius:14px;padding:14px;background:#111">'
   +'<div style="color:#FFD700;font-weight:900;font-size:16px;margin-bottom:10px">🤳 KYC - Selfie + Bank Zero Letter (Required)</div>'
   +ficaInfo
-        +((()=>{let a=(typeof bankStatus!=='undefined'?bankStatus:'')+' '+(typeof currentUser!=='undefined'&&currentUser?(currentUser.bankStatus||currentUser.bankApproved||''):'')+' '+(typeof userData!=='undefined'&&userData?(userData.bankStatus||userData.bankApproved||''):'')+' '+(ficaInfo||'');return a.toLowerCase().includes('approv');})() ?
-    : 
-    '<label class="small" style="color:#fff">1. 🤳 Live Selfie *</label>'
-    +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
-    +'<label for="ficaId" style="background:#fff;color:#000;padding:8px 14px;border-radius:6px;font-weight:800;cursor:pointer">Start Selfie</label>'
-    +'<span id="ficaSelfieName" style="color:#aaa;font-size:13px">No selfie yet</span>'
-    +'</div>'
-    +'<input type="file" id="ficaId" accept="image/*" capture="user" class="input" style="display:none">'
-    +'<div id="ficaIdPreview" class="small" style="color:#2ee89e"></div>'
-    +'<small style="color:#aaa;display:block;margin-bottom:10px">📸 No cap/sunglasses, good light. Front camera will open.</small>'
-  )
-    +((()=>{let a=(typeof bankStatus!=='undefined'?bankStatus:'')+' '+(typeof currentUser!=='undefined'&&currentUser?(currentUser.bankStatus||currentUser.bankApproved||''):'')+' '+(typeof userData!=='undefined'&&userData?(userData.bankStatus||userData.bankApproved||''):'')+' '+(ficaInfo||'');return a.toLowerCase().includes('approv');})() ?
-    '<div style="color:#2ee89e;font-weight:900;padding:8px 0;margin-top:10px">2. Bank Zero Letter - Verified ✅</div>'
-    :
-    '<label class="small" style="color:#fff;margin-top:10px;display:block">2. Bank Zero Confirmation Letter / Bank Statement * (Image or PDF)</label>'
-    +'<input type="file" id="ficaBank" accept="image/*,.pdf,application/pdf" class="input" style="padding:10px">'
-    +'<div id="ficaBankPreview" class="small" style="color:#2ee89e"></div>'
-    +'</div>'
-  )
+    +'<label class="small" style="color:#fff">1. 🤳 Live Selfie *</label>'
+  +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
+  +'<label for="ficaId" style="background:#fff;color:#000;padding:8px 14px;border-radius:6px;font-weight:800;cursor:pointer">Start Selfie</label>'
+  +'<span id="ficaSelfieName" style="color:#aaa;font-size:13px">No selfie yet</span>'
+  +'</div>'
+  +'<input type="file" id="ficaId" accept="image/*" capture="user" class="input" style="display:none">'
+  +'<div id="ficaIdPreview" class="small" style="color:#2ee89e"></div>'
+  +'<small style="color:#aaa;display:block;margin-bottom:10px">📸 No cap/sunglasses, good light. Front camera will open.</small>'
+  +'<label class="small" style="color:#fff;margin-top:10px;display:block">2. Bank Zero Confirmation Letter / Bank Statement * (Image or PDF)</label>'
+  +'<input type="file" id="ficaBank" accept="image/*,.pdf,application/pdf" class="input" style="padding:10px">'
+  +'<div id="ficaBankPreview" class="small" style="color:#2ee89e"></div>'
+  +'</div>'
   +'<button class="btn" onclick="saveBank()" style="margin-top:14px">Submit for Approval + Send FICA to WhatsApp</button><br><br><button class="btn2" onclick="goWallets()">Back to Wallets</button></div>';
   document.getElementById("app").innerHTML=h;
   setTimeout(function(){
