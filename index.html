@@ -570,6 +570,28 @@ function addPackage(cell,pkgIdx){
   if(tryGiveInviterBonus(u)){alert(pkg.name+" added + Inviter R10 bonus given!");} else {alert(pkg.name+" added");}
   editUserPackages(cell);
 }
+function viewFica(cell, type){
+  var u=users.find(function(x){return x.cell===cell});
+  if(!u||!u.fica){alert("No FICA file");return;}
+  var data = (type==='id') ? u.fica.idData : u.fica.bankData;
+  var name = (type==='id') ? (u.fica.idName||'ID') : (u.fica.bankName||'BankLetter');
+  if(!data){alert("No "+type+" file saved for "+name);return;}
+  var w = window.open('','_blank');
+  if(data.indexOf('data:application/pdf')===0 || name.toLowerCase().endsWith('.pdf')){
+    w.document.write('<html><body style="margin:0"><embed src="'+data+'" type="application/pdf" style="width:100%;height:100vh"></body></html>');
+  } else {
+    w.document.write('<html><body style="margin:0;background:#000;text-align:center"><img src="'+data+'" style="max-width:100%;max-height:100vh"></body></html>');
+  }
+}
+function shareFicaToWhatsApp(cell, type){
+  var u=users.find(function(x){return x.cell===cell});
+  if(!u||!u.fica) return;
+  var fileName = (type==='id') ? (u.fica.idName||'ID') : (u.fica.bankName||'BankDoc');
+  var msg = "*FICA FILE for "+u.name+"%0A%0A*Cell:* "+encodeURIComponent(u.cell)+"%0A*File:* "+encodeURIComponent(fileName)+"%0A*Type:* "+type+"%0A%0A*Note:* Real file is in Admin > view it then Share > WhatsApp 0510011039";
+  var waLink = "https://wa.me/27510011039?text="+msg;
+  window.open(waLink,'_blank');
+  viewFica(cell, type);
+} 
 function deleteUser(cell){if(!confirm("Delete "+cell+"?"))return;users=users.filter(function(x){return x.cell!==cell});txs=txs.filter(function(t){return t.cell!==cell});save();goAdmin();}
 function approveWithdraw(idx){
   var t=txs[idx];if(!t||t.status!=="pending")return;
@@ -698,6 +720,7 @@ function goAdmin(){
       var rewardInfo = uu.activeLoyaltyReward &&!uu.activeLoyaltyReward.cleared? '<div style="background:#0a1f18;border:1px solid #2ee89e;padding:6px;border-radius:8px;margin:6px 0;color:#2ee89e">🎁 ACTIVE LOYALTY REWARD: R'+uu.activeLoyaltyReward.amount+' '+uu.activeLoyaltyReward.tierName+' - Popup every 60s - '+(uu.activeLoyaltyReward.withdrawPending?'PENDING WITHDRAWAL':'ACTIVE')+'</div>' : '';
       h+='<div style="border:1px solid #444;padding:10px;margin:8px 0;border-radius:10px" class="userItem" data-search="'+uu.cell+' '+uu.invite+' '+uu.name.toLowerCase()+' '+(uu.email||"").toLowerCase()+'"><b>'+uu.name+'</b><br>'+uu.cell+' - <b class="gold">'+uu.invite+'</b><br>Main R'+uu.w.main.toFixed(2)+' | Inviter R'+uu.w.inviter.toFixed(2)+' | Loyalty R'+uu.w.loyalty.toFixed(2)+' | '+uu.pkgs.length+' pkgs<br>By: '+(uu.by||"None")+'<br>'+rewardInfo;
       if(uu.bank){h+='<div style="margin-top:8px;padding:8px;border:1px solid gold;border-radius:8px;background:#1a1a1a"><b>Bank:</b> '+(uu.bank.bankName||"")+'<br><b>Holder:</b> '+(uu.bank.holder||"")+'<br><b>Acc:</b> '+(uu.bank.acc||"")+'<br><b>Status:</b> '+(uu.bank.approved?'<span style="color:darkgreen">APPROVED ✓</span>':'<span style="color:orange">PENDING</span>')+'<br><button class="btn2" onclick="approveBank(\''+uu.cell+'\')" style="background:green;color:#fff">Approve Banking</button> <button class="btnRed" onclick="rejectBank(\''+uu.cell+'\')">Reject Bank</button></div>';}
+if(uu.fica && (uu.fica.idName || uu.fica.bankName)){h+='<div style="margin-top:8px;padding:10px;border:2px dashed #2ee89e;border-radius:10px;background:#0a1f18"><b style="color:#2ee89e">📁 FICA Docs:</b><br>';if(uu.fica.idName){h+='<span class="small">🆔 ID: <b style="color:#fff">'+uu.fica.idName+'</b></span><br><button class="btn2" style="background:#2ee89e;color:#000" onclick="viewFica(\''+uu.cell+'\',\'id\')">👁️ View ID</button> <button class="btn2" style="background:#25D366;color:#000" onclick="shareFicaToWhatsApp(\''+uu.cell+'\',\'id\')">📤 WhatsApp ID</button><br>';}if(uu.fica.bankName){h+='<span class="small">🏦 Bank: <b style="color:#fff">'+uu.fica.bankName+'</b></span><br><button class="btn2" style="background:#2ee89e;color:#000" onclick="viewFica(\''+uu.cell+'\',\'bank\')">👁️ View Bank Letter</button> <button class="btn2" style="background:#25D366;color:#000" onclick="shareFicaToWhatsApp(\''+uu.cell+'\',\'bank\')">📤 WhatsApp Bank</button><br>';}h+='<span class="small" style="color:#aaa">'+(uu.fica.uploadedAt?new Date(uu.fica.uploadedAt).toLocaleString():'')+'</span></div>';}
       h+='<br><button class="btn2" onclick="editUserWallets(\''+uu.cell+'\')">Edit 3 Wallets</button><button class="btn2" onclick="editUserDetails(\''+uu.cell+'\')" style="background:#5dade2;color:#000">Edit Personal Details</button><button class="btn2" onclick="editAdminBank(\''+uu.cell+'\')" style="background:#1a1a1a;color:#d4af37;border:1px solid #d4af37">Edit Banking Details</button><button class="btn2" onclick="editUserPackages(\''+uu.cell+'\')" style="background:#d4af37">Packages ('+uu.pkgs.length+')</button><br><br><button class="btnRed" onclick="deleteUser(\''+uu.cell+'\')">Delete User</button> <button class="btnInbox" onclick="openInboxModal(\''+uu.cell+'\')">Inbox</button></div>';
     }
    
