@@ -419,11 +419,12 @@ function goBankForm(){
   var ficaInfo = (u&&u.fica)? "<div style='padding:6px;background:#0a1f18;border:1px solid #2ee89e;border-radius:8px;margin-bottom:10px;color:#2ee89e;font-size:12px'>FICA Already Uploaded: ID="+ (u.fica.idName||"yes") +" | Bank="+ (u.fica.bankName||"yes") +" - You can re-upload to update</div>" : "";
   var h='<div class="card"><h3 class="gold">Upload Banking Details</h3><p class="small">Required before withdrawal. Admin will approve.</p><label class="small">Account Holder Name *</label><input id="bName" class="input" placeholder="Account Holder Name" value="'+holder+'"><label class="small">Bank Name</label><input id="bBank" class="input" value="Bank Zero" readonly disabled style="background:#1e1e1e;color:#d4af37;border-color:#d4af37;font-weight:800"><label class="small">Account Number *</label><input id="bAcc" class="input" placeholder="Account Number" value="'+acc+'"><label class="small">Branch Code</label><input id="bBranch" class="input" value="888000" readonly disabled style="background:#1e1e1e;color:#d4af37;border-color:#d4af37;font-weight:800">'
   +'<div style="margin-top:18px;border:2px solid #d4af37;border-radius:14px;padding:14px;background:#111">'
-  +'<div style="color:#FFD700;font-weight:900;font-size:16px;margin-bottom:10px">📁 FICA Documents (Required) - Picture or PDF</div>'
+  +'<div style="color:#FFD700;font-weight:900;font-size:16px;margin-bottom:10px">🤳 KYC - Selfie + Bank Zero Letter (Required)</div>'
   +ficaInfo
-  +'<label class="small" style="color:#fff">1. ID Copy * (Image or PDF)</label>'
-  +'<input type="file" id="ficaId" accept="image/*,.pdf,application/pdf" class="input" style="padding:10px">'
+  +'<label class="small" style="color:#fff">1. 🤳 Live Selfie * (Replaces ID - Your Bank Zero letter has your ID number)</label>'
+  +'<input type="file" id="ficaId" accept="image/*" capture="user" class="input" style="padding:10px;border:2px solid #FFD700">'
   +'<div id="ficaIdPreview" class="small" style="color:#2ee89e"></div>'
+   +'<small style="color:#aaa;display:block;margin-bottom:10px">📸 Must be live selfie, no cap/sunglasses, good light. Front camera will open.</small>' 
   +'<label class="small" style="color:#fff;margin-top:10px;display:block">2. Bank Zero Confirmation Letter / Bank Statement * (Image or PDF)</label>'
   +'<input type="file" id="ficaBank" accept="image/*,.pdf,application/pdf" class="input" style="padding:10px">'
   +'<div id="ficaBankPreview" class="small" style="color:#2ee89e"></div>'
