@@ -586,12 +586,21 @@ function viewFica(cell, type){
 function shareFicaToWhatsApp(cell, type){
   var u=users.find(function(x){return x.cell===cell});
   if(!u||!u.fica) return;
-  var fileName = (type==='id') ? (u.fica.idName||'ID') : (u.fica.bankName||'BankDoc');
-  var msg = "*FICA FILE for "+u.name+"%0A%0A*Cell:* "+encodeURIComponent(u.cell)+"%0A*File:* "+encodeURIComponent(fileName)+"%0A*Type:* "+type+"%0A%0A*Note:* Real file is in Admin > view it then Share > WhatsApp 0510011039";
-  var waLink = "https://wa.me/27510011039?text="+msg;
-  window.open(waLink,'_blank');
-  viewFica(cell, type);
-} 
+  var data=(type==='id')?u.fica.idData:u.fica.bankData;
+  var name=(type==='id')?(u.fica.idName||'ID.pdf'):(u.fica.bankName||'Bank.pdf');
+  if(!data){alert("No file");return;}
+  try{
+    var arr=data.split(','),mime=arr[0].match(/:(.*?);/)[1],bstr=atob(arr[1]),n=bstr.length,u8arr=new Uint8Array(n);
+    while(n--){u8arr[n]=bstr.charCodeAt(n);}
+    var file=new File([u8arr],name,{type:mime});
+    if(navigator.canShare&&navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:name,text:'FICA for '+u.name+' - '+u.cell}).then(function(){});
+      return;
+    }
+  }catch(e){}
+  var a=document.createElement('a');a.href=data;a.download=name;document.body.appendChild(a);a.click();a.remove();
+  setTimeout(function(){window.open("https://wa.me/27510011039?text="+encodeURIComponent("FICA "+name+" for "+u.name),"_blank");},800);
+}
 function deleteUser(cell){if(!confirm("Delete "+cell+"?"))return;users=users.filter(function(x){return x.cell!==cell});txs=txs.filter(function(t){return t.cell!==cell});save();goAdmin();}
 function approveWithdraw(idx){
   var t=txs[idx];if(!t||t.status!=="pending")return;
