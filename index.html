@@ -421,8 +421,7 @@ function goBankForm(){
   +'<div style="margin-top:18px;border:2px solid #d4af37;border-radius:14px;padding:14px;background:#111">'
   +'<div style="color:#FFD700;font-weight:900;font-size:16px;margin-bottom:10px">🤳 KYC - Selfie + Bank Zero Letter (Required)</div>'
   +ficaInfo
-      +(ficaInfo && ficaInfo.toLowerCase().includes('approved') ? 
-    '<div style="color:#2ee89e;font-weight:900;padding:8px 0">1. 🤳 Live Selfie * - Verified ✅</div>' 
+        +((()=>{let a=(typeof bankStatus!=='undefined'?bankStatus:'')+' '+(typeof currentUser!=='undefined'&&currentUser?(currentUser.bankStatus||currentUser.bankApproved||''):'')+' '+(typeof userData!=='undefined'&&userData?(userData.bankStatus||userData.bankApproved||''):'')+' '+(ficaInfo||'');return a.toLowerCase().includes('approv');})() ?
     : 
     '<label class="small" style="color:#fff">1. 🤳 Live Selfie *</label>'
     +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
@@ -433,7 +432,7 @@ function goBankForm(){
     +'<div id="ficaIdPreview" class="small" style="color:#2ee89e"></div>'
     +'<small style="color:#aaa;display:block;margin-bottom:10px">📸 No cap/sunglasses, good light. Front camera will open.</small>'
   )
-  +(ficaInfo && ficaInfo.toLowerCase().includes('approved') ?
+    +((()=>{let a=(typeof bankStatus!=='undefined'?bankStatus:'')+' '+(typeof currentUser!=='undefined'&&currentUser?(currentUser.bankStatus||currentUser.bankApproved||''):'')+' '+(typeof userData!=='undefined'&&userData?(userData.bankStatus||userData.bankApproved||''):'')+' '+(ficaInfo||'');return a.toLowerCase().includes('approv');})() ?
     '<div style="color:#2ee89e;font-weight:900;padding:8px 0;margin-top:10px">2. Bank Zero Letter - Verified ✅</div>'
     :
     '<label class="small" style="color:#fff;margin-top:10px;display:block">2. Bank Zero Confirmation Letter / Bank Statement * (Image or PDF)</label>'
