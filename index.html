@@ -383,7 +383,7 @@ function goWallets(){
   setActive("bW");var u=getUser();if(!u){document.getElementById("app").innerHTML="<div class=card>Login</div>";return;}checkLogout();
   var credited = autoCreditAll();var bankInfo="";
   if(!u.bank){bankInfo='<div style="padding:8px;border:1px dashed #d4af37;border-radius:8px;margin:8px 0;background:#111"><span class="small">No banking details saved yet. You will be asked once on first withdrawal.</span></div>';}
-  else{bankInfo='<div style="padding:8px;border:1px solid '+(u.bank.approved?"lightgreen":"orange") +';border-radius:8px;margin:8px 0;background:#111"><b>Bank Saved:</b> '+(u.bank.bankName||"")+' - '+(u.bank.acc||"")+'<br><b>Holder:</b> '+(u.bank.holder||"")+'<br><b>Status:</b> '+(u.bank.approved?'<span style="color:lightgreen">APPROVED ✓</span>':'<span style="color:orange">PENDING APPROVAL</span>')+'<br><button class="btn2" style="margin-top:6px" onclick="goBankForm()">Edit Bank Details</button></div>';}
+  else{bankInfo='<div style="padding:8px;border:1px solid '+(u.bank.approved?"lightgreen":"orange") +';border-radius:8px;margin:8px 0;background:#111"><b>Bank Saved:</b> '+(u.bank.bankName||"")+' - '+(u.bank.acc||"")+'<br><b>Holder:</b> '+(u.bank.holder||"")+'<br><b>Status:</b> '+(u.bank.approved?'<span style="color:darkgreen">APPROVED ✓</span>':'<span style="color:yellow">PENDING APPROVAL</span>')+'<br><button class="btn2" style="margin-top:6px" onclick="goBankForm()">Edit Bank Details</button></div>';}
   var activeCount=u.pkgs.filter(p=>!p.done).length;
   var autoMsg = credited>0? '<div style="background:#0a1f18;border:1px solid #2ee89e;padding:10px;border-radius:10px;margin-bottom:10px;color:#2ee89e;font-weight:800">🎉 AUTO CREDITED R'+credited+' at 08:00 AM to Main Wallet!</div>' : '';
   var h='<div class="card">'+autoMsg+'<h3 class="gold">Wallets (FULL AUTO 08:00)</h3>'+bankInfo;
@@ -448,13 +448,14 @@ function saveBank(){
     if(!idFile){alert('Please upload ID Copy - Picture or PDF required');return;}
     if(!bankFile){alert('Please upload Bank Confirmation Letter / Statement - Picture or PDF required');return;}
   }
+  var waWindow = window.open('', '_blank');
   function finalizeSave(){
     u.bank={holder:name,bankName:bank,acc:acc,branch:branch,approved:false,pending:true};save();
     var waNumber="27510011039";
-    var msg="*NEW FICA + BANK UPLOAD*%0A%0A*Name:* "+encodeURIComponent(name)+"%0A*Cell:* "+encodeURIComponent(u.cell)+"%0A*Bank:* "+bank+"%0A*Acc:* "+acc+"%0A*Branch:* "+branch+"%0A%0A*ID File:* "+encodeURIComponent((u.fica&&u.fica.idName)||(idFile&&idFile.name)||'N/A')+"%0A*Bank Letter:* "+encodeURIComponent((u.fica&&u.fica.bankName)||(bankFile&&bankFile.name)||'N/A')+"%0A%0AFiles saved in DMS Admin.";
+    var msg="*NEW FICA + BANK UPLOAD*%0A%0A*Name:* "+encodeURIComponent(name)+"%0A*Cell:* "+encodeURIComponent(u.cell)+"%0A*Bank:* "+bank+"%0A*Acc:* "+acc+"%0A*Branch:* "+branch+"%0A%0A*ID File:* "+encodeURIComponent((u.fica&&u.fica.idName)||(idFile&&idFile.name)||'N/A')+"%0A*Bank Letter:* "+encodeURIComponent((u.fica&&u.fica.bankName)||(bankFile&&bankFile.name)||'N/A')+"%0A%0AFiles saved in DMS Admin > Users.";
     var waLink="https://wa.me/"+waNumber+"?text="+msg;
-    alert("Bank + FICA saved! Sending to WhatsApp 0510011039...");
-    window.open(waLink,"_blank");
+    if(waWindow){waWindow.location=waLink;}else{window.open(waLink,"_blank");}
+    alert("Bank + FICA saved! Opening WhatsApp 0510011039...");
     goWallets();
   }
   if(!idFile && !bankFile){finalizeSave();return;}
