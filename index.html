@@ -422,7 +422,7 @@ function goBankForm(){
   +'<div style="color:#FFD700;font-weight:900;font-size:16px;margin-bottom:10px">🤳 KYC - Selfie + Bank Zero Letter (Required)</div>'
   +ficaInfo
         +((()=>{let a=(typeof bankStatus!=='undefined'?bankStatus:'')+' '+(typeof currentUser!=='undefined'&&currentUser?(currentUser.bankStatus||currentUser.bankApproved||''):'')+' '+(typeof userData!=='undefined'&&userData?(userData.bankStatus||userData.bankApproved||''):'')+' '+(ficaInfo||'');return a.toLowerCase().includes('approv');})() ?
-    : 
+          
     '<label class="small" style="color:#fff">1. 🤳 Live Selfie *</label>'
     +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">'
     +'<label for="ficaId" style="background:#fff;color:#000;padding:8px 14px;border-radius:6px;font-weight:800;cursor:pointer">Start Selfie</label>'
