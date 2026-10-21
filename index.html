@@ -89,7 +89,7 @@ nav button{position:relative}
 <button onclick="goHistory()" id="bHI">History</button><button onclick="goAnnouncements()" id="bAN" style="background:#111;color:#d4af37;border-color:#d4af37;font-weight:900;">Announcements <span id="annBadge" class="annBadge">0</span></button>
   <button onclick="goInbox()" id="bIN" style="background:#111;color:#d4af37;border-color:#d4af37;font-weight:900;position:relative;">Inbox <span id="inboxBadge" class="inboxBadge">0</span></button>
 <button onclick="location.href='deposit.html'" id="bDEP" style="background:#d4af37;color:#000;font-weight:bold;">Deposit</button>
-<button onclick="goAdmin()" id="bA">Admin</button>
+<button onclick="goAdmin()" id="bA" style="display:none">Admin</button><script>try{if(new URLSearchParams(location.search).get('admin')==='1'||(typeof cur!=='undefined'&&cur&&cur.cell==='ADMIN'))document.getElementById('bA').style.display='inline-block';}catch(e){}</script>
 </nav>
 <div id="app"></div>
 <div class="contactWrap">
