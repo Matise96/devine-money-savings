@@ -188,6 +188,7 @@ function checkAndInitLoyaltyPopup(){
 }
 function safeParse(k,f){try{var v=localStorage.getItem(k);if(!v) return JSON.parse(f);return JSON.parse(v);}catch(e){return JSON.parse(f);}}
 var PKGS=[
+  {id:"S",name:"STARTER",price:70,daily:5,earliest:7,duration:14,target:70,desc:"Daily R5 cashback. Minimum withdrawal at R70."},
 {id:"A",name:"PACKAGE A",price:160,daily:10,earliest:7,duration:14,target:140,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
 {id:"B",name:"PACKAGE B",price:250,daily:10,earliest:7,duration:21,target:210,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
 {id:"C",name:"PACKAGE C",price:340,daily:10,earliest:7,duration:30,target:300,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
@@ -198,7 +199,7 @@ var users=safeParse("dms_users","[]");
 var txs=safeParse("dms_txs","[]");
 var cur=safeParse("dms_cur","null");var anns=safeParse("dms_anns","[]");
 var adminSub="leaderboard";
-var VALID_DEPOSITS=[160,250,340,430,520];
+var VALID_DEPOSITS=[70,160,250,340,430,520];
 function save(){
   localStorage.setItem("dms_users",JSON.stringify(users));
   localStorage.setItem("dms_txs",JSON.stringify(txs));
