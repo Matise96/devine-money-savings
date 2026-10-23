@@ -304,7 +304,15 @@ function goHome(){
 }
 function goBonus(){
   setActive("bBO");checkLogout();
-  var h='<div class="card" style="border:2px solid #d4af37"><h2 class="gold">BONUS BUTTON</h2><div style="background:#1a1a1a;border:1px solid #d4af37;border-radius:12px;padding:16px;line-height:1.8;text-align:left"><p><b>#Earn R10 per invite.</b></p><p><b>#Invites are unlimited</b></p><p>#You do not have to invite many people you can invite 7 people once-off and everytime they all deposit you earn your bonus and can be immediately withdrawn as minimum withdrawal is at R70.</p><p style="color:#ffcc00"><b>#NB:Invitee must deposit first or purchase a package from other wallets for the Inviter to be rewarded.</b></p></div><br><button class="btn" onclick="goTeam()">Go to My Team</button><br><br><button class="btn2" onclick="goHome()">Home</button></div>';
+  var h='<div class="card" style="border:2px solid #d4af37"><h2 class="gold">BONUS BUTTON</h2><div style="background:#1a1a1a;border:1px solid #d4af37;border-radius:12px;padding:16px;line-height:1.8;text-align:left">'
+  +'<p><b style="color:#2ee89e">#Earn R5 per invite on Starter only</b></p>'
+  +'<p class="small" style="color:#ccc;line-height:1.6">(Please note that Starter is not a package, it is designed for users to use it to learn how the platform really works, from deposits, withdrawals, daily earnings and inviter bonuses. The loyalty rewards bonuses do not apply on Starter, but you will still earn inviter bonuses when you invite)</p>'
+  +'<hr style="border-color:#333;margin:12px 0">'
+  +'<p><b style="color:#d4af37">#Earn R10 per invite from Package A-E.</b></p>'
+  +'<p><b>#Invites are unlimited</b></p>'
+  +'<p>#You do not have to invite many people you can invite 7 people once-off and everytime they all deposit you earn your bonus and can be immediately withdrawn as minimum withdrawal is at R70.</p>'
+  +'<p style="color:#ffcc00"><b>#NB:Invitee must deposit first or purchase a package from other wallets for the Inviter to be rewarded.</b></p>'
+  +'</div><br><button class="btn" onclick="goTeam()">Go to My Team</button><br><br><button class="btn2" onclick="goHome()">Home</button></div>';
   document.getElementById("app").innerHTML=h;
 }
 function goRegister(){
