@@ -754,8 +754,7 @@ function goAdmin(){
     }catch(e){}
   }
   board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
-  }
-  board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
+  
   h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
   h+='<div style="overflow:auto"><table class="leadTable"><tr><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
   for(var r=0;r<board.length;r++){
