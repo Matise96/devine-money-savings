@@ -762,7 +762,8 @@ try{
 // --- END LEADER BOARD CALC ---
 
 var h='<div class="card">';
-  if(adminSub==="leaderboard"){
+if(adminSub==="leaderboard"){
+  h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
     h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
     
   h+='<div style="overflow:auto"><table class="leadTable"><tr><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
@@ -771,6 +772,24 @@ var h='<div class="card">';
     h+='<tr style="'+(r<3? (row.total>0?'background:#1a2a1a;border-left:3px solid #2ee89e':''):'')+'"><td><b>'+medal+'</b></td><td><b>'+row.name+'</b><br><span class="gold">'+row.invite+'</span><br><span class="small">'+row.cell+'</span></td><td><b style="color:#2ee89e;font-size:16px">'+row.total+' invites</b><br><span class="small">'+row.qualified+' qualified</span></td><td><b>Total Earned= R'+row.earned+'</b></td></tr>';
   }
   h+='</table></div>';
+  } else {
+  h+='<h3 class="gold">Admin Dashboard</h3>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0">';
+  h+='<div class="statBox">Users<br><b>'+users.length+'</b></div>';
+  h+='<div class="statBox">Main Bal<br><b>R'+totalMain+'</b></div>';
+  h+='<div class="statBox">Inviter<br><b style="color:#0f0">R'+totalInv+'</b></div>';
+  h+='<div class="statBox">Loyalty<br><b>R'+totalLoy+'</b></div>';
+  h+='<div class="statBox">Pending<br><b>'+pend.length+'</b></div>';
+  h+='<div class="statBox">Paid<br><b>R'+totalPaid+'</b></div>';
+  h+='</div>';
+  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">';
+  h+='<button onclick="adminSub=\'dashboard\';render()">Dashboard</button>';
+  h+='<button onclick="adminSub=\'leaderboard\';render()">Leaderboard</button>';
+  h+='<button onclick="adminSub=\'users\';render()">Users</button>';
+  h+='<button onclick="adminSub=\'withdrawals\';render()">Withdrawals</button>';
+  h+='</div>';
+}
+h+='</div>';
 }
 
   if(adminSub==="announcements"){
