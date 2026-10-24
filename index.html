@@ -745,6 +745,16 @@ function goAdmin(){
     }
     board.push({u:u, name:((u.name||"")+" "+(u.surname||"")).trim()||u.cell, invite:u.invite||u.myCode||"", cell:u.cell||"", total:total, qualified:qual, earned:earn});
   }
+  // AUTO-CREDIT INVITER WALLET - Fixes R0
+  for(var c=0;c<board.length;c++){
+    try{
+      var uu=board[c].u;
+      if(!uu.w) uu.w={};
+      uu.w.inviter = board[c].earned;
+    }catch(e){}
+  }
+  board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
+  }
   board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
   h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
   h+='<div style="overflow:auto"><table class="leadTable"><tr><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
