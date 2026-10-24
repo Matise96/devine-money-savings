@@ -715,83 +715,51 @@ function goAdmin(){
   }
   for(var i=0;i<users.length;i++){var exp="DMS"+String(i+1).padStart(3,"0");users[i].invite=exp;ensureWallets(users[i]);}
   var autoAll = autoCreditAll();
-  var totalMain=0,totalInv=0,totalLoy=0,totalPaid=0;
-  users.forEach(function(u)  {ensureWallets(u);totalMain+=u.w.main;totalLoy+=u.w.loyalty;});           
-  txs.forEach(function(t){if(t.type==="withdraw"&&(t.status==="approved"||t.status==="done"))totalPaid+=t.amount;});
-  
-var pend=txs.filter(function(t){return t.status==="pending"});
+ var totalMain=0, totalInv=0, totalLoy=0, totalPaid=0;
+users.forEach(function(u){ try{ ensureWallets(u); totalMain+=Number(u.w.main||0); totalLoy+=Number(u.w.loyalty||0); }catch(e){} });
+var txs = window.txs || []; 
+try{ txs.forEach(function(t){ if(t.status==="paid") totalPaid+=Number(t.amount||0); }); }catch(e){}
+var pend = txs.filter(function(t){ return t.status==="pending"; });
 
-// --- LEADER BOARD CALC - MUST BE BEFORE var h= FOR DASHBOARD R15 ---
-var board=[];
+var board=[]; 
 try{
-  board=[];
   for(var i=0;i<users.length;i++){
     var u=users[i]; if(!u) continue;
     var total=0, qual=0, earn=0;
     for(var j=0;j<users.length;j++){
       var uj=users[j]; if(!uj) continue;
-      var byVal=uj.by||"";
-      if(byVal===u.invite || byVal===u.cell || byVal===u.myCode){
+      if((uj.by||"")=== (u.invite||"") || (uj.by||"")===(u.cell||"") || (uj.by||"")===(u.myCode||"")){
         total++;
-        var mb=0; try{ mb=Number(uj.w && uj.w.main ? uj.w.main : 0); }catch(e){ mb=0; }
-        if(mb>=70){
-          qual++;
-          if(mb>=70) earn+=5;
-          if(mb>=160) earn+=10;
-          if(mb>=250) earn+=10;
-          if(mb>=340) earn+=10;
-          if(mb>=430) earn+=10;
-          if(mb>=520) earn+=10;
-        }
+        var mb=0; try{ mb=Number(uj.w&&uj.w.main?uj.w.main:0); }catch(e){ mb=0; }
+        if(mb>=70){ qual++; earn+=5; if(mb>=160)earn+=10; if(mb>=250)earn+=10; if(mb>=340)earn+=10; if(mb>=430)earn+=10; if(mb>=520)earn+=10; }
       }
     }
-    board.push({u:u, name:(((u.name||"")+" "+(u.surname||"")).trim()||u.cell), invite:u.invite||u.myCode||"", cell:u.cell||"", total:total, qualified:qual, earned:earn});
+    board.push({cell:u.cell||"", invite:u.invite||"", total:total, qualified:qual, earned:earn, name:((u.name||"")+" "+(u.surname||"")).trim()||u.cell, u:u});
   }
-  var seen={}; var clean=[];
-  for(var k=0;k<board.length;k++){
-    var key=board[k].cell||board[k].invite;
-    if(!seen[key]){ seen[key]=1; clean.push(board[k]); }
-  }
-  board=clean;
-  board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
-  totalInv=0; for(var k=0;k<board.length;k++){ totalInv+=board[k].earned||0; }
-}catch(e){
-  console.log("board calc failed",e);
-  totalInv=0; board=[];
-}
-// --- END LEADER BOARD CALC ---
+  board.sort(function(a,b){ return b.total-a.total; });
+  for(var k=0;k<board.length;k++) totalInv+=board[k].earned||0;
+}catch(e){ board=[]; totalInv=0; }
 
 var h='<div class="card">';
 if(adminSub==="leaderboard"){
   h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
-    h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
-    
   h+='<div style="overflow:auto"><table class="leadTable"><tr><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
-  for(var r=0;r<board.length;r++){
-    var row=board[r]; var medal=r===0?'🥇':r===1?'🥈':r===2?'🥉':(r+1)+'. ';
-    h+='<tr style="'+(r<3? (row.total>0?'background:#1a2a1a;border-left:3px solid #2ee89e':''):'')+'"><td><b>'+medal+'</b></td><td><b>'+row.name+'</b><br><span class="gold">'+row.invite+'</span><br><span class="small">'+row.cell+'</span></td><td><b style="color:#2ee89e;font-size:16px">'+row.total+' invites</b><br><span class="small">'+row.qualified+' qualified</span></td><td><b>Total Earned= R'+row.earned+'</b></td></tr>';
+  for(var i=0;i<board.length;i++){
+    var b=board[i];
+    h+='<tr><td>'+(i+1)+'</td><td>'+b.name+'<br><span class="small">'+(b.invite||"")+'<br>'+b.cell+'</span></td><td><b style="color:#0f0">'+b.total+' invites</b><br>'+b.qualified+' qualified</td><td>Total Earned= R'+b.earned+'</td></tr>';
   }
   h+='</table></div>';
-  } else {
+} else {
   h+='<h3 class="gold">Admin Dashboard</h3>';
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0">';
   h+='<div class="statBox">Users<br><b>'+users.length+'</b></div>';
   h+='<div class="statBox">Main Bal<br><b>R'+totalMain+'</b></div>';
   h+='<div class="statBox">Inviter<br><b style="color:#0f0">R'+totalInv+'</b></div>';
   h+='<div class="statBox">Loyalty<br><b>R'+totalLoy+'</b></div>';
-  h+='<div class="statBox">Pending<br><b>'+pend.length+'</b></div>';
-  h+='<div class="statBox">Paid<br><b>R'+totalPaid+'</b></div>';
-  h+='</div>';
-  h+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">';
-  h+='<button onclick="adminSub=\'dashboard\';render()">Dashboard</button>';
-  h+='<button onclick="adminSub=\'leaderboard\';render()">Leaderboard</button>';
-  h+='<button onclick="adminSub=\'users\';render()">Users</button>';
-  h+='<button onclick="adminSub=\'withdrawals\';render()">Withdrawals</button>';
   h+='</div>';
 }
 h+='</div>';
-}
-
+  
   if(adminSub==="announcements"){
     h+='<h3 class="gold">Post Announcement to ALL Users</h3>';
     h+='<div style="border:2px solid #d4af37;padding:14px;border-radius:14px;background:#1a1a1a;margin-bottom:16px">';
