@@ -724,7 +724,7 @@ function goAdmin(){
     h+='<h3 class="gold">Pending Withdrawals</h3>';if(pend.length===0)h+="<p>No pending</p>";
     for(var i=0;i<pend.length;i++){var t=pend[i];var idx=txs.indexOf(t);var adminFee=(t.amount>=140)?20:10;var adminPay=t.amount-adminFee;h+='<div style="border:1px solid #d4af37;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+t.cell+'</b><br>R'+t.amount+' - R'+adminFee+' fee = Pay R'+adminPay+'<br><button class="btn2" onclick="approveWithdraw('+idx+')">Approve</button><button class="btnRed" onclick="rejectWithdraw('+idx+')">Reject</button></div>';}
   }
-  if(adminSub==="leaderboard"){
+    if(adminSub==="leaderboard"){
   var board=[];
   for(var i=0;i<users.length;i++){
     var u=users[i]; if(!u) continue;
@@ -733,27 +733,26 @@ function goAdmin(){
       var uj=users[j]; if(!uj) continue;
       var byVal = uj.by || "";
       if(byVal===u.invite || byVal===u.cell || byVal===u.myCode){
-                total++;
-        var mb=0; try{ mb=Number(uj.w? (uj.w.main?uj.w.main:0):0); }catch(e){ mb=0; }
+        total++;
+        var mb=0; try{ mb=Number(uj.w?(uj.w.main?uj.w.main:0):0); }catch(e){ mb=0; }
+        // AUTO R5 / R10 LOGIC - R70 = R5, R160+ = R10
         if(mb>=70){
           qual++;
-          earn+=5;
+          if(mb>=160){ earn+=10; } else { earn+=5; }
         }
-        if(mb>=160){
-          earn+=10;
-        }
+      }
     }
     board.push({u:u, name:((u.name||"")+" "+(u.surname||"")).trim()||u.cell, invite:u.invite||u.myCode||"", cell:u.cell||"", total:total, qualified:qual, earned:earn});
   }
-  // AUTO-CREDIT INVITER WALLET - Fixes R0
-  for(var c=0;c<board.length;c++){
-    try{
-      var uu=board[c].u;
-      if(!uu.w) uu.w={};
-      uu.w.inviter = board[c].earned;
-    }catch(e){}
+  // REMOVE DUPLICATES - fixes your 4 rows for 2 users
+  var seen={}; var clean=[];
+  for(var k=0;k<board.length;k++){
+    var key=board[k].cell||board[k].invite;
+    if(!seen[key]){ seen[key]=1; clean.push(board[k]); }
   }
+  board=clean;
   board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
+  h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
     
   h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
   h+='<div style="overflow:auto"><table class="leadTable"><tr><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
