@@ -745,15 +745,17 @@ function goAdmin(){
     }
     board.push({u:u, name:((u.name||"")+" "+(u.surname||"")).trim()||u.cell, invite:u.invite||u.myCode||"", cell:u.cell||"", total:total, qualified:qual, earned:earn});
   }
-      // SAFE AUTO-CREDIT - Fixes Inviter R0 + No Crash
-  try{
-    for(var k=0;k<board.length;k++){
-      if(board[k].u){
-        if(!board[k].u.w) board[k].u.w={};
-        board[k].u.w.inviter = board[k].earned;
-      }
-    }
-  }catch(e){}
+      
+  board.push({u:u, name:((u.name||"")+" "+(u.surname||"")).trim()||u.cell, invite:u.invite||u.myCode||"", cell:u.cell||"", total:total, qualified:qual, earned:earn});
+  }
+  // AUTO-CREDIT INVITER WALLET - Fixes R0
+  for(var c=0;c<board.length;c++){
+    try{
+      var uu=board[c].u;
+      if(!uu.w) uu.w={};
+      uu.w.inviter = board[c].earned;
+    }catch(e){}
+  }
   board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
     
   h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
