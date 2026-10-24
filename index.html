@@ -235,7 +235,7 @@ function tryGiveInviterBonus(invitedCell){
   var mainBal = invitedUser.w.main || 0;
   var hasStarterPkg = (invitedUser.pkgs||[]).some(function(p){return p.price===70 || (p.id && p.id.toLowerCase().includes("starter"))});
   var isStarter = mainBal===70 || mainBal===70.00 || hasStarterPkg;
-  var bonusAmt = isStarter ? 5 : 10;
+  var bonusAmt = isStarter ? 5 : 5;
   if(!inviter.w) inviter.w={main:0,inviter:0,loyalty:0};
   inviter.w.inviter = (inviter.w.inviter||0) + bonusAmt;
   inviter.invitesCount = (inviter.invitesCount||0)+1;
@@ -735,8 +735,7 @@ function goAdmin(){
           if(isQualifiedInvite(users[j])){qualifiedCount++;}
         }
       }
-      var earned = qualifiedCount * 10;
-      board.push({name:u.name,invite:u.invite,cell:u.cell,total:totalInvites,qualified:qualifiedCount,earned:earned});
+     if(mb>=70){if(mb<160){earned+=5;}else{earned+=10;}} 
     }
     board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
     h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
