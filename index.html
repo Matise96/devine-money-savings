@@ -745,9 +745,6 @@ function goAdmin(){
     }
     board.push({u:u, name:((u.name||"")+" "+(u.surname||"")).trim()||u.cell, invite:u.invite||u.myCode||"", cell:u.cell||"", total:total, qualified:qual, earned:earn});
   }
-      
-  board.push({u:u, name:((u.name||"")+" "+(u.surname||"")).trim()||u.cell, invite:u.invite||u.myCode||"", cell:u.cell||"", total:total, qualified:qual, earned:earn});
-  }
   // AUTO-CREDIT INVITER WALLET - Fixes R0
   for(var c=0;c<board.length;c++){
     try{
