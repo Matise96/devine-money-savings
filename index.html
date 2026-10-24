@@ -724,8 +724,8 @@ function goAdmin(){
     h+='<h3 class="gold">Pending Withdrawals</h3>';if(pend.length===0)h+="<p>No pending</p>";
     for(var i=0;i<pend.length;i++){var t=pend[i];var idx=txs.indexOf(t);var adminFee=(t.amount>=140)?20:10;var adminPay=t.amount-adminFee;h+='<div style="border:1px solid #d4af37;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+t.cell+'</b><br>R'+t.amount+' - R'+adminFee+' fee = Pay R'+adminPay+'<br><button class="btn2" onclick="approveWithdraw('+idx+')">Approve</button><button class="btnRed" onclick="rejectWithdraw('+idx+')">Reject</button></div>';}
   }
-    if(adminSub==="leaderboard"){
-  var board=[];
+  }
+    var board=[]; // OUTSIDE if - so totalInv always works
   for(var i=0;i<users.length;i++){
     var u=users[i]; if(!u) continue;
     var total=0, qual=0, earn=0;
@@ -735,7 +735,6 @@ function goAdmin(){
       if(byVal===u.invite || byVal===u.cell || byVal===u.myCode){
         total++;
         var mb=0; try{ mb=Number(uj.w?(uj.w.main?uj.w.main:0):0); }catch(e){ mb=0; }
-            // CUMULATIVE MILESTONES - R70=R5, each 160/250/340/430/520 = +R10
         if(mb>=70){
           qual++;
           if(mb>=70) earn+=5;
@@ -744,10 +743,11 @@ function goAdmin(){
           if(mb>=340) earn+=10;
           if(mb>=430) earn+=10;
           if(mb>=520) earn+=10;
-        }    
+        }
+      }
+    }
     board.push({u:u, name:((u.name||"")+" "+(u.surname||"")).trim()||u.cell, invite:u.invite||u.myCode||"", cell:u.cell||"", total:total, qualified:qual, earned:earn});
   }
-  // REMOVE DUPLICATES - fixes your 4 rows for 2 users
   var seen={}; var clean=[];
   for(var k=0;k<board.length;k++){
     var key=board[k].cell||board[k].invite;
@@ -755,8 +755,10 @@ function goAdmin(){
   }
   board=clean;
   board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
-    totalInv=0; for(var k=0;k<board.length;k++){ totalInv+=board[k].earned||0; }  
-  h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
+  totalInv=0; for(var k=0;k<board.length;k++){ totalInv+=board[k].earned||0; }
+
+  if(adminSub==="leaderboard"){
+    h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
     
   h+='<div style="overflow:auto"><table class="leadTable"><tr><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
   for(var r=0;r<board.length;r++){
