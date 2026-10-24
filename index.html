@@ -735,7 +735,10 @@ function goAdmin(){
           if(isQualifiedInvite(users[j])){qualifiedCount++;}
         }
       }
-     if(mb>=70){if(mb<160){earned+=5;}else{earned+=10;}} 
+     var totalInvites=0; var qualifiedCount=0; var earned=0;
+...
+var mb=Number(users[j].w.main)||0;
+if(mb>=70 && mb<160){earned+=5;}else if(mb>=160){earned+=10;}
     }
     board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
     h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
