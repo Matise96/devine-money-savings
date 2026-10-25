@@ -735,18 +735,15 @@ function goAdmin(){
     var board=[];
     for(var uIdx=0;uIdx<users.length;uIdx++){
       var u=users[uIdx];ensureWallets(u);
-      var totalInvites=0; var qualifiedCount=0; 
-var myCode = (u.code||"").toString().trim().toUpperCase();
-var myInvite = (u.invite||"").toString().trim().toUpperCase();
+      var myCode = (u.code||"").toString().trim().toUpperCase();
+var totalInvites = 0; 
+var qualifiedCount = 0;
 for(var j=0;j<users.length;j++){
-  var other=users[j];
-  if(!other || other.code===u.code) continue;
-  var otherBy = (other.by || other.invitedBy || "").toString().trim().toUpperCase();
-  if(otherBy===myCode || (myInvite && otherBy===myInvite)){
+  var ob = (users[j].by||"").toString().trim().toUpperCase();
+  if(ob!=="" && ob===myCode){
     totalInvites++;
-    // qualified if Main >=70
-    var m = parseInt((other.w?other.w.main:other.main)||0);
-    if(m>=70 || (other.pkgs && other.pkgs.length>0)) qualifiedCount++;
+    var mm = parseInt((users[j].w?users[j].w.main:users[j].main)||0);
+    if(mm>=70 || (users[j].pkgs && users[j].pkgs.length>0)) qualifiedCount++;
   }
 }
 var earned = parseInt((u.w?u.w.inviter:u.inviter)||0);
