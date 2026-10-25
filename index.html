@@ -749,24 +749,6 @@ if(adminSub==="leaderboard"){
     h+='<tr><td>'+(i+1)+'</td><td>'+b.name+'<br><span class="small">'+(b.invite||"")+'<br>'+b.cell+'</span></td><td><b style="color:#0f0">'+b.total+' invites</b><br>'+b.qualified+' qualified</td><td>Total Earned= R'+b.earned+'</td></tr>';
   }
   h+='</table></div>';
-  } else {
-  h+='<h3 class="gold">Admin Dashboard</h3>';
-  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0">';
-      h+='<div class="statBox">Users<br><b>'+users.length+'</b></div>';
-    h+='<div class="statBox">Main Bal<br><b>R'+totalMain+'</b></div>';
-    h+='<div class="statBox">Inviter<br><b style="color:#0f0">R'+totalInv+'</b></div>';
-    h+='<div class="statBox">Loyalty<br><b>R'+totalLoy+'</b></div>';
-    h+='<div class="statBox">Pending<br><b>'+pend.length+'</b></div>';
-    h+='<div class="statBox">Paid<br><b>R'+totalPaid+'</b></div>';
-    h+='</div>';
-  h+='<div>';
-    style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">';
-  h+='<button onclick="adminSub=\'dashboard\';render()">Dashboard</button>';
-  h+='<button onclick="adminSub=\'leaderboard\';render()">Leaderboard</button>';
-  h+='<button onclick="adminSub=\'users\';render()">Users</button>';
-  h+='<button onclick="adminSub=\'withdrawals\';render()">Withdrawals</button>';
-  h+='</div>';
-h+='</div>';
 } else {
   h+='<h3 class="gold">Admin Dashboard</h3>';
   h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0">';
