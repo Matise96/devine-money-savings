@@ -376,6 +376,24 @@ function buyPkg(i){
   save();
   if(tryGiveInviterBonus(u)){alert("Success! "+pkg.name+" bought - Inviter R10 bonus triggered! Auto starts tomorrow 08:00 AM");} else {alert("Success! "+pkg.name+" bought - Auto daily R"+pkg.daily+" starts tomorrow 08:00 AM to Main Wallet");}
   goActivePackages();
+function tryGiveInviterBonus(u){
+  if(!u.invitedBy) return false;
+  var inv=users.find(function(x){return x.invite===u.invitedBy;});
+  if(!inv) return false;
+  ensureWallets(inv);
+  inv.paidLevels=inv.paidLevels||{};
+  var last=u.pkgs[u.pkgs.length-1];
+  var price=last?last.price:0;
+  var earn=0;
+  if(price===70 && !inv.paidLevels[70]) earn=5;
+  if((price===160||price===250||price===340||price===430||price===520) && !inv.paidLevels[price]) earn=10;
+  if(earn>0){
+    inv.w.inviter+=earn;
+    inv.paidLevels[price]=true;
+    save();
+    return true;
+  }
+  return false;
 }
 function goActivePackages(){
   setActive("bAP");var u=getUser();if(!u){document.getElementById("app").innerHTML="<div class=card>Login first</div>";return;}checkLogout();
@@ -711,13 +729,48 @@ function goAdmin(){
     document.getElementById("app").innerHTML='<div class="card"><h3>Admin Login</h3><input id="aC" class="input" placeholder="Cell" value="0510011039"><div class="pwdWrap"><input id="aP" class="input" type="password" placeholder="Pass"><button class="eyeBtn" id="eyeAP" onclick="toggleEye(&quot;aP&quot;,&quot;eyeAP&quot;)">👁️</button></div><button class="btn" onclick="adminLogin()">Login</button></div>';return;
   }
   for(var i=0;i<users.length;i++){var exp="DMS"+String(i+1).padStart(3,"0");users[i].invite=exp;ensureWallets(users[i]);}
-  var mb = {main:0,inv:0,loyal:0};
   var autoAll = autoCreditAll();
   var totalMain=0,totalInv=0,totalLoy=0,totalPaid=0;
   users.forEach(function(u){ensureWallets(u);totalMain+=u.w.main;totalInv+=u.w.inviter;totalLoy+=u.w.loyalty;});
   txs.forEach(function(t){if(t.type==="withdraw"&&(t.status==="approved"||t.status==="done"))totalPaid+=t.amount;});
   var pend=txs.filter(function(t){return t.status==="pending"});
-  var h='<div class="card">'+(autoAll>0?'<div style="background:#0a1f18;border:1px solid #2ee89e;padding:8px;border-radius:8px;margin-bottom:8px;color:#2ee89e">🎉 Auto-credited R'+autoAll+' to ALL users at 08:00 AM today!</div>':'')+'<h2 class="gold">Admin Dashboard</h2><div class="statBox"><b>'+users.length+'</b><br><span class="small">Users</span></div><div class="statBox"><b>'+pend.length+'</b><br><span class="small">Pending</span></div><div class="statBox"><b>R'+totalMain.toFixed(0)+'</b><br><span class="small">Total Main</span></div><div class="statBox"><b>R'+totalInv.toFixed(0)+'</b><br><span class="small">Inviter</span></div><div class="statBox"><b>R'+totalLoy.toFixed(0)+'</b><br><span class="small">Loyalty</span></div><div class="statBox"><b>R'+totalPaid.toFixed(0)+'</b><br><span class="small">Paid Out</span></div><hr><div class="adminTab"><button onclick="setAdminSub(\'dashboard\')" class="'+(adminSub==="dashboard"?"active":"")+'">Dashboard</button><button onclick="setAdminSub(\'withdrawals\')" class="'+(adminSub==="withdrawals"?"active":"")+'">Withdrawals ('+pend.length+')</button><button onclick="setAdminSub(\'users\')" class="'+(adminSub==="users"?"active":"")+'">Users ('+users.length+')</button><button onclick="setAdminSub(\'leaderboard\')" class="'+(adminSub==="leaderboard"?"active":"")+'" style="background:#0f2a22;color:#2ee89e;border-color:#2ee89e">🏆 Leader Board</button><button onclick="setAdminSub(\'announcements\')" class="'+(adminSub==="announcements"?"active":"")+'" style="background:#d4af37;color:#000;font-weight:900">📢 Announcements ('+anns.length+')</button>  <button onclick="setAdminSub(\'settings\')" class="'+(adminSub==="settings"?"active":"")+'">Settings</button></div><hr>';
+ var h='<div class="card">'+
+(users.length===0?'<div>No users yet</div>':'')+
+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0;">'+
+'<div style="border:1px solid #c9a227;padding:8px;border-radius:8px;text-align:center"><b>'+users.length+'</b><br>Users</div>'+
+'<div style="border:1px solid #c9a227;padding:8px;border-radius:8px;text-align:center"><b>'+pend.length+'</b><br>Pending</div>'+
+'<div style="border:1px solid #c9a227;padding:8px;border-radius:8px;text-align:center"><b>R'+totalMain+'</b><br>Total Main</div>'+
+'<div style="border:1px solid #c9a227;padding:8px;border-radius:8px;text-align:center"><b>R'+totalInv+'</b><br>Inviter</div>'+
+'<div style="border:1px solid #c9a227;padding:8px;border-radius:8px;text-align:center"><b>R'+totalLoy+'</b><br>Loyalty</div>'+
+'<div style="border:1px solid #c9a227;padding:8px;border-radius:8px;text-align:center"><b>R'+totalPaid+'</b><br>Paid Out</div>'+
+'</div>'+
+'<div style="display:flex;gap:6px;overflow:auto;margin:8px 0;">'+
+'<button class="btn" onclick="adminSub=\'dash\';render()">Dashboard</button>'+
+'<button class="btn" onclick="adminSub=\'withdrawals\';render()">Withdrawals ('+pend.length+')</button>'+
+'<button class="btn" onclick="adminSub=\'users\';render()">Users ('+users.length+')</button>'+
+'<button class="btn" onclick="adminSub=\'leaderboard\';render()">🏆 Leader Board</button>'+
+'</div>';
+
+if(adminSub==='leaderboard'){
+  h+='<h3 class="gold">🏆 Leader Board</h3><p>All users shown. Earned only QUALIFIED.</p>';
+  h+='<div style="overflow:auto"><table style="width:100%;border-collapse:collapse"><tr style="background:#d4af37"><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
+  var sorted=users.slice().sort(function(a,b){return (b.w.inviter+b.w.loyalty)-(a.w.inviter+a.w.loyalty);});
+  for(var j=0;j<sorted.length;j++){var u=sorted[j];var invC=0;for(var k=0;k<users.length;k++){if(users[k].invitedBy===u.invite)invC++;}var earn=(u.w.inviter||0)+(u.w.loyalty||0);h+='<tr style="border-bottom:1px solid #333"><td>'+(j+1)+'</td><td>'+(u.name||u.cell)+' | '+u.invite+'</td><td>'+invC+'</td><td>R'+earn+'</td></tr>';}
+  h+='</table></div>';
+}
+if(adminSub==='users'){
+  h+='<h3>Users</h3><div style="overflow:auto"><table style="width:100%"><tr><th>Name</th><th>Cell</th><th>Code</th><th>Main</th></tr>';
+  for(var j=0;j<users.length;j++){var u=users[j];h+='<tr><td>'+(u.name||'-')+'</td><td>'+u.cell+'</td><td>'+u.invite+'</td><td>R'+(u.w.main||0)+'</td></tr>';}
+  h+='</table></div>';
+}
+if(adminSub==='withdrawals'){
+  h+='<h3>Withdrawals</h3>';
+  if(pend.length===0){h+='<div>No pending</div>';}
+  for(var j=0;j<pend.length;j++){var t=pend[j];h+='<div style="border:1px solid #444;padding:8px;margin:6px 0">R'+t.amount+' - '+t.cell+' <button onclick="approveTx(\''+t.id+'\')">Approve</button> <button onclick="rejectTx(\''+t.id+'\')">Reject</button></div>';}
+}
+if(adminSub==='dash' || !adminSub){h+='<h3>Dashboard</h3><div>Welcome Admin</div>';}
+h+='</div>';
+document.getElementById("app").innerHTML=h;return; 
   if(adminSub==="dashboard"||adminSub==="withdrawals"){
     h+='<h3 class="gold">Pending Withdrawals</h3>';if(pend.length===0)h+="<p>No pending</p>";
     for(var i=0;i<pend.length;i++){var t=pend[i];var idx=txs.indexOf(t);var adminFee=(t.amount>=140)?20:10;var adminPay=t.amount-adminFee;h+='<div style="border:1px solid #d4af37;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+t.cell+'</b><br>R'+t.amount+' - R'+adminFee+' fee = Pay R'+adminPay+'<br><button class="btn2" onclick="approveWithdraw('+idx+')">Approve</button><button class="btnRed" onclick="rejectWithdraw('+idx+')">Reject</button></div>';}
