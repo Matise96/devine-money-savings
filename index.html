@@ -735,34 +735,21 @@ function goAdmin(){
     var board=[];
     for(var uIdx=0;uIdx<users.length;uIdx++){
       var u=users[uIdx];ensureWallets(u);
-      var totalInvites=0; var qualifiedCount=0; var earned=0;
+      var totalInvites=0; var qualifiedCount=0; 
 var myCode = (u.code||"").toString().trim().toUpperCase();
 var myInvite = (u.invite||"").toString().trim().toUpperCase();
 for(var j=0;j<users.length;j++){
   var other=users[j];
   if(!other || other.code===u.code) continue;
-  var otherBy = (other.by || other.invitedBy || other.inviteBy || "").toString().trim().toUpperCase();
-  if(!otherBy) continue;
-  var isMine = (otherBy===myCode || otherBy===myInvite);
-  if(isMine){
+  var otherBy = (other.by || other.invitedBy || "").toString().trim().toUpperCase();
+  if(otherBy===myCode || (myInvite && otherBy===myInvite)){
     totalInvites++;
-    // qualified if has any package or main >=70
-    if(other.pkgs && other.pkgs.length>0) qualifiedCount++;
-    else if((other.w && parseInt(other.w.main||0)>=70) || parseInt(other.main||0)>=70) qualifiedCount++;
-    if(other.pkgs){
-      for(var k=0;k<other.pkgs.length;k++){
-        var pr=parseInt(other.pkgs[k].price || other.pkgs[k].amount || 0);
-        if(pr===70) earned+=5;
-        else if([160,250,340,430,520].indexOf(pr)!==-1) earned+=10;
-      }
-    } else {
-      // if no pkgs but you want deposit to count, count main deposit
-      var mainDep = parseInt(other.w ? (other.w.main||0) : (other.main||0));
-      if(mainDep>=70 && mainDep<160) earned+=5;
-      else if(mainDep>=160) earned+=10;
-    }
+    // qualified if Main >=70
+    var m = parseInt((other.w?other.w.main:other.main)||0);
+    if(m>=70 || (other.pkgs && other.pkgs.length>0)) qualifiedCount++;
   }
 }
+var earned = parseInt((u.w?u.w.inviter:u.inviter)||0);
       board.push({name:u.name,invite:u.invite,cell:u.cell,total:totalInvites,qualified:qualifiedCount,earned:earned});
     }
     board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
