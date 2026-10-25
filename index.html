@@ -225,22 +225,23 @@ function previewAnnImg(){var i=document.getElementById("annImg");var p=document.
 function getUser(){if(!cur||cur.cell==="ADMIN") return null;for(var i=0;i<users.length;i++){if(users[i].cell===cur.cell){ensureWallets(users[i]);return users[i];}}return null;}
 function toggleEye(a,b){var x=document.getElementById(a);var y=document.getElementById(b);if(!x) return;if(x.type==="password"){x.type="text";y.textContent="🙈";}else{x.type="password";y.textContent="👁️";}}
 function isQualifiedInvite(invitedUser){if(!invitedUser) return false;var bal=(invitedUser.w.main||0)+(invitedUser.w.inviter||0)+(invitedUser.w.loyalty||0);var hasValidDeposit=VALID_DEPOSITS.includes(Math.round(invitedUser.w.main))||VALID_DEPOSITS.includes(Math.round(bal));var hasBoughtPackage=invitedUser.pkgs&&invitedUser.pkgs.length>0;var hasTx=false;try{hasTx=txs.some(function(t){return t.cell===invitedUser.cell;});}catch(e){}return hasValidDeposit||hasBoughtPackage||hasTx;}
+
 function tryGiveInviterBonus(invitedCell){
   var invitedUser = users.find(function(x){return x.cell===invitedCell || x.id===invitedCell});
   if(!invitedUser) return false;
   if(invitedUser.inviterBonusGiven) return false;
-  var inviter = users.find(function(x){return x.cell===invitedUser.by || x.id===invitedUser.by || x.invite===invitedUser.by || x.myCode===invitedUser.by});
+  var inviter = users.find(function(x){return x.cell===invitedUser.invitedBy || x.id===invitedUser.invitedBy || x.myCode===invitedUser.invitedBy});
   if(!inviter) return false;
-  var mainBal = Number(invitedUser.w.main)||0;
-  if(mainBal<70) return false;
-  var bonusAmt = (mainBal>=70 && mainBal<160) ? 5 : 10;
+  var mainBal = invitedUser.w.main || 0;
+  var hasStarterPkg = (invitedUser.pkgs||[]).some(function(p){return p.price===70 || (p.id && p.id.toLowerCase().includes("starter"))});
+  var isStarter = mainBal===70 || mainBal===70.00 || hasStarterPkg;
+  var bonusAmt = isStarter ? 5 : 5;
   if(!inviter.w) inviter.w={main:0,inviter:0,loyalty:0};
-  inviter.w.inviter = (Number(inviter.w.inviter)||0) + bonusAmt;
+  inviter.w.inviter = (inviter.w.inviter||0) + bonusAmt;
+  inviter.invitesCount = (inviter.invitesCount||0)+1;
   invitedUser.inviterBonusGiven = true;
   save();
   return true;
-}
-
 }
  
 function autoCreditAll(){
@@ -727,15 +728,14 @@ function goAdmin(){
     var board=[];
     for(var uIdx=0;uIdx<users.length;uIdx++){
       var u=users[uIdx];ensureWallets(u);
-      var totalInvites=0; var qualifiedCount=0; var earned=0;
-for(var j=0;j<users.length;j++){
-  if(users[j].by===u.invite || users[j].by===u.cell){
-    totalInvites++;ensureWallets(users[j]);
-    if(isQualifiedInvite(users[j])){
-      qualifiedCount++;
-      var mb=Number(users[j].w.main)||0;
-      
-    if(mb>=70){if(mb<160){earned+=5;}else{earned+=10;}}  board.push({name:u.name,invite:u.invite,cell:u.cell,total:totalInvites,qualified:qualifiedCount,earned:earned});
+      var totalInvites=0; var qualifiedCount=0;
+      for(var j=0;j<users.length;j++){
+        if(users[j].by===u.invite || users[j].by===u.cell){
+          totalInvites++;ensureWallets(users[j]);
+          if(isQualifiedInvite(users[j])){qualifiedCount++;}
+        }
+      }
+     if(mb>=70){if(mb<160){earned+=5;}else{earned+=10;}} 
     }
     board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
     h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
