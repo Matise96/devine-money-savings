@@ -355,10 +355,7 @@ function doLogin(){
   for(var i=0;i<users.length;i++){if(users[i].cell===c&&users[i].pass===p){ensureWallets(users[i]);cur={cell:users[i].cell};save();goHome();return;}}
   alert("Wrong");
 }
-function adminLogin(){
-  var c=document.getElementById("aC").value.trim(),p=document.getElementById("aP").value.trim();
-  if(c===atob("MDUxMDAxMTAzOQ==")&&p===atob("VGlpc2V0c28jOTY=")){
-}
+function adminLogin(){var c=document.getElementById("aC").value.trim(),p=document.getElementById("aP").value.trim();if(c===atob("MDUxMDAxMTAzOQ==")&&p===atob("VGlpc2V0c28jOTY=")){cur={cell:"ADMIN"};save();goAdmin();}else{alert("Wrong");}}
 function goPackages(){
   setActive("bP");checkLogout();
   var h='<div class="card"><h3 class="gold">Packages - Daily cashback at 08:00 AM</h3>';
