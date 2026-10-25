@@ -376,6 +376,7 @@ function buyPkg(i){
   save();
   if(tryGiveInviterBonus(u)){alert("Success! "+pkg.name+" bought - Inviter R10 bonus triggered! Auto starts tomorrow 08:00 AM");} else {alert("Success! "+pkg.name+" bought - Auto daily R"+pkg.daily+" starts tomorrow 08:00 AM to Main Wallet");}
   goActivePackages();
+}                                  
 function tryGiveInviterBonus(u){
   if(!u.invitedBy) return false;
   var inv=users.find(function(x){return x.invite===u.invitedBy;});
