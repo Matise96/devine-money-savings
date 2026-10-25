@@ -366,22 +366,20 @@ function buyPkg(i){
 }
 function tryGiveInviterBonus(u){
   if(!u.invitedBy) return false;
-  var inv=users.find(function(x){return x.invite===u.invitedBy;});
+  var inv=users.find(function(x){return x.invite===u.invitedBy || x.code===u.invitedBy;});
   if(!inv) return false;
-  ensureWallets(inv);
-  inv.paidLevels=inv.paidLevels||{};
-  var last=u.pkgs[u.pkgs.length-1];
-  var price=last?last.price:0;
+  if(!inv.w) inv.w={main:0,inviter:0,loyalty:0};
+  var last = u.pkgs && u.pkgs.length ? u.pkgs[u.pkgs.length-1].price : 0;
+  if(!last) return false;
   var earn=0;
-  if(price===70 && !inv.paidLevels[70]) earn=5;
-  if((price===160||price===250||price===340||price===430||price===520) && !inv.paidLevels[price]) earn=10;
-  if(earn>0){
-    inv.w.inviter+=earn;
-    inv.paidLevels[price]=true;
-    save();
-    return true;
-  }
-  return false;
+  if(last===70) earn=5;
+  else if([160,250,340,430,520].indexOf(last)!==-1) earn=10;
+  else return false;
+  inv.w.inviter+=earn;
+  if(!inv.trans) inv.trans=[];
+  inv.trans.push({type:"inviter_bonus",amount:earn,from:u.code,note:"Inviter bonus R"+earn+" from "+u.code+" - R"+last, date:new Date().toISOString(), status:"approved", wallet:"inviter"});
+  save();
+  return true;
 }
 function goActivePackages(){
 
@@ -732,14 +730,20 @@ function goAdmin(){
     var board=[];
     for(var uIdx=0;uIdx<users.length;uIdx++){
       var u=users[uIdx];ensureWallets(u);
-      var totalInvites=0; var qualifiedCount=0;
-      for(var j=0;j<users.length;j++){
-        if(users[j].by===u.invite || users[j].by===u.cell){
-          totalInvites++;ensureWallets(users[j]);
-          if(isQualifiedInvite(users[j])){qualifiedCount++;}
-        }
+      var totalInvites=0; var qualifiedCount=0; var earned=0;
+for(var j=0;j<users.length;j++){
+  if(users[j].by===u.invite || users[j].by===u.cell || users[j].invitedBy===u.invite || users[j].invitedBy===u.code){
+    totalInvites++; ensureWallets(users[j]);
+    if(isQualifiedInvite(users[j])) qualifiedCount++;
+    if(users[j].pkgs){
+      for(var k=0;k<users[j].pkgs.length;k++){
+        var pr=users[j].pkgs[k].price;
+        if(pr===70) earned+=5;
+        else if([160,250,340,430,520].indexOf(pr)!==-1) earned+=10;
       }
-      var earned = qualifiedCount * 10;
+    }
+  }
+}
       board.push({name:u.name,invite:u.invite,cell:u.cell,total:totalInvites,qualified:qualifiedCount,earned:earned});
     }
     board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
