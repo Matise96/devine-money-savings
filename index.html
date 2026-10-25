@@ -711,6 +711,7 @@ function goAdmin(){
     document.getElementById("app").innerHTML='<div class="card"><h3>Admin Login</h3><input id="aC" class="input" placeholder="Cell" value="0510011039"><div class="pwdWrap"><input id="aP" class="input" type="password" placeholder="Pass"><button class="eyeBtn" id="eyeAP" onclick="toggleEye(&quot;aP&quot;,&quot;eyeAP&quot;)">👁️</button></div><button class="btn" onclick="adminLogin()">Login</button></div>';return;
   }
   for(var i=0;i<users.length;i++){var exp="DMS"+String(i+1).padStart(3,"0");users[i].invite=exp;ensureWallets(users[i]);}
+  var mb = {main:0,inv:0,loyal:0};
   var autoAll = autoCreditAll();
   var totalMain=0,totalInv=0,totalLoy=0,totalPaid=0;
   users.forEach(function(u){ensureWallets(u);totalMain+=u.w.main;totalInv+=u.w.inviter;totalLoy+=u.w.loyalty;});
