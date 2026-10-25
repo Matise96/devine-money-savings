@@ -225,23 +225,22 @@ function previewAnnImg(){var i=document.getElementById("annImg");var p=document.
 function getUser(){if(!cur||cur.cell==="ADMIN") return null;for(var i=0;i<users.length;i++){if(users[i].cell===cur.cell){ensureWallets(users[i]);return users[i];}}return null;}
 function toggleEye(a,b){var x=document.getElementById(a);var y=document.getElementById(b);if(!x) return;if(x.type==="password"){x.type="text";y.textContent="🙈";}else{x.type="password";y.textContent="👁️";}}
 function isQualifiedInvite(invitedUser){if(!invitedUser) return false;var bal=(invitedUser.w.main||0)+(invitedUser.w.inviter||0)+(invitedUser.w.loyalty||0);var hasValidDeposit=VALID_DEPOSITS.includes(Math.round(invitedUser.w.main))||VALID_DEPOSITS.includes(Math.round(bal));var hasBoughtPackage=invitedUser.pkgs&&invitedUser.pkgs.length>0;var hasTx=false;try{hasTx=txs.some(function(t){return t.cell===invitedUser.cell;});}catch(e){}return hasValidDeposit||hasBoughtPackage||hasTx;}
-
 function tryGiveInviterBonus(invitedCell){
   var invitedUser = users.find(function(x){return x.cell===invitedCell || x.id===invitedCell});
   if(!invitedUser) return false;
   if(invitedUser.inviterBonusGiven) return false;
-  var inviter = users.find(function(x){return x.cell===invitedUser.invitedBy || x.id===invitedUser.invitedBy || x.myCode===invitedUser.invitedBy});
+  var inviter = users.find(function(x){return x.cell===invitedUser.by || x.id===invitedUser.by || x.invite===invitedUser.by || x.myCode===invitedUser.by});
   if(!inviter) return false;
-  var mainBal = invitedUser.w.main || 0;
-  var hasStarterPkg = (invitedUser.pkgs||[]).some(function(p){return p.price===70 || (p.id && p.id.toLowerCase().includes("starter"))});
-  var isStarter = mainBal===70 || mainBal===70.00 || hasStarterPkg;
-  var bonusAmt = isStarter ? 5 : 5;
+  var mainBal = Number(invitedUser.w.main)||0;
+  if(mainBal<70) return false;
+  var bonusAmt = (mainBal>=70 && mainBal<160) ? 5 : 10;
   if(!inviter.w) inviter.w={main:0,inviter:0,loyalty:0};
-  inviter.w.inviter = (inviter.w.inviter||0) + bonusAmt;
-  inviter.invitesCount = (inviter.invitesCount||0)+1;
+  inviter.w.inviter = (Number(inviter.w.inviter)||0) + bonusAmt;
   invitedUser.inviterBonusGiven = true;
   save();
   return true;
+}
+
 }
  
 function autoCreditAll(){
@@ -725,45 +724,31 @@ function goAdmin(){
     for(var i=0;i<pend.length;i++){var t=pend[i];var idx=txs.indexOf(t);var adminFee=(t.amount>=140)?20:10;var adminPay=t.amount-adminFee;h+='<div style="border:1px solid #d4af37;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+t.cell+'</b><br>R'+t.amount+' - R'+adminFee+' fee = Pay R'+adminPay+'<br><button class="btn2" onclick="approveWithdraw('+idx+')">Approve</button><button class="btnRed" onclick="rejectWithdraw('+idx+')">Reject</button></div>';}
   }
   if(adminSub==="leaderboard"){
-  var board=[];
-  for(var i=0;i<users.length;i++){
-    var u=users[i]; if(!u) continue;
-    var total=0, qual=0, earn=0;
-    for(var j=0;j<users.length;j++){
-      var uj=users[j]; if(!uj) continue;
-      var byVal = uj.by || "";
-      if(byVal===u.invite || byVal===u.cell || byVal===u.myCode){
-                total++;
-        var mb=0; try{ mb=Number(uj.w? (uj.w.main?uj.w.main:0):0); }catch(e){ mb=0; }
-        if(mb>=70){
-          qual++;
-          earn+=5;
-        }
-        if(mb>=160){
-          earn+=10;
-        }
+    var board=[];
+    for(var uIdx=0;uIdx<users.length;uIdx++){
+      var u=users[uIdx];ensureWallets(u);
+      var totalInvites=0; var qualifiedCount=0; var earned=0;
+for(var j=0;j<users.length;j++){
+  if(users[j].by===u.invite || users[j].by===u.cell){
+    totalInvites++;ensureWallets(users[j]);
+    if(isQualifiedInvite(users[j])){
+      qualifiedCount++;
+      var mb=Number(users[j].w.main)||0;
+      if(mb>=70 && mb<160){earned+=5;}else if(mb>=160){earned+=10;}
     }
-    board.push({u:u, name:((u.name||"")+" "+(u.surname||"")).trim()||u.cell, invite:u.invite||u.myCode||"", cell:u.cell||"", total:total, qualified:qual, earned:earn});
   }
-      // SAFE AUTO-CREDIT - Fixes Inviter R0 + No Crash
-  try{
-    for(var k=0;k<board.length;k++){
-      if(board[k].u){
-        if(!board[k].u.w) board[k].u.w={};
-        board[k].u.w.inviter = board[k].earned;
-      }
-    }
-  }catch(e){}
-  board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
-    
-  h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
-  h+='<div style="overflow:auto"><table class="leadTable"><tr><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
-  for(var r=0;r<board.length;r++){
-    var row=board[r]; var medal=r===0?'🥇':r===1?'🥈':r===2?'🥉':(r+1)+'. ';
-    h+='<tr style="'+(r<3? (row.total>0?'background:#1a2a1a;border-left:3px solid #2ee89e':''):'')+'"><td><b>'+medal+'</b></td><td><b>'+row.name+'</b><br><span class="gold">'+row.invite+'</span><br><span class="small">'+row.cell+'</span></td><td><b style="color:#2ee89e;font-size:16px">'+row.total+' invites</b><br><span class="small">'+row.qualified+' qualified</span></td><td><b>Total Earned= R'+row.earned+'</b></td></tr>';
-  }
-  h+='</table></div>';
 }
+      board.push({name:u.name,invite:u.invite,cell:u.cell,total:totalInvites,qualified:qualifiedCount,earned:earned});
+    }
+    board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
+    h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
+    h+='<div style="overflow:auto"><table class="leadTable"><tr><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
+    for(var r=0;r<board.length;r++){
+      var row=board[r];var medal=r===0?'🥇':r===1?'🥈':r===2?'🥉':(r+1)+'.';
+      h+='<tr style="'+(r<3 && row.total>0?'background:#1a2a1a;border-left:3px solid #2ee89e':'')+'"><td><b>'+medal+'</b></td><td><b>'+row.name+'</b><br><span class="gold">'+row.invite+'</span><br><span class="small">'+row.cell+'</span></td><td><b style="color:#2ee89e;font-size:16px">'+row.total+' invites</b><br><span class="small">'+row.qualified+' qualified</span></td><td><b>Total Earned= R'+row.earned+'</b></td></tr>';
+    }
+    h+='</table></div>';
+  }
 
   if(adminSub==="announcements"){
     h+='<h3 class="gold">Post Announcement to ALL Users</h3>';
