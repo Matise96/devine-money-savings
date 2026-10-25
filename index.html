@@ -365,11 +365,13 @@ function buyPkg(i){
   goActivePackages();
 }
 function tryGiveInviterBonus(u){
-  if(!u.invitedBy) return false;
-  var inv=users.find(function(x){return x.invite===u.invitedBy || x.code===u.invitedBy;});
+  var inviteCode = u.invitedBy || u.by || u.inviteBy;
+  if(!inviteCode) return false;
+  var inv=users.find(function(x){return x.invite===inviteCode || x.code===inviteCode || x.cell===inviteCode;});
   if(!inv) return false;
   if(!inv.w) inv.w={main:0,inviter:0,loyalty:0};
   var last = u.pkgs && u.pkgs.length ? u.pkgs[u.pkgs.length-1].price : 0;
+  last = parseInt(last||0);
   if(!last) return false;
   var earn=0;
   if(last===70) earn=5;
@@ -732,12 +734,15 @@ function goAdmin(){
       var u=users[uIdx];ensureWallets(u);
       var totalInvites=0; var qualifiedCount=0; var earned=0;
 for(var j=0;j<users.length;j++){
-  if(users[j].by===u.invite || users[j].by===u.cell || users[j].invitedBy===u.invite || users[j].invitedBy===u.code){
-    totalInvites++; ensureWallets(users[j]);
-    if(isQualifiedInvite(users[j])) qualifiedCount++;
-    if(users[j].pkgs){
-      for(var k=0;k<users[j].pkgs.length;k++){
-        var pr=users[j].pkgs[k].price;
+  var other=users[j];
+  if(other.code===u.code) continue; // don't count self!
+  var isMine = (other.by && (other.by===u.invite || other.by===u.cell || other.by===u.code)) || (other.invitedBy && (other.invitedBy===u.invite || other.invitedBy===u.code));
+  if(isMine){
+    totalInvites++; ensureWallets(other);
+    if(isQualifiedInvite(other)) qualifiedCount++;
+    if(other.pkgs){
+      for(var k=0;k<other.pkgs.length;k++){
+        var pr=parseInt(other.pkgs[k].price || other.pkgs[k].amount || 0);
         if(pr===70) earned+=5;
         else if([160,250,340,430,520].indexOf(pr)!==-1) earned+=10;
       }
