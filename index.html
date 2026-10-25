@@ -363,8 +363,27 @@ function buyPkg(i){
   save();
   if(tryGiveInviterBonus(u)){alert("Success! "+pkg.name+" bought - Inviter R10 bonus triggered! Auto starts tomorrow 08:00 AM");} else {alert("Success! "+pkg.name+" bought - Auto daily R"+pkg.daily+" starts tomorrow 08:00 AM to Main Wallet");}
   goActivePackages();
+function tryGiveInviterBonus(u){
+  if(!u.invitedBy) return false;
+  var inv=users.find(function(x){return x.invite===u.invitedBy;});
+  if(!inv) return false;
+  ensureWallets(inv);
+  inv.paidLevels=inv.paidLevels||{};
+  var last=u.pkgs[u.pkgs.length-1];
+  var price=last?last.price:0;
+  var earn=0;
+  if(price===70 && !inv.paidLevels[70]) earn=5;
+  if((price===160||price===250||price===340||price===430||price===520) && !inv.paidLevels[price]) earn=10;
+  if(earn>0){
+    inv.w.inviter+=earn;
+    inv.paidLevels[price]=true;
+    save();
+    return true;
+  }
+  return false;
 }
 function goActivePackages(){
+
   setActive("bAP");var u=getUser();if(!u){document.getElementById("app").innerHTML="<div class=card>Login first</div>";return;}checkLogout();
   var credited = autoCreditAll();
   var activePkgs=u.pkgs.filter(p=>!p.done);
