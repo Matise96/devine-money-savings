@@ -357,7 +357,7 @@ function doLogin(){
 }
 function adminLogin(){
   var c=document.getElementById("aC").value.trim(),p=document.getElementById("aP").value.trim();
-  if(c===atob("MDUxMDAxMTAzOQ==")&&p===atob("VGlpc2V0c28jOTY=")){cur={cell:"ADMIN"};save();goAdmin();}else{alert("Wrong");}
+  if(c===atob("MDUxMDAxMTAzOQ==")&&p===atob("VGlpc2V0c28jOTY=")){
 }
 function goPackages(){
   setActive("bP");checkLogout();
