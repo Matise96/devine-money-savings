@@ -748,29 +748,43 @@ if(adminSub==="leaderboard"){
     var b=board[i];
     h+='<tr><td>'+(i+1)+'</td><td>'+b.name+'<br><span class="small">'+(b.invite||"")+'<br>'+b.cell+'</span></td><td><b style="color:#0f0">'+b.total+' invites</b><br>'+b.qualified+' qualified</td><td>Total Earned= R'+b.earned+'</td></tr>';
   }
-h+='</table></div>';
+  h+='</table></div>';
+  } else {
+  h+='<h3 class="gold">Admin Dashboard</h3>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0">';
+      h+='<div class="statBox">Users<br><b>'+users.length+'</b></div>';
+    h+='<div class="statBox">Main Bal<br><b>R'+totalMain+'</b></div>';
+    h+='<div class="statBox">Inviter<br><b style="color:#0f0">R'+totalInv+'</b></div>';
+    h+='<div class="statBox">Loyalty<br><b>R'+totalLoy+'</b></div>';
+    h+='<div class="statBox">Pending<br><b>'+pend.length+'</b></div>';
+    h+='<div class="statBox">Paid<br><b>R'+totalPaid+'</b></div>';
+    h+='</div>';
+  h+='<div>';
+    style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0">';
+  h+='<button onclick="adminSub=\'dashboard\';render()">Dashboard</button>';
+  h+='<button onclick="adminSub=\'leaderboard\';render()">Leaderboard</button>';
+  h+='<button onclick="adminSub=\'users\';render()">Users</button>';
+  h+='<button onclick="adminSub=\'withdrawals\';render()">Withdrawals</button>';
+  h+='</div>';
+h+='</div>';
 } else {
-h+='<h3 class="gold">Admin Dashboard</h3>';
-h+='<div style="display:grid;grid-template-columns:1fr 1fr;'+
-'gap:10px;margin:10px 0">';
-h+='<div class="statBox">Users<br><b>'+users.length+'</b></div>';
-h+='<div class="statBox">Main Bal<br><b>R'+totalMain+'</b></div>';
-h+='<div class="statBox">Inviter<br><b style="color:#0f0">R'+totalInv+'</b></div>';
-h+='<div class="statBox">Loyalty<br><b>R'+totalLoy+'</b></div>';
-h+='<div class="statBox">Pending<br><b>'+pend.length+'</b></div>';
-h+='<div class="statBox">Paid<br><b>R'+totalPaid+'</b></div>';
-h+='</div>';
-h+='<div style="display:flex;gap:8px;flex-wrap:wrap;'+
-'margin:10px 0">';
-h+='<button onclick="adminSub=\'dashboard\';render()">Dashboard</button>';
-h+='<button onclick="adminSub=\'leaderboard\';render()">Leaderboard</button>';
-h+='<button onclick="adminSub=\'users\';render()">Users</button>';
-h+='<button onclick="adminSub=\'withdrawals\';render()">Withdrawals</button>';
-h+='</div>';
+  h+='<h3 class="gold">Admin Dashboard</h3>';
+  h+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0">';
+  h+='<div class="statBox">Users<br><b>'+users.length+'</b></div>';
+  h+='<div class="statBox">Main Bal<br><b>R'+totalMain+'</b></div>';
+  h+='<div class="statBox">Inviter<br><b style="color:#0f0">R'+totalInv+'</b></div>';
+  h+='<div class="statBox">Loyalty<br><b>R'+totalLoy+'</b></div>';
+  h+='</div>';
 }
 h+='</div>';
-h+='</div>';
-  
+  if(adminSub==="announcements"){
+    h+='<h3 class="gold">Post Announcement to ALL Users</h3>';
+    h+='<div style="border:2px solid #d4af37;padding:14px;border-radius:14px;background:#1a1a1a;margin-bottom:16px">';
+    h+='<label class="small">Title *</label><input id="annTitle" class="input" placeholder="Title">';
+    h+='<label class="small">Message *</label><textarea id="annText" class="input" rows="5" placeholder="Write message..."></textarea>';
+    h+='<label class="small">Upload Picture (optional)</label><input type="file" id="annImg" class="input" accept="image/*" onchange="previewAnnImg()"><div id="annPreview"></div>';
+    h+='<br><button class="btn" onclick="postAnnouncement()" style="background:#d4af37;color:#000">POST TO ALL USERS</button>';
+    h+='</div>';
     h+='<h3 class="gold">Existing ('+anns.length+')</h3>';
     if(anns.length===0){h+='<p class="small">No announcements yet.</p>';}
     else{for(var i=anns.length-1;i>=0;i--){var a=anns[i];h+='<div class="annItem"><div style="display:flex;justify-content:space-between"><b style="color:#d4af37">'+a.title+'</b><span class="small">'+new Date(a.date).toLocaleString()+'</span></div><p style="white-space:pre-wrap;margin:8px 0">'+a.text+'</p>'+(a.img?'<img src="'+a.img+'" class="annImg">':'')+'<br><button class="btnRed" onclick="deleteAnn('+a.id+')" style="margin-top:8px">Delete</button></div>';}}
