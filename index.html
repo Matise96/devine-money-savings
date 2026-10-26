@@ -514,7 +514,8 @@ function goTeam(){
   var code=u.invite;var team=[];for(var i=0;i<users.length;i++){if(users[i].by===code||users[i].by===u.cell)team.push(users[i]);}
   var link=location.origin+location.pathname+"?invite="+code;
   var h='<div class="card"><h3 class="gold">My Team '+team.length+'</h3><p>Code <b>'+code+'</b></p><input class="input" value="'+link+'" readonly><button class="btn2" onclick="navigator.clipboard.writeText(\''+link+'\')">Copy Link</button><hr>';
-  for(var k=0;k<team.length;k++){h+='<div>'+team[k].name+' '+team[k].cell+'</div>';}if(team.length===0)h+="No team";h+="<p>Inviter: R"+u.w.inviter.toFixed(2)+"</p></div>";
+  for(var k=0;k<team.length;k++){var c=team[k].cell||"";var m=c?c.substr(0,3)+"***"+c.substr(c.length-4):"***";var cd=team[k].invite||team[k].code||"DMS---";h+='<div>'+cd+' '+m+'</div>';}
+  if(team.length===0)h+="No team";h+="<p>Inviter: R"+u.w.inviter.toFixed(2)+"</p></div>";
   document.getElementById("app").innerHTML=h;
 }
 function goHistory(){
