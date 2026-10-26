@@ -522,9 +522,7 @@ function goHistory(){
   var list=[];if(cur.cell==="ADMIN"){list=txs;}else{var gu=getUser();if(!gu){document.getElementById("app").innerHTML="<div class=card>Login</div>";return;}for(var i=0;i<txs.length;i++){if(txs[i].cell===gu.cell)list.push(txs[i]);}}
   var h='<div class="card"><h3 class="gold">History</h3>';
   for(var i=list.length-1;i>=0;i--){
-    var t=list[i];var typeDisplay=t.type;if(typeDisplay==="buy")typeDisplay="bought";var feeDisplay="";if(t.type==="withdraw"&&t.fee>0){feeDisplay=" - 25% fee";}
-    var st=t.status;if(st==="done")st="approved";if(!st)st="approved";
-   if(typeDisplay==="earn")typeDisplay="earned"; h+='<div style="border-bottom:1px solid #222;padding:6px 0"><b>'+typeDisplay+'</b> R'+t.amount+feeDisplay+'<br><span class="small">'+new Date(t.date).toLocaleString()+" "+(t.note||"").replace(/\(Target.*?\)/g,"")+" "+st+" ["+(t.wallet||"")+']</span></div>';
+  var t=list[i];var typeDisplay=t.type;var feeDisplay="";if(t.type=="withdraw"&&t.fee>0){feeDisplay=" - 25% fee";} var st=t.status;if(st=="done")st="approved";if(!st)st="approved"; if(t.note&&(t.note.includes("Manual")||t.note.includes("Total Earned")||t.note.includes("synced"))){typeDisplay="Deposited";t.note="";} if(typeDisplay=="earn")typeDisplay="earned"; if(typeDisplay=="deposited")typeDisplay="Deposited"; if(typeDisplay=="buy")typeDisplay="bought";var cleanNote=(t.note||"").replace(/\(Target.*?\)/g,""); if(cleanNote.toLowerCase().includes("main")||t.wallet=="main"){if(typeDisplay=="earned")typeDisplay="Deposited";} h+='<div style="border-bottom:1px solid #222;padding:6px 0"><b>'+typeDisplay+'</b> R'+t.amount+feeDisplay+'<br><span class="small">'+new Date(t.date).toLocaleString()+" "+cleanNote+" "+st+" ["+(t.wallet||"")+']</span></div>';
   }
   if(list.length===0)h+="No history";h+="</div>";document.getElementById("app").innerHTML=h;
 }
