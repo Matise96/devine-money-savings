@@ -732,27 +732,26 @@ function goAdmin(){
     for(var i=0;i<pend.length;i++){var t=pend[i];var idx=txs.indexOf(t);var adminFee=(t.amount>=140)?20:10;var adminPay=t.amount-adminFee;h+='<div style="border:1px solid #d4af37;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+t.cell+'</b><br>R'+t.amount+' - R'+adminFee+' fee = Pay R'+adminPay+'<br><button class="btn2" onclick="approveWithdraw('+idx+')">Approve</button><button class="btnRed" onclick="rejectWithdraw('+idx+')">Reject</button></div>';}
   }
   if(adminSub==="leaderboard"){
-      var board=[];
-  for(var uIdx=0; uIdx<users.length; uIdx++){
-    var u=users[uIdx]; ensureWallets(u);
-    var myCode=(u.code||"").toString().trim().toUpperCase();
-    var myList=[];
-    for(var j=0;j<users.length;j++){
-      if(!users[j]) continue;
-      if((users[j].code||"").toString().trim().toUpperCase()===myCode) continue;
-      var raw=users[j].by||users[j].byCode||users[j].invitedBy||users[j].inviterCode||"";
-      var ob=raw.toString().trim().toUpperCase();
-      if(ob!=="" && ob===myCode) myList.push(users[j]);
+      
+  var board=[];
+for(var uIdx=0; uIdx<users.length; uIdx++){
+  var u=users[uIdx]; ensureWallets(u);
+  var myCode = u.code;
+  var totalInvites = 0;
+  var qualifiedCount = 0;
+  for(var j=0;j<users.length;j++){
+    if(!users[j]) continue;
+    if(users[j].code === myCode) continue;
+    if(users[j].by === myCode){
+      totalInvites++;
+      var mm = users[j].w ? users[j].w.main : users[j].main;
+      mm = parseInt(mm||0);
+      if(mm >= 70) qualifiedCount++;
     }
-    var totalInvites=myList.length;
-    var qualifiedCount=0;
-    for(var k=0;k<myList.length;k++){
-      var mm=parseInt((myList[k].w?myList[k].w.main:myList[k].main)||0);
-      if(mm>=70 || (myList[k].pkgs && myList[k].pkgs.length>0)) qualifiedCount++;
-    }
-    var earned=qualifiedCount*5;
-    board.push({name:u.name,code:u.code,cell:u.cell,invite:u.invite,total:totalInvites,qualified:qualifiedCount,earned:earned});
   }
+  var earned = qualifiedCount * 5;
+  board.push({name:u.name,code:u.code,cell:u.cell,invite:u.invite,total:totalInvites,qualified:qualifiedCount,earned:earned});
+}
     
     board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
     h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
