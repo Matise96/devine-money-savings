@@ -360,7 +360,6 @@ function buyPkg(i){
   if(key=="main")u.w.main-=price;if(key=="inviter")u.w.inviter-=price;if(key=="loyalty")u.w.loyalty-=price;
   u.pkgs.push({id:pkg.id,price:price,daily:pkg.daily,earliest:pkg.earliest,duration:pkg.duration,target:pkg.target,boughtAt:new Date().toISOString(),lastClaim:null,totalEarned:0,done:false});
   txs.push({cell:u.cell,type:"bought",amount:price,fee:0,note:"Bought "+pkg.name+" from "+key+" wallet",date:new Date().toISOString(),status:"approved",wallet:key});
-  tryGiveInviterBonus(u);
   save();
   goActivePackages();
 }
