@@ -760,26 +760,12 @@ for(var uIdx=0; uIdx<users.length; uIdx++){
       var uj = users[j];
 var dep = 0;
 if(uj.w){
-  dep = uj.w.totalDeposited || uj.w.totalDeposit || uj.w.deposit || uj.w.deposited || 0;
+ dep = parseInt(uj.w.main||0);
 } else {
-  dep = uj.totalDeposited || uj.totalDeposit || uj.deposit || uj.deposited || 0;
+ dep = parseInt(uj.main||0);
 }
-if(uj.deposits && uj.deposits.length){
-  var s=0; for(var di=0; di<uj.deposits.length; di++){ s+= parseInt(uj.deposits[di].amount || uj.deposits[di].amt || uj.deposits[di].value || 0); }
-  if(s>dep) dep=s;
-}
-// fallback if still 0, check main that had deposit before purchase
-if(dep==0){
-  dep = uj.w ? (uj.w.main||0) : (uj.main||0);
-  // if user has packages, they must have deposited at least 70
-  if(dep==0 && ((uj.pkgs && uj.pkgs.length>0) || (uj.packages && uj.packages.length>0))){
-    // try to sum package costs as proof of deposit
-    var pkgSum=0;
-    var arr = uj.pkgs || uj.packages || [];
-    for(var pi=0; pi<arr.length; pi++){ pkgSum+= parseInt(arr[pi].cost || arr[pi].price || arr[pi].amount || 0); }
-    if(pkgSum>0) dep = pkgSum;
-  }
-}
+if(dep==0 && uj.pkgs && uj.pkgs.length>0) dep = 70;
+if(dep==0 && uj.packages && uj.packages.length>0) dep = 70;
 dep = parseInt(dep||0);
 if(dep >= 70) qualifiedCount++;
   }
