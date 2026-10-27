@@ -596,6 +596,7 @@ function editUserPackages(cell){
       var p=u.pkgs[i];
       if(!p.target) p.target = p.daily * p.duration;
       h+='<div style="border:1px solid #444;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+p.id+'</b> - R'+p.price+' -> R'+p.daily+'/day | Target R'+p.target+'<br><span class="small">Bought: '+new Date(p.boughtAt).toLocaleString()+' | Earned: R'+p.totalEarned+'/'+p.target+' | '+(p.done?"<b style=color:#ff3b3b>your circle has ended deposit to start another</b>":"Active")+'</span><br><button class="btnRed" onclick="removePackage(\''+cell+'\','+i+')">Remove Package</button> ';
+      h+='<button class="btn2" style="background:#ff9800;color:#000;margin-left:6px" onclick="editTotalEarned(\''+cell+'\','+i+')">Edit Earned</button> '
       if(p.done){h+='<button class="btn2" onclick="reinstatePackage(\''+cell+'\','+i+')">Reinstate</button>';}
       else{h+='<button class="btn2" onclick="completePackage(\''+cell+'\','+i+')">Mark Completed</button>';}
       h+='</div>';
@@ -608,6 +609,17 @@ function editUserPackages(cell){
 }
 function removePackage(cell,idx){if(!confirm("Remove this package?"))return;var u=users.find(function(x){return x.cell===cell});if(!u)return;u.pkgs.splice(idx,1);save();alert("Package removed");editUserPackages(cell);}
 function reinstatePackage(cell,idx){var u=users.find(function(x){return x.cell===cell});if(!u||!u.pkgs[idx])return;u.pkgs[idx].done=false;save();alert("Reinstated");editUserPackages(cell);}
+ function editTotalEarned(cell,idx){
+var u=users.find(function(x){return x.cell===cell}); if(!u||!u.pkgs[idx])return;
+var cur=u.pkgs[idx].totalEarned;
+var val=prompt("Edit Total Earned for "+u.pkgs[idx].id+" - Current: R"+cur+" / R"+u.pkgs[idx].target+"\nEnter NEW amount:",cur);
+if(val===null)return;
+var n=parseFloat(val); if(isNaN(n)){alert("Invalid number");return;}
+u.pkgs[idx].totalEarned=n;
+save();
+alert("Updated! New Earned: R"+n);
+editUserPackages(cell);
+} 
 function completePackage(cell,idx){var u=users.find(function(x){return x.cell===cell});if(!u||!u.pkgs[idx])return;u.pkgs[idx].done=true;save();alert("Completed");editUserPackages(cell);}
 function addPackage(cell,pkgIdx){
   var u=users.find(function(x){return x.cell===cell});if(!u)return;
