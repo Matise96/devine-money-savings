@@ -514,8 +514,11 @@ function goTeam(){
   var code=u.invite;var team=[];for(var i=0;i<users.length;i++){if(users[i].by===code||users[i].by===u.cell)team.push(users[i]);}
   var link=location.origin+location.pathname+"?invite="+code;
   var h='<div class="card"><h3 class="gold">My Team '+team.length+'</h3><p>Code <b>'+code+'</b></p><input class="input" value="'+link+'" readonly><button class="btn2" onclick="navigator.clipboard.writeText(\''+link+'\')">Copy Link</button><hr>';
-  for(var k=0;k<team.length;k++){var c=team[k].cell||"";var m=c?c.substr(0,3)+"***"+c.substr(c.length-4):"***";var cd=team[k].invite||team[k].code||"DMS---";h+='<div>'+cd+' '+m+'</div>';}
-  if(team.length===0)h+="No team";h+="<p>Inviter: R"+u.w.inviter.toFixed(2)+"</p></div>";
+  h+='<div style="overflow-x:auto;margin-top:12px;border:1px solid #D4AF37;border-radius:10px"><table style="width:100%;border-collapse:collapse;font-size:14px"><tr style="background:#D4AF37;color:#000"><th style="padding:10px;text-align:left">#</th><th style="padding:10px;text-align:left">User Code</th><th style="padding:10px;text-align:left">Number</th></tr>';
+for(var k=0;k<team.length;k++){var c=team[k].cell||"";var m=c?c.substr(0,3)+"***"+c.substr(c.length-4):"***";var cd=team[k].invite||team[k].code||"DMS---";h+='<tr style="border-bottom:1px solid #333"><td style="padding:8px">'+(k+1)+'.</td><td style="padding:8px">'+cd+'</td><td style="padding:8px">'+m+'</td></tr>';}
+if(team.length===0)h+='<tr><td colspan="3" style="padding:12px;text-align:center">No team</td></tr>';
+h+='<tr style="background:#111;color:#D4AF37;font-weight:bold"><td colspan="2" style="padding:10px">Total Inviter Earned</td><td style="padding:10px">R'+u.w.inviter.toFixed(2)+'</td></tr>';
+h+='</table></div></div>';
   document.getElementById("app").innerHTML=h;
 }
 function goHistory(){
