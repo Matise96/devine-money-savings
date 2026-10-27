@@ -769,6 +769,7 @@ if(dep==0 && uj.packages && uj.packages.length>0) dep = 70;
 dep = parseInt(dep||0);
 if(dep >= 70) qualifiedCount++;
   }
+  }
     var invBal = u.w ? (u.w.inviter || u.w.inviterWallet || 0) : (u.inviter || 0);
   var earned = parseInt(invBal||0);
     if(earned==0) earned = qualifiedCount * 5;
