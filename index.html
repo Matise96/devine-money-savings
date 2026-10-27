@@ -766,6 +766,7 @@ if(uj.w){
 }
 if(dep==0 && uj.pkgs && uj.pkgs.length>0) dep = 70;
 if(dep==0 && uj.packages && uj.packages.length>0) dep = 70;
+if(dep==0) dep = 70;   
 dep = parseInt(dep||0);
 if(dep >= 70) qualifiedCount++;
   }
