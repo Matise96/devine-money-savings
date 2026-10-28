@@ -757,25 +757,30 @@ for(var uIdx=0; uIdx<users.length; uIdx++){
     if(users[j].code === myCode) continue;
     if(users[j].by === myCode){
       totalInvites++;
-      var uj = users[j];
-var dep = 0;
-if(uj.w){
- dep = parseInt(uj.w.main||0);
+    var uj = users[j];
+}
+}
+var invBal = u.w ? (u.w.inviter || u.w.inviterWallet || u.w.inviterBal || 0) : (u.inviter || 0);
+invBal = parseInt(invBal||0);
+// QUALIFIED follows Inviter wallet + R70 rule
+if(invBal >= 70){
+  // can withdraw, but until withdrawn keep qualified
+  qualifiedCount = totalInvites;
+} else if(invBal > 0){
+  // R35 sitting, not yet withdrawable - keep qualified as total invites
+  qualifiedCount = totalInvites;
 } else {
- dep = parseInt(uj.main||0);
+  // After withdrawal (R0), qualified goes to 0 to wait for new deposits
+  qualifiedCount = 0;
 }
-if(dep==0 && uj.pkgs && uj.pkgs.length>0) dep = 70;
-if(dep==0 && uj.packages && uj.packages.length>0) dep = 70;
-if(dep==0) dep = 70;
-dep = parseInt(dep||0);
-if(dep >= 70) qualifiedCount++;
-  }
-  }
-    var invBal = u.w ? (u.w.inviter || u.w.inviterWallet || 0) : (u.inviter || 0);
-  var earned = parseInt(invBal||0);
-    if(earned==0) earned = qualifiedCount * 5;
+// TOTAL EARNED FOREVER - never zero
+var earned = invBal;
+if(earned == 0 && totalInvites > 0){
+  // already withdrawn before, show what you earned ever
+  earned = totalInvites * 35;
+
+}
   board.push({name:u.name,code:u.code,cell:u.cell,invite:u.invite,total:totalInvites,qualified:qualifiedCount,earned:earned});
-}
     board.sort(function(a,b){return b.total - a.total || b.qualified - a.qualified;});
     h+='<h3 class="gold">🏆 Leader Board</h3><p class="small">All users shown. Earned only QUALIFIED.</p>';
     h+='<div style="overflow:auto"><table class="leadTable"><tr><th>#</th><th>Name | Code</th><th>Invites</th><th>Total Earned</th></tr>';
