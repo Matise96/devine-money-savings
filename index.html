@@ -597,7 +597,7 @@ function editUserPackages(cell){
       if(!p.target) p.target = p.daily * p.duration;
       h+='<div style="border:1px solid #444;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+p.id+'</b> - R'+p.price+' -> R'+p.daily+'/day | Target R'+p.target+'<br><span class="small">Bought: '+new Date(p.boughtAt).toLocaleString()+' | Earned: R'+p.totalEarned+'/'+p.target+' | '+(p.done?"<b style=color:#ff3b3b>your circle has ended deposit to start another</b>":"Active")+'</span><br><button class="btnRed" onclick="removePackage(\''+cell+'\','+i+')">Remove Package</button> ';
       h+='<button class="btn2" style="background:#ff9800;color:#000;margin-left:6px" onclick="editTotalEarned(\''+cell+'\','+i+')">Edit Earned</button> '
-         +'<button class="btn" style="background:#d4af37;color:#000;font-weight:900;margin-left:8px;" onclick="editInvites(\''+u.code+'\')">Edit Invites</button>'
+         +'<button class="btn" style="background:#d4af37;color:#000;font-weight:900;margin-left:8px;" onclick="editInvites(\''+u.cell+'\')" >Edit Invites</button>'
       if(p.done){h+='<button class="btn2" onclick="reinstatePackage(\''+cell+'\','+i+')">Reinstate</button>';}
       else{h+='<button class="btn2" onclick="completePackage(\''+cell+'\','+i+')">Mark Completed</button>';}
       h+='</div>';
@@ -664,7 +664,7 @@ function shareFicaToWhatsApp(cell, type){
 }
 function deleteUser(cell){if(!confirm("Delete "+cell+"?"))return;users=users.filter(function(x){return x.cell!==cell});txs=txs.filter(function(t){return t.cell!==cell});save();goAdmin();}
   function editInvites(code){
-  var u=users.find(function(x){return x && x.code===code});
+    var u=users.find(function(x){return x && (x.code===code || x.cell===code)});
   if(!u) return alert('Not found '+code);
   var curInv=(u.manualInvites!=null?u.manualInvites:0);
   if(curInv==0){
