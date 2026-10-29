@@ -92,7 +92,6 @@ nav button{position:relative}
 <button onclick="goHistory()" id="bHI">History</button><button onclick="goAnnouncements()" id="bAN" style="background:#111;color:#d4af37;border-color:#d4af37;font-weight:900;">Announcements <span id="annBadge" class="annBadge">0</span></button>
   <button onclick="goInbox()" id="bIN" style="background:#111;color:#d4af37;border-color:#d4af37;font-weight:900;position:relative;">Inbox <span id="inboxBadge" class="inboxBadge">0</span></button>
 <button onclick="location.href='deposit.html'" id="bDEP" style="background:#d4af37;color:#000;font-weight:bold;">Deposit</button>
-  +'<button class="btn" style="background:#d4af37;color:#000;font-weight:900;margin-left:8px;" onclick="editInvites(\''+u.code+'\')">Edit Invites</button>'
 <button onclick="goAdmin()" id="bA" style="display:none">Admin</button><script>try{if(new URLSearchParams(location.search).get('admin')==='1'||(typeof cur!=='undefined'&&cur&&cur.cell==='ADMIN'))document.getElementById('bA').style.display='inline-block';}catch(e){}</script>
 </nav>
 <div id="app"></div>
@@ -598,6 +597,7 @@ function editUserPackages(cell){
       if(!p.target) p.target = p.daily * p.duration;
       h+='<div style="border:1px solid #444;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+p.id+'</b> - R'+p.price+' -> R'+p.daily+'/day | Target R'+p.target+'<br><span class="small">Bought: '+new Date(p.boughtAt).toLocaleString()+' | Earned: R'+p.totalEarned+'/'+p.target+' | '+(p.done?"<b style=color:#ff3b3b>your circle has ended deposit to start another</b>":"Active")+'</span><br><button class="btnRed" onclick="removePackage(\''+cell+'\','+i+')">Remove Package</button> ';
       h+='<button class="btn2" style="background:#ff9800;color:#000;margin-left:6px" onclick="editTotalEarned(\''+cell+'\','+i+')">Edit Earned</button> '
+         +'<button class="btn" style="background:#d4af37;color:#000;font-weight:900;margin-left:8px;" onclick="editInvites(\''+u.code+'\')">Edit Invites</button>'
       if(p.done){h+='<button class="btn2" onclick="reinstatePackage(\''+cell+'\','+i+')">Reinstate</button>';}
       else{h+='<button class="btn2" onclick="completePackage(\''+cell+'\','+i+')">Mark Completed</button>';}
       h+='</div>';
@@ -664,27 +664,23 @@ function shareFicaToWhatsApp(cell, type){
 }
 function deleteUser(cell){if(!confirm("Delete "+cell+"?"))return;users=users.filter(function(x){return x.cell!==cell});txs=txs.filter(function(t){return t.cell!==cell});save();goAdmin();}
   function editInvites(code){
-  var u = users.find(x=>x && x.code===code);
+  var u=users.find(function(x){return x && x.code===code});
   if(!u) return alert('Not found '+code);
-  var curInv = (u.manualInvites!=null? u.manualInvites : (u.totalInvites||0));
-  var curQual = (u.manualQualified!=null? u.manualQualified : 0);
-  // if cur is 0, try count real invites
+  var curInv=(u.manualInvites!=null?u.manualInvites:0);
   if(curInv==0){
     var c=0; for(var k=0;k<users.length;k++){ if(users[k] && users[k].by===code) c++; }
     curInv=c;
   }
-  var newInv = prompt('TOTAL invites for '+u.name+' ('+code+')', curInv);
+  var curQual=(u.manualQualified!=null?u.manualQualified:0);
+  var newInv=prompt('TOTAL invites for '+u.name+' ('+code+')', curInv);
   if(newInv===null) return;
-  var newQual = prompt('QUALIFIED for '+u.name+' (must be <= invites)', curQual);
+  var newQual=prompt('QUALIFIED for '+u.name, curQual);
   if(newQual===null) return;
-  u.manualInvites = parseInt(newInv)||0;
-  u.manualQualified = parseInt(newQual)||0;
-  // Save - try all keys you use
-  try{ localStorage.setItem('users', JSON.stringify(users)); }catch(e){}
-  try{ localStorage.setItem('dms_users', JSON.stringify(users)); }catch(e){}
-  try{ if(typeof saveUsers==='function') saveUsers(); }catch(e){}
+  u.manualInvites=parseInt(newInv)||0;
+  u.manualQualified=parseInt(newQual)||0;
+  save(); goAdmin();
   alert('Saved! '+code+' -> Invites:'+u.manualInvites+' Qualified:'+u.manualQualified);
-  location.reload();
+  
 }
 function approveWithdraw(idx){
   var t=txs[idx];if(!t||t.status!=="pending")return;
@@ -740,7 +736,7 @@ function openInboxModal(cell){
   var u=users.find(function(x){return x.cell===cell}); if(!u) return; ensureInbox(u);
   var prev = u.inbox.length>0? u.inbox.slice(-3).reverse().map(m=>'<div style="border:1px solid #333;padding:8px;border-radius:8px;margin:6px 0"><b>'+new Date(m.date).toLocaleString()+'</b><br>'+m.text+'</div>').join('') : '<p class="small">No previous messages</p>';
   var html='<div id="inboxModal" class="inboxModal" style="display:flex"><div class="inboxModalBox"><h3 class="gold">Inbox to '+u.name+' ('+u.cell+')</h3><label class="small">Title</label><input id="inboxTitle" class="input" placeholder="Title"><label class="small">Message *</label><textarea id="inboxText" class="input" rows="4" placeholder="Type message to this user only..."></textarea><button class="btn" onclick="sendInboxMsg(\''+cell+'\')">Send to User</button><button class="btn2" onclick="closeInboxModal()" style="width:100%;margin-top:8px">Close</button><hr><h4 class="small">Previous (last 3)</h4>'+prev+'</div></div>';
-  document.body.insertAdjacentHTML('beforeend', html);
+document.body.insertAdjacentHTML('beforeend', html);
 }
 function closeInboxModal(){ var m=document.getElementById("inboxModal"); if(m) m.remove(); }
 function sendInboxMsg(cell){
