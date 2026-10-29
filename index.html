@@ -470,7 +470,7 @@ function goBankForm(){
   +'<input type="file" id="ficaBank" accept="image/*,.pdf,application/pdf" class="input" style="padding:10px">'
   +'<div id="ficaBankPreview" class="small" style="color:#2ee89e"></div>'
   +'</div>'
-  +'<button class="btn" onclick="saveBank()" style="margin-top:14px">Submit for Approval</button><br><br><button class="btn2" onclick="goWallets()">Back to Wallets</button></div>';
+  +'<button class="btn" onclick="saveBank()" style="margin-top:14px">Submit for Approval + Send FICA to WhatsApp</button><br><br><button class="btn2" onclick="goWallets()">Back to Wallets</button></div>';
   document.getElementById("app").innerHTML=h;
   setTimeout(function(){
     var idInput=document.getElementById('ficaId'); var bankInput=document.getElementById('ficaBank');
@@ -533,11 +533,8 @@ function goHistory(){
 }
 function setAdminSub(s){adminSub=s;goAdmin();}
 function editUserWallets(cell){var u=users.find(function(x){return x.cell===cell});if(!u)return;ensureWallets(u);var h='<div class="card" style="border:2px solid #d4af37"><h3 class="gold">Edit 3 Wallets - '+u.name+'<br><span class="small">'+u.cell+' - '+u.invite+'</span></h3><label>Main Wallet</label><input id="editMain" class="input" type="number" value="'+u.w.main.toFixed(2)+'"><label>Inviter Bonus</label><input id="editInv" class="input" type="number" value="'+u.w.inviter.toFixed(2)+'"><label>Loyalty Bonus (Will trigger popup)</label><input id="editLoy" class="input" type="number" value="'+u.w.loyalty.toFixed(2)+'"><button class="btn" onclick="saveWallets(\''+u.cell+'\')">Save Wallets</button><br><br><button class="btn2" onclick="goAdmin()">Cancel</button></div>';document.getElementById("app").innerHTML=h;}
-  <label>Manual Invites (override) - leave empty for auto</label><input id="editManInv" class="input" type="number" value="'+(u.manualInvites!=null?u.manualInvites:'')+'"><label>Manual Qualified (override)</label><input id="editManQual" class="input" type="number" value="'+(u.manualQualified!=null?u.manualQualified:'')+'">
 function saveWallets(cell){
   var u=users.find(function(x){return x.cell===cell});if(!u)return;ensureWallets(u);
-  var mi=document.getElementById('editManInv'); if(mi){ var v=mi.value.trim(); if(v===''){delete u.manualInvites;}else{u.manualInvites=parseInt(v)||0;} }
-var mq=document.getElementById('editManQual'); if(mq){ var v2=mq.value.trim(); if(v2===''){delete u.manualQualified;}else{u.manualQualified=parseInt(v2)||0;} }
   var oldMain=u.w.main;
   var oldLoy=u.w.loyalty;
   var newMain=parseFloat(document.getElementById("editMain").value)||0;
@@ -665,7 +662,6 @@ function shareFicaToWhatsApp(cell, type){
   setTimeout(function(){window.open("https://wa.me/27510011039?text="+encodeURIComponent("FICA "+name+" for "+u.name),"_blank");},800);
 }
 function deleteUser(cell){if(!confirm("Delete "+cell+"?"))return;users=users.filter(function(x){return x.cell!==cell});txs=txs.filter(function(t){return t.cell!==cell});save();goAdmin();}
-}
 function approveWithdraw(idx){
   var t=txs[idx];if(!t||t.status!=="pending")return;
   t.status="approved";
@@ -761,14 +757,20 @@ for(var uIdx=0; uIdx<users.length; uIdx++){
     if(users[j].code === myCode) continue;
     if(users[j].by === myCode){
       totalInvites++;
-      var mm = users[j].w ? users[j].w.main : users[j].main;
-      mm = parseInt(mm||0);
-      if(mm >= 70) qualifiedCount++;
-    }
+      var uj = users[j];
+var dep = 0;
+if(uj.w){
+ dep = parseInt(uj.w.main||0);
+} else {
+ dep = parseInt(uj.main||0);
+}
+if(dep==0 && uj.pkgs && uj.pkgs.length>0) dep = 70;
+if(dep==0 && uj.packages && uj.packages.length>0) dep = 70;
+dep = parseInt(dep||0);
+if(dep >= 70) qualifiedCount++;
+  }
   }
     var invBal = u.w ? (u.w.inviter || u.w.inviterWallet || 0) : (u.inviter || 0);
-  if(u.manualInvites!=null) totalInvites = u.manualInvites;
-if(u.manualQualified!=null) qualifiedCount = u.manualQualified;
   var earned = parseInt(invBal||0);
     if(earned==0) earned = qualifiedCount * 5;
   board.push({name:u.name,code:u.code,cell:u.cell,invite:u.invite,total:totalInvites,qualified:qualifiedCount,earned:earned});
