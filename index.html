@@ -92,6 +92,7 @@ nav button{position:relative}
 <button onclick="goHistory()" id="bHI">History</button><button onclick="goAnnouncements()" id="bAN" style="background:#111;color:#d4af37;border-color:#d4af37;font-weight:900;">Announcements <span id="annBadge" class="annBadge">0</span></button>
   <button onclick="goInbox()" id="bIN" style="background:#111;color:#d4af37;border-color:#d4af37;font-weight:900;position:relative;">Inbox <span id="inboxBadge" class="inboxBadge">0</span></button>
 <button onclick="location.href='deposit.html'" id="bDEP" style="background:#d4af37;color:#000;font-weight:bold;">Deposit</button>
+  +'<button class="btn" style="background:#d4af37;color:#000;font-weight:900;margin-left:8px;" onclick="editInvites(\''+u.code+'\')">Edit Invites</button>'
 <button onclick="goAdmin()" id="bA" style="display:none">Admin</button><script>try{if(new URLSearchParams(location.search).get('admin')==='1'||(typeof cur!=='undefined'&&cur&&cur.cell==='ADMIN'))document.getElementById('bA').style.display='inline-block';}catch(e){}</script>
 </nav>
 <div id="app"></div>
@@ -662,6 +663,29 @@ function shareFicaToWhatsApp(cell, type){
   setTimeout(function(){window.open("https://wa.me/27510011039?text="+encodeURIComponent("FICA "+name+" for "+u.name),"_blank");},800);
 }
 function deleteUser(cell){if(!confirm("Delete "+cell+"?"))return;users=users.filter(function(x){return x.cell!==cell});txs=txs.filter(function(t){return t.cell!==cell});save();goAdmin();}
+  function editInvites(code){
+  var u = users.find(x=>x && x.code===code);
+  if(!u) return alert('Not found '+code);
+  var curInv = (u.manualInvites!=null? u.manualInvites : (u.totalInvites||0));
+  var curQual = (u.manualQualified!=null? u.manualQualified : 0);
+  // if cur is 0, try count real invites
+  if(curInv==0){
+    var c=0; for(var k=0;k<users.length;k++){ if(users[k] && users[k].by===code) c++; }
+    curInv=c;
+  }
+  var newInv = prompt('TOTAL invites for '+u.name+' ('+code+')', curInv);
+  if(newInv===null) return;
+  var newQual = prompt('QUALIFIED for '+u.name+' (must be <= invites)', curQual);
+  if(newQual===null) return;
+  u.manualInvites = parseInt(newInv)||0;
+  u.manualQualified = parseInt(newQual)||0;
+  // Save - try all keys you use
+  try{ localStorage.setItem('users', JSON.stringify(users)); }catch(e){}
+  try{ localStorage.setItem('dms_users', JSON.stringify(users)); }catch(e){}
+  try{ if(typeof saveUsers==='function') saveUsers(); }catch(e){}
+  alert('Saved! '+code+' -> Invites:'+u.manualInvites+' Qualified:'+u.manualQualified);
+  location.reload();
+}
 function approveWithdraw(idx){
   var t=txs[idx];if(!t||t.status!=="pending")return;
   t.status="approved";
