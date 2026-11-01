@@ -246,12 +246,20 @@ function autoCreditAll(){
       var last = p.lastClaim? new Date(p.lastClaim) : null;
       if(last){if(last.toDateString() === now.toDateString()) continue;}
       var daysToCredit = 1;
-      if(!last){
-        var daysSinceFirst = Math.floor((today8am - firstCredit)/(1000*60*60*24)) + 1;
-        if(daysSinceFirst < 1) daysSinceFirst = 1;
-        if(daysSinceFirst > 14) daysSinceFirst = 14;
-        daysToCredit =1;
-      }
+if(!last){
+  var daysSinceFirst = Math.floor((today8am - firstCredit)/(1000*60*60*24)) + 1;
+  if(daysSinceFirst < 1) daysSinceFirst = 1;
+  if(daysSinceFirst > 14) daysSinceFirst = 14;
+  daysToCredit = daysSinceFirst; // FIX: credit all missed days for new package
+} else {
+  // FIX: calculate how many days since last claim
+  var lastMidnight = new Date(last); lastMidnight.setHours(0,0,0,0);
+  var todayMidnight = new Date(now); todayMidnight.setHours(0,0,0,0);
+  var diff = Math.floor((todayMidnight - lastMidnight)/(1000*60*60*24));
+  if(diff < 1) diff = 1;
+  if(diff > 14) diff = 14; // cap at package duration
+  daysToCredit = diff;
+}
       for(var d=0; d<daysToCredit; d++){
         if(p.done) break;
         if(p.totalEarned >= p.target){p.done=true; break;}
