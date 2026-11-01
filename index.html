@@ -844,7 +844,8 @@ if(uu.fica && (uu.fica.idName || uu.fica.bankName)){h+='<div style="margin-top:8
 h+='<h3 class="gold">👥 All Users - Audit (Bank Ready)</h3><div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><button onclick="exportAuditPDF()" style="background:#d4af37;color:#000;padding:6px 10px;border:none;border-radius:5px">📄 View PDF</button><button onclick="shareWhatsAppAudit()" style="background:#25D366;color:#fff;padding:6px 10px;border:none;border-radius:5px">WhatsApp 0510011039</button><button onclick="shareEmailAudit()" style="background:#007bff;color:#fff;padding:6px 10px;border:none;border-radius:5px">Email devine9606@gmail.com</button></div><div style="overflow-x:auto"><table border="1" style="width:100%;border-collapse:collapse;background:#1a1a1a;color:#fff;font-size:12px"><thead><tr><th>User Code</th><th>ID Number</th><th>Names and Surname</th><th>Date Joined</th><th>Gender</th><th>Save/Del</th></tr></thead><tbody id="allUsersTableBody"><tr><td colspan=6>Loading...</td></tr></tbody></table></div>';
 setTimeout(function(){
 var tb=document.getElementById('allUsersTableBody'); if(!tb)return; var html='';
-for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||u.userCode||('DMS'+String(i+1).padStart(3,'0')); var idNum=u.idNumber||''; var name=(u.name||'')+' '+(u.surname||''); var joined=u.joinedAt||u.joined||''; try{if(joined)joined=new Date(joined).toLocaleString();}catch(e){} var gen=u.gender||'Not set'; html+='<tr><td>'+code+'</td><td><input value=\''+idNum+'\' onchange="users['+i+'].idNumber=this.value;localStorage.setItem(\'users\',JSON.stringify(users))" style="width:90px"></td><td>'+name+'</td><td>'+joined+'</td><td><select onchange="users['+i+'].gender=this.value;localStorage.setItem(\'users\',JSON.stringify(users))"><option '+(gen==='Male'?'selected':'')+'>Male</option><option '+(gen==='Female'?'selected':'')+'>Female</option><option '+(gen==='Not set'?'selected':'')+'>Not set</option></select></td><td><button onclick="localStorage.setItem(\'users\',JSON.stringify(users));alert(\'Saved\')">Save</button> <button onclick="if(confirm(\'Delete?\')){users.splice('+i+',1);localStorage.setItem(\'users\',JSON.stringify(users));renderAdmin()}">Del</button></td></tr>';}
+for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||u.userCode||('DMS'+String(i+1).padStart(3,'0')); var idNum=u.idNumber||''; var name=(u.name||'')+' '+(u.surname||'');var joined=u.joinedAt||u.joined||''; if(!joined){ joined=new Date().toISOString(); u.joinedAt=joined; u.joined=joined; }
+try{if(joined)joined=new Date(joined).toLocaleDateString();}catch(e){}  var gen=u.gender||'Not set'; html+='<tr><td>'+code+'</td><td><input value=\''+idNum+'\' onchange="users['+i+'].idNumber=this.value;localStorage.setItem(\'users\',JSON.stringify(users))" style="width:90px"></td><td>'+name+'</td><td>'+joined+'</td><td><select onchange="users['+i+'].gender=this.value;localStorage.setItem(\'users\',JSON.stringify(users))"><option '+(gen==='Male'?'selected':'')+'>Male</option><option '+(gen==='Female'?'selected':'')+'>Female</option><option '+(gen==='Not set'?'selected':'')+'>Not set</option></select></td><td><button onclick="localStorage.setItem(\'users\',JSON.stringify(users));alert(\'Saved\')">Save</button> <button onclick="if(confirm(\'Delete?\')){users.splice('+i+',1);localStorage.setItem(\'users\',JSON.stringify(users));renderAdmin()}">Del</button></td></tr>';} localStorage.setItem('users',JSON.stringify(users));
 tb.innerHTML=html;
 },300);
 }
@@ -914,6 +915,18 @@ function colorStatusHistory(){
   });
 }
 setInterval(colorStatusHistory, 700);
+
+function exportAuditPDF(){
+var rows=""; for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||u.userCode||('DMS'+String(i+1).padStart(3,'0')); var idNum=u.idNumber||''; var name=(u.name||'')+' '+(u.surname||''); var joined=u.joinedAt||u.joined||''; try{if(joined)joined=new Date(joined).toLocaleDateString();}catch(e){} var gen=u.gender||''; rows+='<tr><td>'+code+'</td><td>'+idNum+'</td><td>'+name+'</td><td>'+joined+'</td><td>'+gen+'</td></tr>';}
+var html='<html><head><title>Audit</title></head><body><h2>Devine Money Savings - All Users Audit</h2><p>Date: '+new Date().toLocaleString()+'</p><table border=1 style="width:100%;border-collapse:collapse"><tr><th>User Code</th><th>ID Number</th><th>Names and Surname</th><th>Date Joined</th><th>Gender</th></tr>'+rows+'</table><script>window.print()<\/script></body></html>'; var w=window.open('','_blank'); w.document.write(html); w.document.close();
+}
+function shareWhatsAppAudit(){
+var text='*DMS Audit - Devine Money Savings*%0A%0A'; for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||('DMS'+String(i+1).padStart(3,'0')); var name=(u.name||'')+' '+(u.surname||''); text+='*'+code+'*: '+name+' - '+(u.idNumber||'No ID')+'%0A';} text+='%0ASent from Admin'; window.open('https://wa.me/27510011039?text='+text,'_blank');
+}
+function shareEmailAudit(){
+var subj='DMS All Users Audit - '+new Date().toLocaleDateString(); var body='Devine Money Savings - All Users Audit%0D%0A%0D%0A'; for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||('DMS'+String(i+1).padStart(3,'0')); var name=(u.name||'')+' '+(u.surname||''); body+=''+code+' | '+(u.idNumber||'No ID')+' | '+name+' | '+(u.joinedAt||'')+' | '+(u.gender||'')+'%0D%0A';} window.location.href='mailto:devine9606@gmail.com?subject='+subj+'&body='+body;
+}
+</script>
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
 </body>
