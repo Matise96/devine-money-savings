@@ -331,23 +331,16 @@ function goBonus(){
 function goRegister(){
   var inv=new URLSearchParams(location.search).get("invite")||"";
   var h='<div class="card"><h3 class="gold">Register</h3><input id="rN" class="input" placeholder="Full Name *"><input id="rC" class="input" placeholder="Cellphone *"><input id="rE" class="input" placeholder="Email *"><select id="rPr" class="input"><option value="">Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select><select id="rG" class="input"><option value="">Gender *</option><option>Male</option><option>Female</option></select><div class="pwdWrap"><input id="rP" class="input" type="password" placeholder="Password *"><button class="eyeBtn" id="eyeRP" onclick="toggleEye(&quot;rP&quot;,&quot;eyeRP&quot;)">👁️</button></div><input id="rI" class="input" placeholder="Invite Code (optional)" value="'+inv+'"><button class="btn" onclick="doRegister()">Create Account</button></div>';
-  
   document.getElementById("app").innerHTML=h;
 }
 function doRegister(){
   var n=document.getElementById("rN").value.trim(),c=document.getElementById("rC").value.trim(),e=document.getElementById("rE").value.trim(),pr=document.getElementById("rPr").value,g=document.getElementById("rG").value,p=document.getElementById("rP").value.trim(),inv=document.getElementById("rI").value.trim().toUpperCase();
-  var joinedAt = new Date().toISOString();
-  var genderVal = (document.getElementById('gender') ? document.getElementById('gender').value : g) || 'Not set';
   if(!n||!c||!e||!pr||!g||!p){alert("Fill all *");return;}
   for(var i=0;i<users.length;i++){if(users[i].cell===c){alert("Cell exists");return;}}
-  var code="DMS"+String(users.length+1).padStart(3,'0');
-  var newUser={name:n,cell:c,email:e,province:pr,gender:genderVal,pin:p,inviteCode:inv,code:code,userCode:code,joinedAt:joinedAt,idNumber:"",wallet:0,invested:0,referrals:[],joined:new Date().toISOString()};
-  users.push(newUser);
-  localStorage.setItem("users", JSON.stringify(users));
-  alert("Registered! Your User Code is "+code+" - Use cell & pin to login");
-  showLogin();
+  var code="DMS"+String(users.length+1).padStart(3,"0");
+  var u={cell:c,name:n,email:e,prov:pr,gender:g,pass:p,invite:code,by:inv||null,w:{main:0,inviter:0,loyalty:0},pkgs:[],bank:null,inviterBonusGiven:false,activeLoyaltyReward:null};
+  users.push(u);save();alert("Registered! "+code+"!");goHome();
 }
-
 function doLogin(){
   var c=document.getElementById("lC").value.trim(),p=document.getElementById("lP").value.trim();
   if(c==="0510011039"&&p==="Tiisetso#96"){cur={cell:"ADMIN"};save();goAdmin();return;}
@@ -775,54 +768,13 @@ function goAdmin(){
   users.forEach(function(u){ensureWallets(u);totalMain+=u.w.main;totalInv+=u.w.inviter;totalLoy+=u.w.loyalty;});
   txs.forEach(function(t){if(t.type==="withdraw"&&(t.status==="approved"||t.status==="done"))totalPaid+=t.amount;});
   var pend=txs.filter(function(t){return t.status==="pending"});
-  var h+='<div class="card">'+(autoAll>0?'<div style="background:#0a1f18;border:1px solid #2ee89e;padding:8px;border-radius:8px;margin-bottom:8px;color:#2ee89e">🎉 Auto-credited R'+autoAll+' to ALL users at 08:00 AM today!</div>':'')+'<h2 class="gold">Admin Dashboard</h2><div class="statBox"><b>'+users.length+'</b><br><span class="small">Users</span></div><div class="statBox"><b>'+pend.length+'</b><br><span class="small">Pending</span></div><div class="statBox"><b>R'+totalMain.toFixed(0)+'</b><br><span class="small">Total Main</span></div><div class="statBox"><b>R'+totalInv.toFixed(0)+'</b><br><span class="small">Inviter</span></div><div class="statBox"><b>R'+totalLoy.toFixed(0)+'</b><br><span class="small">Loyalty</span></div><div class="statBox"><b>R'+totalPaid.toFixed(0)+'</b><br><span class="small">Paid Out</span></div><hr><div class="adminTab"><button onclick="setAdminSub(\'dashboard\')" class="'+(adminSub==="dashboard"?"active":"")+'">Dashboard</button><button onclick="setAdminSub(\'withdrawals\')" class="'+(adminSub==="withdrawals"?"active":"")+'">Withdrawals ('+pend.length+')</button><button onclick="setAdminSub(\'users\')" class="'+(adminSub==="users"?"active":"")+'">Users ('+users.length+')</button><button onclick="setAdminSub(\'leaderboard\')" class="'+(adminSub==="leaderboard"?"active":"")+'" style="background:#0f2a22;color:#2ee89e;border-color:#2ee89e">🏆 Leader Board</button><button onclick="setAdminSub(\'announcements\')" class="'+(adminSub==="announcements"?"active":"")+'" style="background:#d4af37;color:#000;font-weight:900">📢 Announcements ('+anns.length+')</button>  <button onclick="setAdminSub(\'settings\')" class="'+(adminSub==="settings"?"active":"")+'">Settings</button></div><hr>';
-  <button id="btnAllUsers" onclick="showAllUsersList()" style="border:1px solid #c9a227; padding:12px 16px; border-radius:18px; background:#1a1a1a; color:#c9a227; margin-left:6px;">👥 All Users</button>
-  if(adminSub==="allusers"){
-  h+='<h3 class="gold">All Users - Audit List</h3>';
-  h+='<div style="display:flex; gap:6px; margin-bottom:10px;"><button onclick="exportAuditPDF()" style="background:#d4af37; color:#000; border:none; padding:8px 12px; border-radius:8px;">📄 PDF</button><button onclick="shareWhatsAppAudit()" style="background:#25D366; color:#fff; border:none; padding:8px 12px; border-radius:8px;">WhatsApp</button><button onclick="shareEmailAudit()" style="background:#4285F4; color:#fff; border:none; padding:8px 12px; border-radius:8px;">Email</button></div>';
-  h+='<div style="overflow-x:auto;"><table style="width:100%; border-collapse:collapse; background:#111; color:#fff;"><thead style="background:#d4af37; color:#000;"><tr><th>User Code</th><th>ID Number</th><th>Names</th><th>Date Joined</th><th>Gender</th></tr></thead><tbody>';
-  for(var i=0;i<users.length;i++){
-    var u=users[i];
-    var code=u.code||u.userCode||`DMS${String(i+1).padStart(3,'0')}`;
-    var idNum=u.idNumber||'';
-    var fullName=u.name||u.fullName||'Unknown';
-    var date=u.joinedAt?new Date(u.joinedAt).toLocaleString():'Old user';
-    var gender=u.gender||'N/A';
-    h+=`<tr><td style="border:1px solid #333; padding:6px; color:#d4af37;">${code}</td><td style="border:1px solid #333; padding:6px;" contenteditable="true">${idNum}</td><td style="border:1px solid #333; padding:6px;" contenteditable="true">${fullName}</td><td style="border:1px solid #333; padding:6px;">${date}</td><td style="border:1px solid #333; padding:6px;" contenteditable="true">${gender}</td></tr>`;
-  }
-  h+='</tbody></table></div>';
-}
+  var h='<div class="card">'+(autoAll>0?'<div style="background:#0a1f18;border:1px solid #2ee89e;padding:8px;border-radius:8px;margin-bottom:8px;color:#2ee89e">🎉 Auto-credited R'+autoAll+' to ALL users at 08:00 AM today!</div>':'')+'<h2 class="gold">Admin Dashboard</h2><div class="statBox"><b>'+users.length+'</b><br><span class="small">Users</span></div><div class="statBox"><b>'+pend.length+'</b><br><span class="small">Pending</span></div><div class="statBox"><b>R'+totalMain.toFixed(0)+'</b><br><span class="small">Total Main</span></div><div class="statBox"><b>R'+totalInv.toFixed(0)+'</b><br><span class="small">Inviter</span></div><div class="statBox"><b>R'+totalLoy.toFixed(0)+'</b><br><span class="small">Loyalty</span></div><div class="statBox"><b>R'+totalPaid.toFixed(0)+'</b><br><span class="small">Paid Out</span></div><hr><div class="adminTab"><button onclick="setAdminSub(\'dashboard\')" class="'+(adminSub==="dashboard"?"active":"")+'">Dashboard</button><button onclick="setAdminSub(\'withdrawals\')" class="'+(adminSub==="withdrawals"?"active":"")+'">Withdrawals ('+pend.length+')</button><button onclick="setAdminSub(\'users\')" class="'+(adminSub==="users"?"active":"")+'">Users ('+users.length+')</button><button onclick="setAdminSub(\'leaderboard\')" class="'+(adminSub==="leaderboard"?"active":"")+'" style="background:#0f2a22;color:#2ee89e;border-color:#2ee89e">🏆 Leader Board</button><button onclick="setAdminSub(\'announcements\')" class="'+(adminSub==="announcements"?"active":"")+'" style="background:#d4af37;color:#000;font-weight:900">📢 Announcements ('+anns.length+')</button>  <button onclick="setAdminSub(\'settings\')" class="'+(adminSub==="settings"?"active":"")+'">Settings</button></div><hr>';
+  h+='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px"><button onclick="adminSub=\'dashboard\';renderAdmin()">Dashboard</button><button onclick="adminSub=\'withdrawals\';renderAdmin()">Withdrawals</button><button onclick="adminSub=\'allUsers\';renderAdmin()">👥 All Users</button><button onclick="adminSub=\'settings\';renderAdmin()">Settings</button></div><hr>';
   if(adminSub==="dashboard"||adminSub==="withdrawals"){
     h+='<h3 class="gold">Pending Withdrawals</h3>';if(pend.length===0)h+="<p>No pending</p>";
     for(var i=0;i<pend.length;i++){var t=pend[i];var idx=txs.indexOf(t);var adminFee=(t.amount>=140)?20:10;var adminPay=t.amount-adminFee;h+='<div style="border:1px solid #d4af37;padding:10px;margin:8px 0;border-radius:10px;background:#1a1a1a"><b>'+t.cell+'</b><br>R'+t.amount+' - R'+adminFee+' fee = Pay R'+adminPay+'<br><button class="btn2" onclick="approveWithdraw('+idx+')">Approve</button><button class="btnRed" onclick="rejectWithdraw('+idx+')">Reject</button></div>';}
   }
-     }
-  if(adminSub==="allusers"){
-    h+='<!-- ALL USERS LIST - AUDIT READY - ADMIN ONLY -->';
-    h+='<div id="allUsersSection" style="display:block; margin-top:16px; padding:10px;">';
-    h+='<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">';
-    h+='<h3 style="color:#f9c74f;">👥 All Users - Audit List</h3>';
-    h+='<div style="display:flex; gap:6px; flex-wrap:wrap;">';
-    h+='<button onclick="exportAuditPDF()" style="background:#f9c74f; color:#000; border:none; padding:8px 12px; border-radius:8px; font-weight:bold;">📄 View PDF</button>';
-    h+='<button onclick="shareWhatsAppAudit()" style="background:#25D366; color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:bold;">WhatsApp</button>';
-    h+='<button onclick="shareEmailAudit()" style="background:#4285F4; color:#fff; border:none; padding:8px 12px; border-radius:8px; font-weight:bold;">Email</button>';
-    h+='<button onclick="saveAllEdits()" style="background:#111; color:#f9c74f; border:1px solid #f9c74f; padding:8px 12px; border-radius:8px;">💾 Save Edits</button>';
-    h+='</div></div>';
-    h+='<div style="overflow-x:auto; margin-top:12px;"><table id="auditTable" style="width:100%; border-collapse:collapse; background:#111; color:#fff; min-width:700px;"><thead style="background:#f9c74f; color:#000;"><tr><th style="padding:8px; border:1px solid #333;">User Code</th><th style="padding:8px; border:1px solid #333;">ID Number</th><th style="padding:8px; border:1px solid #333;">Names and Surname</th><th style="padding:8px; border:1px solid #333;">Date Joined</th><th style="padding:8px; border:1px solid #333;">Gender</th><th style="padding:8px; border:1px solid #333;">Action</th></tr></thead><tbody id="allUsersTableBody">';
-    for(var i=0;i<users.length;i++){
-      var u=users[i];
-      var code=u.code||u.userCode||`DMS${String(i+1).padStart(3,'0')}`;
-      var idNum=u.idNumber||'';
-      var fullName=u.name||u.fullName||'Unknown';
-      var date=u.joinedAt?new Date(u.joinedAt).toLocaleString():'Old user';
-      var gender=u.gender||'N/A';
-      h+=`<tr><td style="border:1px solid #333; padding:6px; color:#f9c74f;">${code}</td><td style="border:1px solid #333; padding:6px;" contenteditable="true">${idNum}</td><td style="border:1px solid #333; padding:6px;" contenteditable="true">${fullName}</td><td style="border:1px solid #333; padding:6px;">${date}</td><td style="border:1px solid #333; padding:6px;" contenteditable="true">${gender}</td><td style="border:1px solid #333; padding:6px;"><button onclick="deleteUser(${i})">Del</button></td></tr>`;
-    }
-    h+='</tbody></table></div>';
-    h+='<p style="color:#888; font-size:12px; margin-top:8px;">Note: Double click any cell to edit manually. Click Save Edits after editing. This list is for audits/banks only.</p>';
-    h+='</div>';
-  }
-  if(adminSub==="leaderboard"){ 
+  if(adminSub==="leaderboard"){    
   var board=[];
 for(var uIdx=0; uIdx<users.length; uIdx++){
   var u=users[uIdx]; ensureWallets(u);
@@ -914,12 +866,6 @@ window.fbSaveAnn = async (a) => { try{ await setDoc(doc(db,"announcements", Stri
   window.fbSaveInbox = async (cell, msg) => { try{ await setDoc(doc(db,"inboxes", cell+"_"+msg.id), {cell:cell,...msg}); await setDoc(doc(db,"users",cell), users.find(x=>x.cell===cell)); console.log("📥 Inbox saved", cell); }catch(e){} };
 console.log("🔥 Firebase dms96-5b0a1 ready");
 </script>
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-<script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-  <script>
   <script>
 // FIXED - colors pending/approved inside History sentence
 function colorStatusHistory(){
@@ -959,30 +905,6 @@ function colorStatusHistory(){
     if(t==='rejected' && el.children.length===0){ el.className='badge-rejected'; }
   });
 }
-function exportAuditPDF(){
-  var {jsPDF} = window.jspdf;
-  var doc = new jsPDF();
-  doc.text("DMS Audit - "+new Date().toLocaleString(),10,15);
-  var rows=[];
-  document.querySelectorAll("#allUsersTableBody tr").forEach(function(r){
-    rows.push([r.cells[0]?.innerText||"", r.cells[1]?.innerText||"", r.cells[2]?.innerText||"", r.cells[3]?.innerText||"", r.cells[4]?.innerText||""]);
-  });
-  doc.autoTable({head:[['User Code','ID Number','Names','Date Joined','Gender']], body:rows, startY:25, headStyles:{fillColor:[249,199,79]}});
-  doc.save("DMS_Audit_"+new Date().toISOString().slice(0,10)+".pdf");
-}
-function shareWhatsAppAudit(){
-  exportAuditPDF();
-  var msg="DMS Audit List - "+document.querySelectorAll("#allUsersTableBody tr").length+" users - PDF downloaded";
-  window.open("https://wa.me/27510011039?text="+encodeURIComponent(msg),"_blank");
-}
-function shareEmailAudit(){
-  exportAuditPDF();
-  var subj="DMS Audit - "+new Date().toLocaleDateString();
-  var body="Audit attached - Total: "+document.querySelectorAll("#allUsersTableBody tr").length;
-  window.location.href="mailto:devine9606@gmail.com?subject="+encodeURIComponent(subj)+"&body="+encodeURIComponent(body);
-}
-function saveAllEdits(){ alert("Edits saved locally - For real saving we need to update localStorage later"); }
-function deleteUser(idx){ if(confirm("Delete user?")){ users.splice(idx,1); localStorage.setItem("users", JSON.stringify(users)); location.reload(); }}
 setInterval(colorStatusHistory, 700);
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
