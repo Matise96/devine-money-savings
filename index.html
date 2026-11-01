@@ -840,6 +840,14 @@ if(uu.fica && (uu.fica.idName || uu.fica.bankName)){h+='<div style="margin-top:8
    
     h+='</div>';
   }
+  if(adminSub==='allUsers'){
+h+='<h3 class="gold">👥 All Users - Audit (Bank Ready)</h3><div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><button onclick="exportAuditPDF()" style="background:#d4af37;color:#000;padding:6px 10px;border:none;border-radius:5px">📄 View PDF</button><button onclick="shareWhatsAppAudit()" style="background:#25D366;color:#fff;padding:6px 10px;border:none;border-radius:5px">WhatsApp 0510011039</button><button onclick="shareEmailAudit()" style="background:#007bff;color:#fff;padding:6px 10px;border:none;border-radius:5px">Email devine9606@gmail.com</button></div><div style="overflow-x:auto"><table border="1" style="width:100%;border-collapse:collapse;background:#1a1a1a;color:#fff;font-size:12px"><thead><tr><th>User Code</th><th>ID Number</th><th>Names and Surname</th><th>Date Joined</th><th>Gender</th><th>Save/Del</th></tr></thead><tbody id="allUsersTableBody"><tr><td colspan=6>Loading...</td></tr></tbody></table></div>';
+setTimeout(function(){
+var tb=document.getElementById('allUsersTableBody'); if(!tb)return; var html='';
+for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||u.userCode||('DMS'+String(i+1).padStart(3,'0')); var idNum=u.idNumber||''; var name=(u.name||'')+' '+(u.surname||''); var joined=u.joinedAt||u.joined||''; try{if(joined)joined=new Date(joined).toLocaleString();}catch(e){} var gen=u.gender||'Not set'; html+='<tr><td>'+code+'</td><td><input value=\''+idNum+'\' onchange="users['+i+'].idNumber=this.value;localStorage.setItem(\'users\',JSON.stringify(users))" style="width:90px"></td><td>'+name+'</td><td>'+joined+'</td><td><select onchange="users['+i+'].gender=this.value;localStorage.setItem(\'users\',JSON.stringify(users))"><option '+(gen==='Male'?'selected':'')+'>Male</option><option '+(gen==='Female'?'selected':'')+'>Female</option><option '+(gen==='Not set'?'selected':'')+'>Not set</option></select></td><td><button onclick="localStorage.setItem(\'users\',JSON.stringify(users));alert(\'Saved\')">Save</button> <button onclick="if(confirm(\'Delete?\')){users.splice('+i+',1);localStorage.setItem(\'users\',JSON.stringify(users));renderAdmin()}">Del</button></td></tr>';}
+tb.innerHTML=html;
+},300);
+}
   if(adminSub==="settings"){h+='<h3 class="gold">Settings - Backup</h3><div style="border:2px solid #d4af37;padding:10px;border-radius:10px"><button class="btn" onclick="exportData()" style="background:#90ee90">Export Backup</button><br><br><input type="file" id="importFile" class="input" accept=".json"><button class="btn2" onclick="importData()">Import Backup</button><p class="small">Upload 4 reward images as R70.jpg, R660.jpg, R1000.jpg, R5000.jpg in same folder as this html for popup</p></div>';}
   h+='</div>';document.getElementById("app").innerHTML=h;
 }
