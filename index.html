@@ -326,39 +326,38 @@ function goBonus(){
   +'</div><br><button class="btn" onclick="goTeam()">Go to My Team</button><br><br><button class="btn2" onclick="goHome()">Home</button></div>';
   document.getElementById("app").innerHTML=h;
 }
-function goRegister(){
+ function goRegister(){
   var inv=new URLSearchParams(location.search).get("invite")||"";
   var h='<div class="card"><h3 class="gold">Register</h3>'+
   '<input id="rN" class="input" placeholder="Full Name *">'+
   '<input id="idNumber" class="input" type="text" placeholder="ID Number (13 digits)" maxlength="13" required>'+
   '<input id="rC" class="input" placeholder="Cellphone *">'+
   '<input id="rE" class="input" placeholder="Email *">'+
-  '<select id="rPr" class="input"><option value="">Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option>';
+  '<select id="rPr" class="input"><option value="">Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select>'+
+  '<select id="rG" class="input"><option value="">Gender *</option><option>Male</option><option>Female</option></select>'+
+  '<input id="rP" class="input" type="password" placeholder="Password *">'+
+  '<input id="rI" class="input" value="'+inv+'" placeholder="Invite Code *">'+
+  '<button class="btn" onclick="doRegister()">REGISTER NOW</button>'+
+  '<button class="btn-outline" onclick="goHome()">Back to Login</button></div>';
+  document.getElementById("app").innerHTML=h;
+}
 
-// ... then later where you save user:
-  var n=document.getElementById("rN").value.trim(),
-  idNum=document.getElementById("idNumber").value.trim(),
-  c=document.getElementById("rC").value.trim(),
-  e=document.getElementById("rE").value.trim(),
-  pr=document.getElementById("rPr").value,
-  g=document.getElementById("rG").value,
-  p=document.getElementById("rP").value.trim(),
-  invCode=document.getElementById("rI").value.trim().toUpperCase();
-
-  // And in the user object:
-  var newUser = {
-    name: n,
-    idNumber: idNum,
-    cell: c,
-    email: e,
-    province: pr,
-    code: `DMS${String(users.length+1).padStart(3,'0')}`
-  };
+function doRegister(){
+  var n=document.getElementById("rN").value.trim();
+  var idNum=document.getElementById("idNumber").value.trim();
+  var c=document.getElementById("rC").value.trim();
+  var e=document.getElementById("rE").value.trim();
+  var pr=document.getElementById("rPr").value;
+  var g=document.getElementById("rG").value;
+  var p=document.getElementById("rP").value.trim();
+  var inv=document.getElementById("rI").value.trim().toUpperCase();
+  if(!n||!idNum||!c||!e||!pr||!g||!p||!inv){alert("Fill all *");return;}
+  if(idNum.length!=13||isNaN(idNum)){alert("ID must be 13 digits");return;}
   var exists=users.find(u=> (u.code===inv || u.userCode===inv));
-if(!exists){alert("Invalid Invite Code! "+inv+" does not exist. Ask inviter for correct DMS code.");return;}
+  if(!exists){alert("Invalid Invite Code! "+inv+" does not exist.");return;}
   for(var i=0;i<users.length;i++){if(users[i].cell===c){alert("Cell exists");return;}}
   var code="DMS"+String(users.length+1).padStart(3,"0");
-  var u={cell:c,name:n,email:e,prov:pr,gender:g,pass:p,invite:code,by:inv||null,w:{main:0,inviter:0,loyalty:0},pkgs:[],bank:null,inviterBonusGiven:false,activeLoyaltyReward:null};
+  var u={cell:c,name:n,email:e,prov:pr,gender:g,pass:p,idNumber:idNum,invite:code,by:inv||null,w:{main:0,inviter:0,loyalty:0},pkgs:[],bank:null,inviterBonusGiven:false,activeLoyaltyReward:null};
   users.push(u);save();alert("Registered! "+code+"!");goHome();
 }
 function doLogin(){
