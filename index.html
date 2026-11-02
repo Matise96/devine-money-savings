@@ -200,18 +200,44 @@ var users=safeParse("dms_users","[]");
 var txs=safeParse("dms_txs","[]");
 var cur=safeParse("dms_cur","null");var anns=safeParse("dms_anns","[]");
 var adminSub="leaderboard";
-var VALID_DEPOSITS=[70,160,250,340,430,520];
+var VALID_DEPOSITS=[70,160,250,340];
 function save(){
+ try{
   localStorage.setItem("dms_users",JSON.stringify(users));
-  localStorage.setItem("dms_txs",JSON.stringify(txs));
-  localStorage.setItem("dms_cur",JSON.stringify(cur));
-  localStorage.setItem("dms_anns",JSON.stringify(anns));
+ }catch(e){
+  // STORAGE FULL - Auto clean old data
   try{
-    if(window.fbSaveUser){ users.forEach(function(u){ window.fbSaveUser(u); }); }
-    if(window.fbSaveTx){ txs.slice(-3).forEach(function(t){ window.fbSaveTx(t); }); }
-    if(window.fbSaveAnn){ anns.slice(-3).forEach(function(a){ window.fbSaveAnn(a); }); }
-  }catch(e){}
+   users.forEach(function(u){
+     if(u.pkgs && u.pkgs.length>10) u.pkgs=u.pkgs.slice(-10);
+     if(u.hist && u.hist.length>20) u.hist=u.hist.slice(-20);
+   });
+   txs = txs.slice(-50);
+   localStorage.setItem("dms_users",JSON.stringify(users));
+   localStorage.setItem("dms_txs",JSON.stringify(txs));
+   console.log('Cleaned storage');
+  }catch(e2){
+   localStorage.removeItem("dms_txs");
+   localStorage.removeItem("dms_anns");
+   try{localStorage.setItem("dms_users",JSON.stringify(users));}catch(e3){alert('Storage still full! Please clear browser data.');}
+  }
+ }
+ try{localStorage.setItem("dms_cur",JSON.stringify(cur));}catch(e){}
+ try{localStorage.setItem("dms_anns",JSON.stringify(anns));}catch(e){}
+ try{
+  if(window.fbSaveUser){users.forEach(function(u){window.fbSaveUser(u);});}
+  if(window.fbSaveTx){txs.slice(-3).forEach(function(t){window.fbSaveTx(t);});}
+  if(window.fbSaveAnn){anns.slice(-3).forEach(function(a){window.fbSaveAnn(a);});}
+ }catch(e){}
 }
+function fixStorage(){
+ if(confirm('Storage full! Clean old history to fix?')){
+  users.forEach(function(u){if(u.pkgs && u.pkgs.length>10) u.pkgs=u.pkgs.slice(-10);});
+  txs = txs.slice(-50);
+  localStorage.removeItem("dms_txs");
+  localStorage.removeItem("dms_anns");
+  save();
+  location.reload();
+ }
 function ensureWallets(u){if(!u.w) u.w={main:0,inviter:0,loyalty:0};if(u.w.bonus!==undefined&&u.w.inviter===undefined){u.w.inviter=u.w.bonus;delete u.w.bonus;}if(u.w.main===undefined) u.w.main=0;if(u.w.inviter===undefined) u.w.inviter=0;if(u.w.loyalty===undefined) u.w.loyalty=0;if(!u.hasOwnProperty('bank')) u.bank=null;if(!u.hasOwnProperty('inviterBonusGiven')) u.inviterBonusGiven=false;if(!u.hasOwnProperty('activeLoyaltyReward')) u.activeLoyaltyReward=null;if(!u.hasOwnProperty('annReadIds')) u.annReadIds=[];}
 function setActive(id){try{document.querySelectorAll("nav button").forEach(function(b){b.classList.remove("active")});var e=document.getElementById(id);if(e) e.classList.add("active");}catch(e){}}function getUnreadAnnCount(){var u=getUser();if(!u) return anns.length;ensureWallets(u);if(!u.annReadIds) u.annReadIds=[];var unread=0;for(var i=0;i<anns.length;i++){if(u.annReadIds.indexOf(anns[i].id)===-1) unread++;}return unread;}
 function updateAnnBadge(){var b=document.getElementById("annBadge");if(!b) return;try{var c=getUnreadAnnCount();if(c>0){b.textContent=c;b.style.display="inline-block";}else{b.style.display="none";}}catch(e){b.style.display="none";}}
