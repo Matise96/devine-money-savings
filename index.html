@@ -914,7 +914,7 @@ function colorStatusHistory(){
   });
 }
 setInterval(colorStatusHistory, 700);
-</script>
+  
   function exportAuditPDF(){
 var rows=""; for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||u.userCode||('DMS'+String(i+1).padStart(3,'0')); var idNum=u.idNumber||''; var name=(u.name||'')+' '+(u.surname||''); var joined=u.joinedAt||u.joined||''; try{if(joined)joined=new Date(joined).toLocaleDateString();}catch(e){} var gen=u.gender||''; rows+='<tr><td>'+code+'</td><td>'+idNum+'</td><td>'+name+'</td><td>'+joined+'</td><td>'+gen+'</td></tr>';}
 var html='<html><head><title>Audit</title></head><body><h2>Devine Money Savings - All Users Audit</h2><p>Date: '+new Date().toLocaleString()+'</p><table border=1 style="width:100%;border-collapse:collapse"><tr><th>User Code</th><th>ID Number</th><th>Names and Surname</th><th>Date Joined</th><th>Gender</th></tr>'+rows+'</table><script>window.print()<\/script></body></html>'; var w=window.open('','_blank'); w.document.write(html); w.document.close();
@@ -925,6 +925,6 @@ var text='*DMS Audit - Devine Money Savings*%0A%0A'; for(var i=0;i<users.length;
 function shareEmailAudit(){
 var subj='DMS All Users Audit - '+new Date().toLocaleDateString(); var body='Devine Money Savings - All Users Audit%0D%0A%0D%0A'; for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||('DMS'+String(i+1).padStart(3,'0')); var name=(u.name||'')+' '+(u.surname||''); body+=''+code+' | '+(u.idNumber||'No ID')+' | '+name+' | '+(u.joinedAt||'')+' | '+(u.gender||'')+'%0D%0A';} window.location.href='mailto:devine9606@gmail.com?subject='+subj+'&body='+body;
 }
-<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
+</script>
 </body>
 </html>
