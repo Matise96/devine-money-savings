@@ -328,16 +328,32 @@ function goBonus(){
 }
 function goRegister(){
   var inv=new URLSearchParams(location.search).get("invite")||"";
-  var h='<div class="card"><h3 class="gold">Register</h3><input id="rN" class="input" placeholder="Full Name *">
-    <input id="idNumber" type="text" placeholder="ID Number (13 digits)" maxlength="13" required>
-    <input id="rC" class="input" placeholder="Cellphone *"><input id="rE" class="input" placeholder="Email *"><select id="rPr" class="input"><option value="">Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select><select id="rG" class="input"><option value="">Gender *</option><option>Male</option><option>Female</option></select><div class="pwdWrap"><input id="rP" class="input" type="password" placeholder="Password *"><button class="eyeBtn" id="eyeRP" onclick="toggleEye(&quot;rP&quot;,&quot;eyeRP&quot;)">👁️</button></div><input id="rI" class="input" placeholder="Invite Code *REQUIRED - e.g.,DMS001" value="'+inv+'"><button class="btn" onclick="doRegister()">Create Account</button></div>';
-  document.getElementById("app").innerHTML=h;
-}
-function doRegister(){
-  var n=document.getElementById("rN").value.trim(),c=document.getElementById("rC").value.trim(),e=document.getElementById("rE").value.trim(),pr=document.getElementById("rPr").value,g=document.getElementById("rG").value,p=document.getElementById("rP").value.trim(),inv=document.getElementById("rI").value.trim().toUpperCase();
-  idNumber: document.getElementById('idNumber').value,
-code: `DMS${String(users.length+1).padStart(3,'0')}`,
-  if(!n||!c||!e||!pr||!g||!p||!inv){alert("Fill all * - Invite Code is REQUIRED");return;}
+  var h='<div class="card"><h3 class="gold">Register</h3>'+
+  '<input id="rN" class="input" placeholder="Full Name *">'+
+  '<input id="idNumber" class="input" type="text" placeholder="ID Number (13 digits)" maxlength="13" required>'+
+  '<input id="rC" class="input" placeholder="Cellphone *">'+
+  '<input id="rE" class="input" placeholder="Email *">'+
+  '<select id="rPr" class="input"><option value="">Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option>';
+
+// ... then later where you save user:
+  var n=document.getElementById("rN").value.trim(),
+  idNum=document.getElementById("idNumber").value.trim(),
+  c=document.getElementById("rC").value.trim(),
+  e=document.getElementById("rE").value.trim(),
+  pr=document.getElementById("rPr").value,
+  g=document.getElementById("rG").value,
+  p=document.getElementById("rP").value.trim(),
+  invCode=document.getElementById("rI").value.trim().toUpperCase();
+
+  // And in the user object:
+  var newUser = {
+    name: n,
+    idNumber: idNum,
+    cell: c,
+    email: e,
+    province: pr,
+    code: `DMS${String(users.length+1).padStart(3,'0')}`
+  };
   var exists=users.find(u=> (u.code===inv || u.userCode===inv));
 if(!exists){alert("Invalid Invite Code! "+inv+" does not exist. Ask inviter for correct DMS code.");return;}
   for(var i=0;i<users.length;i++){if(users[i].cell===c){alert("Cell exists");return;}}
