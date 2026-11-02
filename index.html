@@ -194,15 +194,13 @@ var PKGS=[
   {id:"S",name:"STARTER",price:70,daily:5,earliest:7,duration:14,target:70,desc:"Daily R5 cashback. Minimum withdrawal at R70."},
 {id:"A",name:"PACKAGE A",price:160,daily:10,earliest:7,duration:14,target:140,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
 {id:"B",name:"PACKAGE B",price:250,daily:10,earliest:7,duration:21,target:210,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
-{id:"C",name:"PACKAGE C",price:340,daily:10,earliest:7,duration:30,target:300,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
-{id:"D",name:"PACKAGE D",price:430,daily:35,earliest:2,duration:11,target:385,desc:"Earliest withdrawal in 2 days. Minimum withdrawal at R70."},
-{id:"E",name:"PACKAGE E",price:520,daily:70,earliest:1,duration:6,target:480,desc:"Earliest withdrawal in 24hrs. Minimum withdrawal at R70."}
+{id:"C",name:"PACKAGE C",price:340,daily:10,earliest:7,duration:30,target:300,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."}
 ];
 var users=safeParse("dms_users","[]");
 var txs=safeParse("dms_txs","[]");
 var cur=safeParse("dms_cur","null");var anns=safeParse("dms_anns","[]");
 var adminSub="leaderboard";
-var VALID_DEPOSITS=[70,160,250,340,430,520];
+var VALID_DEPOSITS=[70,160,250,340];
 function save(){
   localStorage.setItem("dms_users",JSON.stringify(users));
   localStorage.setItem("dms_txs",JSON.stringify(txs));
@@ -321,7 +319,7 @@ function goBonus(){
   +'<p><b style="color:#2ee89e">#Earn R5 per invite on Starter only</b></p>'
   +'<p class="small" style="color:#ccc;line-height:1.6">(Please note that Starter is not a package, it is designed for users to use it to learn how the platform really works, from deposits, withdrawals, daily earnings and inviter bonuses. The loyalty rewards bonuses do not apply on Starter, but you will still earn inviter bonuses when you invite)</p>'
   +'<hr style="border-color:#333;margin:12px 0">'
-  +'<p><b style="color:#d4af37">#Earn R10 per invite from Package A-E.</b></p>'
+  +'<p><b style="color:#d4af37">#Earn R10 per invite from Package A-C.</b></p>'
   +'<p><b>#Invites are unlimited</b></p>'
   +'<p>#You do not have to invite many people you can invite 7 people once-off and everytime they all deposit you earn your bonus and can be immediately withdrawn as minimum withdrawal is at R70.</p>'
   +'<p style="color:#ffcc00"><b>#NB:Invitee must deposit first or purchase a package from other wallets for the Inviter to be rewarded.</b></p>'
@@ -330,12 +328,14 @@ function goBonus(){
 }
 function goRegister(){
   var inv=new URLSearchParams(location.search).get("invite")||"";
-  var h='<div class="card"><h3 class="gold">Register</h3><input id="rN" class="input" placeholder="Full Name *"><input id="rC" class="input" placeholder="Cellphone *"><input id="rE" class="input" placeholder="Email *"><select id="rPr" class="input"><option value="">Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select><select id="rG" class="input"><option value="">Gender *</option><option>Male</option><option>Female</option></select><div class="pwdWrap"><input id="rP" class="input" type="password" placeholder="Password *"><button class="eyeBtn" id="eyeRP" onclick="toggleEye(&quot;rP&quot;,&quot;eyeRP&quot;)">👁️</button></div><input id="rI" class="input" placeholder="Invite Code (optional)" value="'+inv+'"><button class="btn" onclick="doRegister()">Create Account</button></div>';
+  var h='<div class="card"><h3 class="gold">Register</h3><input id="rN" class="input" placeholder="Full Name *"><input id="rC" class="input" placeholder="Cellphone *"><input id="rE" class="input" placeholder="Email *"><select id="rPr" class="input"><option value="">Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select><select id="rG" class="input"><option value="">Gender *</option><option>Male</option><option>Female</option></select><div class="pwdWrap"><input id="rP" class="input" type="password" placeholder="Password *"><button class="eyeBtn" id="eyeRP" onclick="toggleEye(&quot;rP&quot;,&quot;eyeRP&quot;)">👁️</button></div><input id="rI" class="input" placeholder="Invite Code *REQUIRED - e.g.,DMS001" value="'+inv+'"><button class="btn" onclick="doRegister()">Create Account</button></div>';
   document.getElementById("app").innerHTML=h;
 }
 function doRegister(){
   var n=document.getElementById("rN").value.trim(),c=document.getElementById("rC").value.trim(),e=document.getElementById("rE").value.trim(),pr=document.getElementById("rPr").value,g=document.getElementById("rG").value,p=document.getElementById("rP").value.trim(),inv=document.getElementById("rI").value.trim().toUpperCase();
-  if(!n||!c||!e||!pr||!g||!p){alert("Fill all *");return;}
+  if(!n||!c||!e||!pr||!g||!p||!inv){alert("Fill all * - Invite Code is REQUIRED");return;}
+  var exists=users.find(u=> (u.code===inv || u.userCode===inv));
+if(!exists){alert("Invalid Invite Code! "+inv+" does not exist. Ask inviter for correct DMS code.");return;}
   for(var i=0;i<users.length;i++){if(users[i].cell===c){alert("Cell exists");return;}}
   var code="DMS"+String(users.length+1).padStart(3,"0");
   var u={cell:c,name:n,email:e,prov:pr,gender:g,pass:p,invite:code,by:inv||null,w:{main:0,inviter:0,loyalty:0},pkgs:[],bank:null,inviterBonusGiven:false,activeLoyaltyReward:null};
