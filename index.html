@@ -194,50 +194,26 @@ var PKGS=[
   {id:"S",name:"STARTER",price:70,daily:5,earliest:7,duration:14,target:70,desc:"Daily R5 cashback. Minimum withdrawal at R70."},
 {id:"A",name:"PACKAGE A",price:160,daily:10,earliest:7,duration:14,target:140,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
 {id:"B",name:"PACKAGE B",price:250,daily:10,earliest:7,duration:21,target:210,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
-{id:"C",name:"PACKAGE C",price:340,daily:10,earliest:7,duration:30,target:300,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."}
+{id:"C",name:"PACKAGE C",price:340,daily:10,earliest:7,duration:30,target:300,desc:"Earliest withdrawal in 7 days. Minimum withdrawal at R70."},
+{id:"D",name:"PACKAGE D",price:430,daily:35,earliest:2,duration:11,target:385,desc:"Earliest withdrawal in 2 days. Minimum withdrawal at R70."},
+{id:"E",name:"PACKAGE E",price:520,daily:70,earliest:1,duration:6,target:480,desc:"Earliest withdrawal in 24hrs. Minimum withdrawal at R70."}
 ];
 var users=safeParse("dms_users","[]");
 var txs=safeParse("dms_txs","[]");
 var cur=safeParse("dms_cur","null");var anns=safeParse("dms_anns","[]");
 var adminSub="leaderboard";
-var VALID_DEPOSITS=[70,160,250,340];
+var VALID_DEPOSITS=[70,160,250,340,430,520];
 function save(){
- try{
   localStorage.setItem("dms_users",JSON.stringify(users));
- }catch(e){
-  // STORAGE FULL - Auto clean old data
+  localStorage.setItem("dms_txs",JSON.stringify(txs));
+  localStorage.setItem("dms_cur",JSON.stringify(cur));
+  localStorage.setItem("dms_anns",JSON.stringify(anns));
   try{
-   users.forEach(function(u){
-     if(u.pkgs && u.pkgs.length>10) u.pkgs=u.pkgs.slice(-10);
-     if(u.hist && u.hist.length>20) u.hist=u.hist.slice(-20);
-   });
-   txs = txs.slice(-50);
-   localStorage.setItem("dms_users",JSON.stringify(users));
-   localStorage.setItem("dms_txs",JSON.stringify(txs));
-   console.log('Cleaned storage');
-  }catch(e2){
-   localStorage.removeItem("dms_txs");
-   localStorage.removeItem("dms_anns");
-   try{localStorage.setItem("dms_users",JSON.stringify(users));}catch(e3){alert('Storage still full! Please clear browser data.');}
-  }
- }
- try{localStorage.setItem("dms_cur",JSON.stringify(cur));}catch(e){}
- try{localStorage.setItem("dms_anns",JSON.stringify(anns));}catch(e){}
- try{
-  if(window.fbSaveUser){users.forEach(function(u){window.fbSaveUser(u);});}
-  if(window.fbSaveTx){txs.slice(-3).forEach(function(t){window.fbSaveTx(t);});}
-  if(window.fbSaveAnn){anns.slice(-3).forEach(function(a){window.fbSaveAnn(a);});}
- }catch(e){}
+    if(window.fbSaveUser){ users.forEach(function(u){ window.fbSaveUser(u); }); }
+    if(window.fbSaveTx){ txs.slice(-3).forEach(function(t){ window.fbSaveTx(t); }); }
+    if(window.fbSaveAnn){ anns.slice(-3).forEach(function(a){ window.fbSaveAnn(a); }); }
+  }catch(e){}
 }
-function fixStorage(){
- if(confirm('Storage full! Clean old history to fix?')){
-  users.forEach(function(u){if(u.pkgs && u.pkgs.length>10) u.pkgs=u.pkgs.slice(-10);});
-  txs = txs.slice(-50);
-  localStorage.removeItem("dms_txs");
-  localStorage.removeItem("dms_anns");
-  save();
-  location.reload();
- }
 function ensureWallets(u){if(!u.w) u.w={main:0,inviter:0,loyalty:0};if(u.w.bonus!==undefined&&u.w.inviter===undefined){u.w.inviter=u.w.bonus;delete u.w.bonus;}if(u.w.main===undefined) u.w.main=0;if(u.w.inviter===undefined) u.w.inviter=0;if(u.w.loyalty===undefined) u.w.loyalty=0;if(!u.hasOwnProperty('bank')) u.bank=null;if(!u.hasOwnProperty('inviterBonusGiven')) u.inviterBonusGiven=false;if(!u.hasOwnProperty('activeLoyaltyReward')) u.activeLoyaltyReward=null;if(!u.hasOwnProperty('annReadIds')) u.annReadIds=[];}
 function setActive(id){try{document.querySelectorAll("nav button").forEach(function(b){b.classList.remove("active")});var e=document.getElementById(id);if(e) e.classList.add("active");}catch(e){}}function getUnreadAnnCount(){var u=getUser();if(!u) return anns.length;ensureWallets(u);if(!u.annReadIds) u.annReadIds=[];var unread=0;for(var i=0;i<anns.length;i++){if(u.annReadIds.indexOf(anns[i].id)===-1) unread++;}return unread;}
 function updateAnnBadge(){var b=document.getElementById("annBadge");if(!b) return;try{var c=getUnreadAnnCount();if(c>0){b.textContent=c;b.style.display="inline-block";}else{b.style.display="none";}}catch(e){b.style.display="none";}}
@@ -354,21 +330,12 @@ function goBonus(){
 }
 function goRegister(){
   var inv=new URLSearchParams(location.search).get("invite")||"";
-  var h='<div class="card"><h3 class="gold">Register</h3><input id="rN" class="input" placeholder="Full Name *"><input id="rC" class="input" placeholder="Cellphone *"><input id="rE" class="input" placeholder="Email *"><select id="rPr" class="input"><option value="">Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select><select id="rG" class="input"><option value="">Gender *</option><option>Male</option><option>Female</option></select><div class="pwdWrap"><input id="rP" class="input" type="password" placeholder="Password *"><button class="eyeBtn" id="eyeRP" onclick="toggleEye(&quot;rP&quot;,&quot;eyeRP&quot;)">👁️</button></div><input id="rI" class="input" placeholder="Invite Code * REQUIRED - e.g.,DMS001" value="'+inv+'"><button class="btn" onclick="doRegister()">Create Account</button></div>';
+  var h='<div class="card"><h3 class="gold">Register</h3><input id="rN" class="input" placeholder="Full Name *"><input id="rC" class="input" placeholder="Cellphone *"><input id="rE" class="input" placeholder="Email *"><select id="rPr" class="input"><option value="">Province *</option><option>Free State</option><option>Gauteng</option><option>KwaZulu-Natal</option><option>Eastern Cape</option><option>Western Cape</option><option>Limpopo</option><option>Mpumalanga</option><option>North West</option><option>Northern Cape</option></select><select id="rG" class="input"><option value="">Gender *</option><option>Male</option><option>Female</option></select><div class="pwdWrap"><input id="rP" class="input" type="password" placeholder="Password *"><button class="eyeBtn" id="eyeRP" onclick="toggleEye(&quot;rP&quot;,&quot;eyeRP&quot;)">👁️</button></div><input id="rI" class="input" placeholder="Invite Code (optional)" value="'+inv+'"><button class="btn" onclick="doRegister()">Create Account</button></div>';
   document.getElementById("app").innerHTML=h;
 }
 function doRegister(){
   var n=document.getElementById("rN").value.trim(),c=document.getElementById("rC").value.trim(),e=document.getElementById("rE").value.trim(),pr=document.getElementById("rPr").value,g=document.getElementById("rG").value,p=document.getElementById("rP").value.trim(),inv=document.getElementById("rI").value.trim().toUpperCase();
-  if(!inv || inv.trim()===""){
-  alert("Inviter User Code is COMPULSORY! Please enter the User Code of the person who invited you (e.g., DMS001).");
-  return;
-}
-// also check if inviter exists
-var exists = users.find(u=> (u.code===inv.trim() || u.userCode===inv.trim()));
-if(!exists){
-  alert("Invalid Inviter Code! "+inv+" does not exist. Ask your inviter for correct DMS code.");
-  return;
-}
+  if(!n||!c||!e||!pr||!g||!p){alert("Fill all *");return;}
   for(var i=0;i<users.length;i++){if(users[i].cell===c){alert("Cell exists");return;}}
   var code="DMS"+String(users.length+1).padStart(3,"0");
   var u={cell:c,name:n,email:e,prov:pr,gender:g,pass:p,invite:code,by:inv||null,w:{main:0,inviter:0,loyalty:0},pkgs:[],bank:null,inviterBonusGiven:false,activeLoyaltyReward:null};
@@ -873,11 +840,13 @@ if(uu.fica && (uu.fica.idName || uu.fica.bankName)){h+='<div style="margin-top:8
    
     h+='</div>';
   }
- if(adminSub==="allUsers"){
-var saved=localStorage.getItem('users'); if(saved){ try{ users=JSON.parse(saved); }catch(e){} }
-var rows=""; for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||u.userCode||('DMS'+String(i+1).padStart(3,'0')); var idNum=u.idNumber||'No ID'; var name=(u.name||'')+' '+(u.surname||''); if(!name.trim())name='No Name'; var joined=u.joinedAt||u.joined||''; if(!joined){ joined=new Date().toISOString(); u.joinedAt=joined; u.joined=joined; } var joinedShow=joined; try{joinedShow=new Date(joined).toLocaleDateString();}catch(e){} var gen=u.gender||'Not set'; var genSel='<select onchange="users['+i+'].gender=this.value;localStorage.setItem(\'users\',JSON.stringify(users));"><option '+(gen==='Male'?'selected':'')+'>Male</option><option '+(gen==='Female'?'selected':'')+'>Female</option><option '+(gen==='Not set'?'selected':'')+'>Not set</option></select>'; rows+='<tr><td>'+code+'</td><td><input value=\''+idNum+'\' onchange="users['+i+'].idNumber=this.value;localStorage.setItem(\'users\',JSON.stringify(users));" style="width:90px"></td><td><input value=\''+name+'\' onchange="var p=this.value.split(\' \'); users['+i+'].name=p[0]; users['+i+'].surname=p.slice(1).join(\' \'); localStorage.setItem(\'users\',JSON.stringify(users));" style="width:120px"></td><td>'+joinedShow+'</td><td>'+genSel+'</td><td><button onclick="localStorage.setItem(\'users\',JSON.stringify(users));alert(\'Saved\')">Save</button> <button onclick="if(confirm(\'Delete?\')){users.splice('+i+',1);localStorage.setItem(\'users\',JSON.stringify(users));renderAdmin()}">Del</button></td></tr>';}
-localStorage.setItem('users',JSON.stringify(users));
-h+='<h3 class="gold">👥 All Users - Audit (Bank Ready)</h3><div style="margin-bottom:10px"><button class="btn" onclick="exportAuditPDF()" style="background:#ffcc00">📄 View PDF</button> <button class="btn" onclick="shareWhatsAppAudit()" style="background:#25d366">WhatsApp 0510011039</button> <button class="btn" onclick="shareEmailAudit()" style="background:#4285f4">Email devine9606@gmail.com</button></div><table border=1 style="width:100%;border-collapse:collapse;background:#111;color:#fff"><tr><th>User Code</th><th>ID Number</th><th>Names and Surname</th><th>Date Joined</th><th>Gender</th><th>Save/Del</th></tr>'+rows+'</table>';
+  if(adminSub==='allUsers'){
+h+='<h3 class="gold">👥 All Users - Audit (Bank Ready)</h3><div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap"><button onclick="exportAuditPDF()" style="background:#d4af37;color:#000;padding:6px 10px;border:none;border-radius:5px">📄 View PDF</button><button onclick="shareWhatsAppAudit()" style="background:#25D366;color:#fff;padding:6px 10px;border:none;border-radius:5px">WhatsApp 0510011039</button><button onclick="shareEmailAudit()" style="background:#007bff;color:#fff;padding:6px 10px;border:none;border-radius:5px">Email devine9606@gmail.com</button></div><div style="overflow-x:auto"><table border="1" style="width:100%;border-collapse:collapse;background:#1a1a1a;color:#fff;font-size:12px"><thead><tr><th>User Code</th><th>ID Number</th><th>Names and Surname</th><th>Date Joined</th><th>Gender</th><th>Save/Del</th></tr></thead><tbody id="allUsersTableBody"><tr><td colspan=6>Loading...</td></tr></tbody></table></div>';
+setTimeout(function(){
+var tb=document.getElementById('allUsersTableBody'); if(!tb)return; var html='';
+for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||u.userCode||('DMS'+String(i+1).padStart(3,'0')); var idNum=u.idNumber||''; var name=(u.name||'')+' '+(u.surname||''); var joined=u.joinedAt||u.joined||''; try{if(joined)joined=new Date(joined).toLocaleString();}catch(e){} var gen=u.gender||'Not set'; html+='<tr><td>'+code+'</td><td><input value=\''+idNum+'\' onchange="users['+i+'].idNumber=this.value;localStorage.setItem(\'users\',JSON.stringify(users))" style="width:90px"></td><td>'+name+'</td><td>'+joined+'</td><td><select onchange="users['+i+'].gender=this.value;localStorage.setItem(\'users\',JSON.stringify(users))"><option '+(gen==='Male'?'selected':'')+'>Male</option><option '+(gen==='Female'?'selected':'')+'>Female</option><option '+(gen==='Not set'?'selected':'')+'>Not set</option></select></td><td><button onclick="localStorage.setItem(\'users\',JSON.stringify(users));alert(\'Saved\')">Save</button> <button onclick="if(confirm(\'Delete?\')){users.splice('+i+',1);localStorage.setItem(\'users\',JSON.stringify(users));renderAdmin()}">Del</button></td></tr>';}
+tb.innerHTML=html;
+},300);
 }
   if(adminSub==="settings"){h+='<h3 class="gold">Settings - Backup</h3><div style="border:2px solid #d4af37;padding:10px;border-radius:10px"><button class="btn" onclick="exportData()" style="background:#90ee90">Export Backup</button><br><br><input type="file" id="importFile" class="input" accept=".json"><button class="btn2" onclick="importData()">Import Backup</button><p class="small">Upload 4 reward images as R70.jpg, R660.jpg, R1000.jpg, R5000.jpg in same folder as this html for popup</p></div>';}
   h+='</div>';document.getElementById("app").innerHTML=h;
@@ -945,18 +914,6 @@ function colorStatusHistory(){
   });
 }
 setInterval(colorStatusHistory, 700);
-
-function exportAuditPDF(){
-var rows=""; for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||u.userCode||('DMS'+String(i+1).padStart(3,'0')); var idNum=u.idNumber||''; var name=(u.name||'')+' '+(u.surname||''); var joined=u.joinedAt||u.joined||''; try{if(joined)joined=new Date(joined).toLocaleDateString();}catch(e){} var gen=u.gender||''; rows+='<tr><td>'+code+'</td><td>'+idNum+'</td><td>'+name+'</td><td>'+joined+'</td><td>'+gen+'</td></tr>';}
-var html='<html><head><title>Audit</title></head><body><h2>Devine Money Savings - All Users Audit</h2><p>Date: '+new Date().toLocaleString()+'</p><table border=1 style="width:100%;border-collapse:collapse"><tr><th>User Code</th><th>ID Number</th><th>Names and Surname</th><th>Date Joined</th><th>Gender</th></tr>'+rows+'</table><script>window.print()<\/script></body></html>'; var w=window.open('','_blank'); w.document.write(html); w.document.close();
-}
-function shareWhatsAppAudit(){
-var text='*DMS Audit - Devine Money Savings*%0A%0A'; for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||('DMS'+String(i+1).padStart(3,'0')); var name=(u.name||'')+' '+(u.surname||''); text+='*'+code+'*: '+name+' - '+(u.idNumber||'No ID')+'%0A';} text+='%0ASent from Admin'; window.open('https://wa.me/27510011039?text='+text,'_blank');
-}
-function shareEmailAudit(){
-var subj='DMS All Users Audit - '+new Date().toLocaleDateString(); var body='Devine Money Savings - All Users Audit%0D%0A%0D%0A'; for(var i=0;i<users.length;i++){var u=users[i]; var code=u.code||('DMS'+String(i+1).padStart(3,'0')); var name=(u.name||'')+' '+(u.surname||''); body+=''+code+' | '+(u.idNumber||'No ID')+' | '+name+' | '+(u.joinedAt||'')+' | '+(u.gender||'')+'%0D%0A';} window.location.href='mailto:devine9606@gmail.com?subject='+subj+'&body='+body;
-}
-</script>
 </script>
 <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}</script>
 </body>
